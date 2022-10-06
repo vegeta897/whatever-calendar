@@ -1,11 +1,14 @@
-<script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+<script lang="ts">
+	import Counter from './Counter.svelte'
+	import welcome from '$lib/images/svelte-welcome.webp'
+	import welcome_fallback from '$lib/images/svelte-welcome.png'
+	import type { PageData } from './$types'
+
+	export let data: PageData
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>Whatever Calendar</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
@@ -18,7 +21,8 @@
 			</picture>
 		</span>
 
-		to your new<br />SvelteKit app
+		to your new<br />SvelteKit app<br />
+		{data.foo}
 	</h1>
 
 	<h2>

@@ -1,43 +1,43 @@
 <script lang="ts">
-	import { confetti } from '@neoconfetti/svelte';
-	import { enhance } from '$app/forms';
-	import type { PageData, ActionData } from './$types';
+	import { confetti } from '@neoconfetti/svelte'
+	import { enhance } from '$app/forms'
+	import type { PageData, ActionData } from './$types'
 
-	export let data: PageData;
+	export let data: PageData
 
-	export let form: ActionData;
+	export let form: ActionData
 
 	/** Whether or not the user has won */
-	$: won = data.answers.at(-1) === 'xxxxx';
+	$: won = data.answers.at(-1) === 'xxxxx'
 
 	/** The index of the current guess */
-	$: i = won ? -1 : data.answers.length;
+	$: i = won ? -1 : data.answers.length
 
 	/** Whether the current guess can be submitted */
-	$: submittable = data.guesses[i]?.length === 5;
+	$: submittable = data.guesses[i]?.length === 5
 
 	/**
 	 * A map of classnames for all letters that have been guessed,
 	 * used for styling the keyboard
 	 */
-	let classnames: Record<string, 'exact' | 'close' | 'missing'>;
+	let classnames: Record<string, 'exact' | 'close' | 'missing'>
 
 	$: {
-		classnames = {};
+		classnames = {}
 
 		data.answers.forEach((answer, i) => {
-			const guess = data.guesses[i];
+			const guess = data.guesses[i]
 
 			for (let i = 0; i < 5; i += 1) {
-				const letter = guess[i];
+				const letter = guess[i]
 
 				if (answer[i] === 'x') {
-					classnames[letter] = 'exact';
+					classnames[letter] = 'exact'
 				} else if (!classnames[letter]) {
-					classnames[letter] = answer[i] === 'c' ? 'close' : 'missing';
+					classnames[letter] = answer[i] === 'c' ? 'close' : 'missing'
 				}
 			}
-		});
+		})
 	}
 
 	/**
@@ -45,16 +45,14 @@
 	 * if client-side JavaScript is enabled
 	 */
 	function update(event: MouseEvent) {
-		const guess = data.guesses[i];
-		const key = (event.target as HTMLButtonElement).getAttribute(
-			'data-key'
-		);
+		const guess = data.guesses[i]
+		const key = (event.target as HTMLButtonElement).getAttribute('data-key')
 
 		if (key === 'backspace') {
-			data.guesses[i] = guess.slice(0, -1);
-			if (form?.badGuess) form.badGuess = false;
+			data.guesses[i] = guess.slice(0, -1)
+			if (form?.badGuess) form.badGuess = false
 		} else if (guess.length < 5) {
-			data.guesses[i] += key;
+			data.guesses[i] += key
 		}
 	}
 
@@ -63,11 +61,11 @@
 	 * desktop users can use the keyboard to play the game
 	 */
 	function keydown(event: KeyboardEvent) {
-		if (event.metaKey) return;
+		if (event.metaKey) return
 
 		document
 			.querySelector(`[data-key="${event.key}" i]`)
-			?.dispatchEvent(new MouseEvent('click', { cancelable: true }));
+			?.dispatchEvent(new MouseEvent('click', { cancelable: true }))
 	}
 </script>
 
@@ -149,7 +147,7 @@
 			force: 0.7,
 			stageWidth: window.innerWidth,
 			stageHeight: window.innerHeight,
-			colors: ['#ff3e00', '#40b3ff', '#676778']
+			colors: ['#ff3e00', '#40b3ff', '#676778'],
 		}}
 	/>
 {/if}

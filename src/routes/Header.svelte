@@ -1,16 +1,9 @@
 <script>
-	import { page } from '$app/stores';
-	import logo from '$lib/images/svelte-logo.svg';
-	import github from '$lib/images/github.svg';
+	import { page } from '$app/stores'
+	import github from '$lib/images/github.svg'
 </script>
 
 <header>
-	<div class="corner">
-		<a href="https://kit.svelte.dev">
-			<img src={logo} alt="SvelteKit" />
-		</a>
-	</div>
-
 	<nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
@@ -32,8 +25,8 @@
 	</nav>
 
 	<div class="corner">
-		<a href="https://github.com/sveltejs/kit">
-			<img src={github} alt="GitHub" />
+		<a href="https://github.com/vegeta897/whatever-calendar">
+			<img class="circle" src={github} alt="GitHub" />
 		</a>
 	</div>
 </header>
@@ -63,10 +56,15 @@
 		object-fit: contain;
 	}
 
+	img.circle {
+		background-color: rgb(196, 196, 196);
+		border-radius: 50%;
+	}
+
 	nav {
 		display: flex;
 		justify-content: center;
-		--background: rgba(255, 255, 255, 0.7);
+		--background: rgba(255, 255, 255, 0.2);
 	}
 
 	svg {
