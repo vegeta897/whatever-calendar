@@ -5,7 +5,10 @@
 
 <svelte:head>
 	<title>Whatever Calendar</title>
-	<meta name="description" content="Collaborative event availability planning" />
+	<meta
+		name="description"
+		content="Collaborative event availability planning"
+	/>
 </svelte:head>
 
 <div class="app">
@@ -16,7 +19,9 @@
 	</main>
 
 	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p>
+			made with <a href="https://kit.svelte.dev">SvelteKit</a>
+		</p>
 	</footer>
 </div>
 
@@ -33,7 +38,7 @@
 		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
-		max-width: 1600px;
+		max-width: 900px;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
@@ -44,9 +49,11 @@
 		justify-content: center;
 		align-items: center;
 		padding: 12px;
+		opacity: 0.8;
 	}
 
 	footer a {
+		color: inherit;
 		font-weight: bold;
 	}
 

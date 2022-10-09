@@ -38,6 +38,7 @@ export const load: PageServerLoad = ({ url, cookies }) => {
 	cookies.set('wec-user-id', userID)
 	return {
 		userData: db.data!,
+		weekStart: cookies.get('wec-weekStart') ?? undefined
 	}
 }
 

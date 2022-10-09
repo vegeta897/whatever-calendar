@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { offInterval, onInterval } from '$lib/images/interval'
+	import { offInterval, onInterval } from '$lib/interval'
+	import { getMonthData } from '$lib/month'
+	import type { CalendarDay } from '$lib/month'
 	import { onDestroy } from 'svelte'
 	import type { UserData } from './+page.server'
 
@@ -8,39 +10,22 @@
 	export let weekStart: 0 | 1
 	export let userData: UserData
 
-	const monthStart = new Date()
-	monthStart.setHours(0, 0, 0, 0)
-	monthStart.setFullYear(year)
-	monthStart.setMonth(month - 1)
-	monthStart.setDate(1)
-
-	$: firstDayColumn = ((7 + monthStart.getDay() - weekStart) % 7) + 1
-
-	const monthName = monthStart.toLocaleString('default', { month: 'long' })
-
-	type CalendarDay = {
-		date: Date
-		day: number
-		marked: boolean
-		weekend: boolean
-	}
-
-	const dayLooper = new Date(monthStart)
-	let days: CalendarDay[] = []
-	while (dayLooper.getMonth() === month - 1) {
-		days.push({
-			date: new Date(dayLooper),
-			day: dayLooper.getDate(),
-			marked: false,
-			weekend: [0, 6].includes(dayLooper.getDay()),
-		})
-		dayLooper.setDate(dayLooper.getDate() + 1)
-	}
+	$: monthData = getMonthData(year, month, weekStart)
 
 	let marking = false
 	let unmarking = false
 
-	function mouseDown(day: CalendarDay) {
+	// TODO: Need to listen to mouse events outside of day boxes
+
+	function dayClick(day: CalendarDay, e: MouseEvent) {
+		if (e.button !== 0) return
+		day.marked = !day.marked
+		monthData.days = monthData.days
+		userData = { users: ['hi'] }
+	}
+
+	function mouseDown(day: CalendarDay, e: PointerEvent) {
+		if (e.button !== 0) return
 		if (day.date < today) return
 		console.log('drag start', day)
 		if (day.marked) {
@@ -50,19 +35,33 @@
 			marking = true
 			day.marked = true
 		}
-		days = days
+		monthData.days = monthData.days
 	}
-	function mouseEnter(day: CalendarDay) {
+	function mouseEnter(day: CalendarDay, e: PointerEvent) {
 		if (!marking && !unmarking) return
+		console.log(e.button, e.buttons)
+		if ((e.buttons & 1) === 0) {
+			marking = false
+			unmarking = false
+			return
+		}
 		day.marked = marking
-		days = days
+		monthData.days = monthData.days
 	}
-	function mouseUp(day: CalendarDay) {
+	function mouseUp(day: CalendarDay, e: PointerEvent) {
+		if (e.button !== 0) return
 		if (!marking && !unmarking) return
 		marking = false
 		unmarking = false
 		console.log('drag stop', day)
 		userData = { users: ['hi'] }
+	}
+
+	function outOfMonth(e: PointerEvent) {
+		if ((e.buttons & 1) === 0) return
+		if (!marking && !unmarking) return
+		marking = false
+		unmarking = false
 	}
 
 	let today = new Date()
@@ -80,32 +79,47 @@
 	onDestroy(() => offInterval(updateToday))
 </script>
 
-<div class="month-container">
-	<h2>{monthName}</h2>
-	<ol class="month" style="--first-day: {firstDayColumn}">
-		{#each days as day, i}
-			<li
+<h2>{monthData.name}</h2>
+<ol class="weekdays">
+	{#each monthData.weekdayNames as weekdayName}
+		<li class="weekday">{weekdayName}</li>
+	{/each}
+</ol>
+<ol class="month" on:pointerleave={outOfMonth}>
+	{#each monthData.days as day, i}
+		<!-- <li
 				class="day"
+				on:click={(e) => dayClick(day, e)}
 				class:weekend={day.weekend}
-				on:mousedown={() => mouseDown(day)}
-				on:mouseup={() => mouseUp(day)}
-				on:mouseenter={() => mouseEnter(day)}
 				class:marked={day.marked}
 				class:invalid={day.date < today}
 			>
 				{day.day}
-			</li>
-		{/each}
-	</ol>
-</div>
+			</li> -->
+
+		<li
+			class="day"
+			on:pointerdown={(e) => mouseDown(day, e)}
+			on:pointerup={(e) => mouseUp(day, e)}
+			on:pointerenter={(e) => mouseEnter(day, e)}
+			class:weekend={day.weekend}
+			class:marked={day.marked}
+			class:invalid={day.date < today}
+			class:out-of-month={!day.inMonth}
+		>
+			{day.day}
+		</li>
+	{/each}
+</ol>
 
 <style>
 	h2 {
 		text-align: center;
 		font-size: 1.5em;
+		margin: 1rem 0;
 	}
 
-	.month {
+	ol {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		list-style: none;
@@ -114,14 +128,20 @@
 		text-align: center;
 	}
 
+	.weekdays {
+		margin-bottom: 0.8rem;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	.month {
+		row-gap: 1px;
+		column-gap: 1px;
+	}
+
 	.day {
-		width: 50px;
-		height: 50px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		margin-left: -1px;
-		margin-top: -1px;
+		height: 60px;
 		box-sizing: border-box;
-		background-color: rgba(255, 255, 255, 0.05);
+		background-color: rgba(255, 255, 255, 0.06);
 		display: flex;
 		flex-wrap: wrap;
 		align-content: center;
@@ -129,19 +149,28 @@
 		cursor: default;
 		user-select: none;
 		transition: background-color 50ms ease-out;
+		/* touch-action: none; */
+	}
+
+	.day.weekend {
+		background-color: rgba(255, 255, 255, 0.1);
 	}
 
 	.day.marked {
 		border-top: 5px solid var(--color-theme-1);
 	}
 
-	.day.invalid {
-		background-color: transparent !important;
-		color: rgba(255, 255, 255, 0.3) !important;
+	.day.out-of-month {
+		background-color: rgba(255, 255, 255, 0.03);
 	}
 
-	.day.weekend {
-		background-color: rgba(255, 255, 255, 0.1);
+	.day.invalid {
+		background-color: rgba(255, 255, 255, 0.02) !important;
+		color: rgba(255, 255, 255, 0.25) !important;
+	}
+
+	.day.out-of-month.invalid {
+		background-color: rgba(255, 255, 255, 0.008) !important;
 	}
 
 	.day:hover {
@@ -150,7 +179,9 @@
 		transition: none;
 	}
 
-	.day:first-child {
-		grid-column-start: var(--first-day);
+@media (max-width: 480px) {
+	.day {
+		height: 40px;
 	}
+}
 </style>

@@ -5,7 +5,8 @@ export function onInterval(callback: () => void) {
 }
 
 export function offInterval(callback: () => void) {
-	if (!listeners.has(callback)) console.error('offInterval received unregistered callback!')
+	if (!listeners.has(callback))
+		console.error('offInterval received unregistered callback!')
 	listeners.delete(callback)
 }
 

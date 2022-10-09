@@ -2,7 +2,7 @@
 	"name": "whatever-calendar",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
@@ -28,6 +28,7 @@
 		"prettier-plugin-svelte": "^2.7.0",
 		"svelte": "^3.46.0",
 		"svelte-check": "^2.7.1",
+		"svelte-local-storage-store": "^0.3.1",
 		"svelte-preprocess": "^4.10.6",
 		"tslib": "^2.3.1",
 		"typescript": "^4.7.4",
