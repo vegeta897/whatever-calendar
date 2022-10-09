@@ -14,7 +14,7 @@
 		<input name="userData" hidden value={JSON.stringify(userData)} />
 		<button>Save</button>
 	</form>
-	<div class="month-container">
+	<div class="calendar-container">
 		{#each [5, 10, 11, 12] as month}
 			<Month year={2022} {month} bind:userData {weekStart} />
 		{/each}
@@ -27,7 +27,7 @@
 </section>
 
 <style>
-	.month-container {
+	.calendar-container {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;

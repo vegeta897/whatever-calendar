@@ -21,7 +21,7 @@
 	type CalendarDay = {
 		date: Date
 		day: number
-		selected: boolean
+		marked: boolean
 		weekend: boolean
 	}
 
@@ -31,28 +31,36 @@
 		days.push({
 			date: new Date(dayLooper),
 			day: dayLooper.getDate(),
-			selected: false,
+			marked: false,
 			weekend: [0, 6].includes(dayLooper.getDay()),
 		})
 		dayLooper.setDate(dayLooper.getDate() + 1)
 	}
 
-	let selecting = false
+	let marking = false
+	let unmarking = false
+
 	function mouseDown(day: CalendarDay) {
 		if (day.date < today) return
 		console.log('drag start', day)
-		selecting = true
-		day.selected = true
+		if (day.marked) {
+			unmarking = true
+			day.marked = false
+		} else {
+			marking = true
+			day.marked = true
+		}
 		days = days
 	}
 	function mouseEnter(day: CalendarDay) {
-		if (!selecting) return
-		day.selected = true
+		if (!marking && !unmarking) return
+		day.marked = marking
 		days = days
 	}
 	function mouseUp(day: CalendarDay) {
-		if (!selecting) return
-		selecting = false
+		if (!marking && !unmarking) return
+		marking = false
+		unmarking = false
 		console.log('drag stop', day)
 		userData = { users: ['hi'] }
 	}
@@ -72,7 +80,7 @@
 	onDestroy(() => offInterval(updateToday))
 </script>
 
-<div>
+<div class="month-container">
 	<h2>{monthName}</h2>
 	<ol class="month" style="--first-day: {firstDayColumn}">
 		{#each days as day, i}
@@ -82,7 +90,7 @@
 				on:mousedown={() => mouseDown(day)}
 				on:mouseup={() => mouseUp(day)}
 				on:mouseenter={() => mouseEnter(day)}
-				class:selected={day.selected}
+				class:marked={day.marked}
 				class:invalid={day.date < today}
 			>
 				{day.day}
@@ -123,7 +131,7 @@
 		transition: background-color 50ms ease-out;
 	}
 
-	.day.selected {
+	.day.marked {
 		border-top: 5px solid var(--color-theme-1);
 	}
 
