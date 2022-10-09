@@ -5,6 +5,7 @@
 
 	export let year: number
 	export let month: number
+	export let weekStart: 0 | 1
 	export let userData: UserData
 
 	const monthStart = new Date()
@@ -13,7 +14,8 @@
 	monthStart.setMonth(month - 1)
 	monthStart.setDate(1)
 
-	const firstDayColumn = monthStart.getDay() + 1
+	$: firstDayColumn = ((7 + monthStart.getDay() - weekStart) % 7) + 1
+
 	const monthName = monthStart.toLocaleString('default', { month: 'long' })
 
 	type CalendarDay = {
@@ -55,9 +57,9 @@
 		userData = { users: ['hi'] }
 	}
 
-	const todayInit = new Date()
-	todayInit.setHours(0, 0, 0, 0)
-	$: today = todayInit
+	let today = new Date()
+	today.setHours(0, 0, 0, 0)
+	$: today
 
 	const updateToday = () => {
 		const now = new Date()

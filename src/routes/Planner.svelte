@@ -4,6 +4,8 @@
 	import Month from './Month.svelte'
 
 	export let userData: UserData
+
+	let weekStart: 0 | 1 = 0
 </script>
 
 <section>
@@ -13,10 +15,15 @@
 		<button>Save</button>
 	</form>
 	<div class="month-container">
-		{#each [10, 11, 12] as month}
-			<Month year={2022} {month} bind:userData />
+		{#each [5, 10, 11, 12] as month}
+			<Month year={2022} {month} bind:userData {weekStart} />
 		{/each}
 	</div>
+	<label for="week-start">Start of week:</label>
+	<select id="week-start" bind:value={weekStart}>
+		<option value={0}>Sunday</option>
+		<option value={1}>Monday</option>
+	</select>
 </section>
 
 <style>
@@ -24,5 +31,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
+		margin-bottom: 1rem;
 	}
 </style>
