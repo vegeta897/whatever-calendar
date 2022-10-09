@@ -3,7 +3,6 @@
 	import './styles.css'
 </script>
 
-
 <svelte:head>
 	<title>Whatever Calendar</title>
 	<meta name="description" content="Collaborative event availability planning" />
@@ -34,7 +33,7 @@
 		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
-		max-width: 64rem;
+		max-width: 1600px;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}

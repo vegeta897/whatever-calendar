@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { offInterval, onInterval } from '$lib/images/interval'
+	import { onDestroy } from 'svelte'
 	import type { UserData } from './+page.server'
 
 	export let year: number
@@ -18,30 +20,54 @@
 		date: Date
 		day: number
 		selected: boolean
+		weekend: boolean
 	}
 
-	const day = new Date(monthStart)
-	const days: CalendarDay[] = []
-	while (day.getMonth() === month - 1) {
-		days.push({ date: new Date(day), day: day.getDate(), selected: false })
-		day.setDate(day.getDate() + 1)
+	const dayLooper = new Date(monthStart)
+	let days: CalendarDay[] = []
+	while (dayLooper.getMonth() === month - 1) {
+		days.push({
+			date: new Date(dayLooper),
+			day: dayLooper.getDate(),
+			selected: false,
+			weekend: [0, 6].includes(dayLooper.getDay()),
+		})
+		dayLooper.setDate(dayLooper.getDate() + 1)
 	}
 
-	let spanStart: number | null = null // Index in days array
-	let spanEnd: number | null = null
-
+	let selecting = false
 	function mouseDown(day: CalendarDay) {
-		console.log('dragging!', day)
-		spanStart = days.indexOf(day)
+		if (day.date < today) return
+		console.log('drag start', day)
+		selecting = true
+		day.selected = true
+		days = days
+	}
+	function mouseEnter(day: CalendarDay) {
+		if (!selecting) return
+		day.selected = true
+		days = days
 	}
 	function mouseUp(day: CalendarDay) {
-		console.log('drag stop!', day)
-		spanEnd = days.indexOf(day)
-		for (let i = spanStart!; i <= spanEnd; i++) {
-			days[i].selected = true
-		}
+		if (!selecting) return
+		selecting = false
+		console.log('drag stop', day)
 		userData = { users: ['hi'] }
 	}
+
+	const todayInit = new Date()
+	todayInit.setHours(0, 0, 0, 0)
+	$: today = todayInit
+
+	const updateToday = () => {
+		const now = new Date()
+		if (now.getDate() !== today.getDate()) {
+			now.setHours(0, 0, 0, 0)
+			today = now
+		}
+	}
+	onInterval(updateToday)
+	onDestroy(() => offInterval(updateToday))
 </script>
 
 <div>
@@ -50,9 +76,12 @@
 		{#each days as day, i}
 			<li
 				class="day"
+				class:weekend={day.weekend}
 				on:mousedown={() => mouseDown(day)}
 				on:mouseup={() => mouseUp(day)}
+				on:mouseenter={() => mouseEnter(day)}
 				class:selected={day.selected}
+				class:invalid={day.date < today}
 			>
 				{day.day}
 			</li>
@@ -76,9 +105,11 @@
 	}
 
 	.day {
-		width: 40px;
-		height: 40px;
-		border: 0.5px solid rgba(255, 255, 255, 0.05);
+		width: 50px;
+		height: 50px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		margin-left: -1px;
+		margin-top: -1px;
 		box-sizing: border-box;
 		background-color: rgba(255, 255, 255, 0.05);
 		display: flex;
@@ -87,15 +118,25 @@
 		justify-content: center;
 		cursor: default;
 		user-select: none;
-		transition: background-color 0.1s ease-out;
+		transition: background-color 50ms ease-out;
 	}
 
 	.day.selected {
 		border-top: 5px solid var(--color-theme-1);
 	}
 
+	.day.invalid {
+		background-color: transparent !important;
+		color: rgba(255, 255, 255, 0.3) !important;
+	}
+
+	.day.weekend {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
 	.day:hover {
-		background-color: rgba(255, 255, 255, 0.15);
+		background-color: rgba(255, 255, 255, 0.16);
+		color: rgba(255, 255, 255, 0.9);
 		transition: none;
 	}
 
