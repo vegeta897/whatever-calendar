@@ -9,8 +9,11 @@
 	export let month: number
 	export let weekStart: 0 | 1
 	export let userData: UserData
+	export let toolMode: 1 | 2
 
 	$: monthData = getMonthData(year, month, weekStart)
+
+	// TODO: Create reactive userDays array that matches indexes with monthData.days
 
 	let marking = false
 	let unmarking = false
@@ -19,7 +22,7 @@
 
 	function dayClick(day: CalendarDay, e: MouseEvent) {
 		if (e.button !== 0) return
-		day.marked = !day.marked
+		day.marked = day.marked ? 0 : toolMode
 		monthData.days = monthData.days
 		userData = { users: ['hi'] }
 	}
@@ -28,12 +31,12 @@
 		if (e.button !== 0) return
 		if (day.date < today) return
 		console.log('drag start', day)
-		if (day.marked) {
+		if (day.marked === toolMode) {
 			unmarking = true
-			day.marked = false
+			day.marked = 0
 		} else {
 			marking = true
-			day.marked = true
+			day.marked = toolMode
 		}
 		monthData.days = monthData.days
 	}
@@ -45,7 +48,7 @@
 			unmarking = false
 			return
 		}
-		day.marked = marking
+		day.marked = marking ? toolMode : 0
 		monthData.days = monthData.days
 	}
 	function mouseUp(day: CalendarDay, e: PointerEvent) {
@@ -87,27 +90,28 @@
 </ol>
 <ol class="month" on:pointerleave={outOfMonth}>
 	{#each monthData.days as day, i}
-		<!-- <li
-				class="day"
-				on:click={(e) => dayClick(day, e)}
-				class:weekend={day.weekend}
-				class:marked={day.marked}
-				class:invalid={day.date < today}
-			>
-				{day.day}
-			</li> -->
-
 		<li
 			class="day"
 			on:pointerdown={(e) => mouseDown(day, e)}
 			on:pointerup={(e) => mouseUp(day, e)}
 			on:pointerenter={(e) => mouseEnter(day, e)}
+			on:dblclick={(e) => e.preventDefault()}
+			class:preferred={day.marked === 1}
+			class:possible={day.marked === 2}
 			class:weekend={day.weekend}
-			class:marked={day.marked}
 			class:invalid={day.date < today}
 			class:out-of-month={!day.inMonth}
 		>
-			{day.day}
+			<div class="day-upper">
+				<div class="day-upper-left">
+					{day.day}
+				</div>
+				<div class="day-upper-right">
+					{#if day.marked === 1} <div class="circle" />{/if}
+					{#if day.marked === 2} <div class="circle circle-empty" />{/if}
+				</div>
+			</div>
+			<div class="day-lower" />
 		</li>
 	{/each}
 </ol>
@@ -136,28 +140,64 @@
 	.month {
 		row-gap: 1px;
 		column-gap: 1px;
+		border-radius: 24px;
+		overflow: hidden;
 	}
 
 	.day {
-		height: 60px;
+		height: 70px;
 		box-sizing: border-box;
 		background-color: rgba(255, 255, 255, 0.06);
+		transition: background-color 50ms ease-out;
+		position: relative;
+		touch-action: manipulation;
 		display: flex;
-		flex-wrap: wrap;
-		align-content: center;
-		justify-content: center;
+		flex-direction: column;
+		justify-content: space-between;
+		font-size: 1.5em;
+	}
+
+	.day .day-upper {
+		display: flex;
+		align-items: flex-start;
 		cursor: default;
 		user-select: none;
-		transition: background-color 50ms ease-out;
-		/* touch-action: none; */
+		padding-top: 6px;
+	}
+
+	.day .day-upper-left {
+		padding-left: 0.4em;
+		display: flex;
+		flex-grow: 1;
+	}
+
+	.day .day-upper-right {
+		display: flex;
+		flex-grow: 1;
+	}
+
+	.day .day-lower {
+		display: flex;
+		flex-grow: 1;
+		align-items: center;
+	}
+
+	.day .circle {
+		box-sizing: border-box;
+		width: 32px;
+		height: 32px;
+		border-width: 16px;
+		border-radius: 16px;
+		border-style: solid;
+		border-color: var(--color-theme-1);
+	}
+
+	.day .circle.circle-empty {
+		border-width: 5px;
 	}
 
 	.day.weekend {
 		background-color: rgba(255, 255, 255, 0.1);
-	}
-
-	.day.marked {
-		border-top: 5px solid var(--color-theme-1);
 	}
 
 	.day.out-of-month {
@@ -179,9 +219,20 @@
 		transition: none;
 	}
 
-@media (max-width: 480px) {
-	.day {
-		height: 40px;
+	@media (max-width: 480px) {
+		.day {
+			height: 54px;
+			font-size: 0.9em;
+		}
+
+		.day .circle {
+			width: 20px;
+			height: 20px;
+			border-width: 10px;
+		}
+
+		.day .circle.circle-empty {
+			border-width: 3.125px;
+		}
 	}
-}
 </style>

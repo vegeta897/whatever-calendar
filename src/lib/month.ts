@@ -5,7 +5,7 @@ export type CalendarDay = {
 	date: Date
 	day: number
 	inMonth: boolean
-	marked: boolean
+	marked: 0|1|2
 	weekend: boolean
 }
 
@@ -41,7 +41,7 @@ export function getMonthData(year: number, month: number, weekStart: 0 | 1) {
 		days.push({
 			date: new Date(dayLooper),
 			day: dayLooper.getDate(),
-			marked: false,
+			marked: 0,
 			inMonth: dayLooper.getMonth() + 1 === month,
 			weekend: [0, 6].includes(dayLooper.getDay()),
 		})

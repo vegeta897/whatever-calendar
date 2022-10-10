@@ -9,6 +9,7 @@
 
 	const MONTHS = [10, 11, 12]
 	let focusedMonth: number = MONTHS[0]
+	let tool: 'preferred' | 'possible' = 'preferred'
 </script>
 
 <section>
@@ -28,12 +29,23 @@
 			</div>
 		{/each}
 	</div>
+	<div class="tools">
+		<label>
+			<input type="radio" bind:group={tool} name="tool" value="preferred" />
+			Preferred
+		</label>
+		<label>
+			<input type="radio" bind:group={tool} name="tool" value="possible" />
+			Possible
+		</label>
+	</div>
 	<div class="focused-month">
 		<Month
 			year={2022}
 			month={focusedMonth}
 			bind:userData
 			weekStart={$weekStart}
+			toolMode={tool === 'preferred' ? 1 : 2}
 		/>
 	</div>
 
@@ -54,12 +66,15 @@
 		flex-wrap: wrap;
 		gap: 2%;
 		width: 100%;
+		margin: 1rem 0;
 	}
 
 	.month-container {
 		box-sizing: border-box;
 		border: 2px solid transparent;
 		flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
 	}
 
 	.month-container.focused {
