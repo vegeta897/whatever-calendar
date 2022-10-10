@@ -1,5 +1,7 @@
-import { DISCORD_API_URL, DISCORD_SERVER_ID, HOST } from '$env/static/private'
+import { DISCORD_SERVER_ID, HOST } from '$env/static/private'
 import type { Handle } from '@sveltejs/kit'
+
+const DISCORD_API_URL = 'https://discordapp.com/api'
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const refreshToken = event.cookies.get('discord_refresh_token')
