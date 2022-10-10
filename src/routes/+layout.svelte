@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Whatever Calendar</title>
+	<title>Whenever</title>
 	<meta
 		name="description"
 		content="Collaborative event availability planning"

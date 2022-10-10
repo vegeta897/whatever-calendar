@@ -13,7 +13,7 @@
 </script>
 
 <section>
-	<h1>Whatever Calendar</h1>
+	<h1>Whenever</h1>
 	<Planner userData={data.userData} />
 </section>
 
