@@ -140,7 +140,6 @@
 	.month {
 		row-gap: 1px;
 		column-gap: 1px;
-		border-radius: 24px;
 		overflow: hidden;
 	}
 

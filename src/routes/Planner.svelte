@@ -6,14 +6,36 @@
 	import { mondayName, sundayName, weekStart } from '$lib/month'
 
 	export let userData: UserData
+	export let discord: App.Locals['discord']
+
+	console.log(discord)
 
 	const MONTHS = [10, 11, 12]
 	let focusedMonth: number = MONTHS[0]
 	let tool: 'preferred' | 'possible' = 'preferred'
+
+	const avatar = discord.guild?.avatar || discord.user.avatar
+	const avatarURL =
+		'https://cdn.discordapp.com/' +
+		(avatar
+			? `avatars/${discord.user.id}/${avatar}`
+			: `embed/avatars/${+discord.user.discriminator % 5}`) +
+		(avatar?.startsWith('a_') ? '.gif' : '.png') +
+		'?size=24'
 </script>
 
 <section>
 	{userData.users}
+	<img
+		width="24px"
+		style="border-radius: 12px;"
+		alt="{discord.guild?.nick || discord.user.username}'s avatar"
+		src={avatarURL}
+	/>
+	{discord.guild?.nick || discord.user.username}<a
+		href="/api/logout"
+		data-sveltekit-prefetch="off">Log out!</a
+	>
 	<form method="POST" action="?/update" use:enhance>
 		<input name="userData" hidden value={JSON.stringify(userData)} />
 		<button>Save</button>
@@ -73,8 +95,7 @@
 		box-sizing: border-box;
 		border: 2px solid transparent;
 		flex: 1;
-    border-radius: 12px;
-    overflow: hidden;
+		overflow: hidden;
 	}
 
 	.month-container.focused {

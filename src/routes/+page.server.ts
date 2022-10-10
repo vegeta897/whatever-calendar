@@ -31,14 +31,14 @@ await db.read()
 
 db.data ||= { users: [] }
 
-export const load: PageServerLoad = ({ url, cookies }) => {
-	const userID = url.searchParams.get('u') || cookies.get('wec-user-id')
-	console.log('loading user:', userID)
-	if (!userID) throw error(401, 'Unauthorized!')
-	cookies.set('wec-user-id', userID)
+export const load: PageServerLoad = ({ cookies, locals }) => {
+	if(!locals.discord) {
+		// TODO: Don't return userData if missing discord user or guild data
+	}
 	return {
 		userData: db.data!,
-		weekStart: cookies.get('wec-weekStart') ?? undefined
+		weekStart: cookies.get('wec-weekStart') ?? undefined,
+		discord: locals.discord
 	}
 }
 

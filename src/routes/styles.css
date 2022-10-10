@@ -11,6 +11,7 @@
 	--color-theme-2: #5865f2;
 	--color-vegeta: #7e89de;
 	--color-text: rgba(255, 255, 255, 0.7);
+	--color-text-strong: rgba(255, 255, 255, 0.9);
 	--column-width: 42rem;
 	--column-margin-top: 4rem;
 	font-family: var(--font-body);
@@ -69,6 +70,15 @@ pre {
 	padding: 0.5em;
 	overflow-x: auto;
 	color: var(--color-text);
+}
+
+code {
+	font-size: 15px;
+	font-family: var(--font-mono);
+	background-color: rgba(255, 255, 255, 0.1);
+	padding: 0.2em;
+	color: var(--color-text-strong);
+	display: inline;
 }
 
 .text-column {
