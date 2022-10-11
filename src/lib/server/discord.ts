@@ -4,8 +4,10 @@ import {
 	DISCORD_REDIRECT_URI,
 } from '$env/static/private'
 import type { RequestEvent } from '@sveltejs/kit'
+import { days, setCookie } from '$lib/server/cookies'
 
-const TOKEN_API = 'https://discord.com/api/oauth2/token'
+export const API_URL = 'https://discordapp.com/api'
+const TOKEN_URL = API_URL + '/oauth2/token'
 
 const DISCORD_REQUEST_DATA = {
 	client_id: DISCORD_CLIENT_ID,
@@ -46,7 +48,7 @@ export async function getAccess(
 		code: authorizationCode,
 		...DISCORD_REQUEST_DATA,
 	}
-	const request = await fetch(TOKEN_API, fetchOptions(dataObject))
+	const request = await fetch(TOKEN_URL, fetchOptions(dataObject))
 	logRateLimitHeaders(request.headers)
 	return request.json()
 }
@@ -60,27 +62,19 @@ export async function refresh(
 		refresh_token: refreshToken,
 		...DISCORD_REQUEST_DATA,
 	}
-	const request = await fetch(TOKEN_API, fetchOptions(dataObject))
+	const request = await fetch(TOKEN_URL, fetchOptions(dataObject))
 	logRateLimitHeaders(request.headers)
 	return await request.json()
 }
-
-const COOKIE_DEFAULTS = {
-	httpOnly: true,
-	path: '/',
-	sameSite: 'strict',
-} as const
 
 export async function setCookies(
 	cookies: RequestEvent['cookies'],
 	response: { access_token: string; refresh_token: string; expires_in: number }
 ) {
-	cookies.set('discord_access_token', response.access_token, {
+	setCookie(cookies, 'discord_access_token', response.access_token, {
 		expires: new Date(Date.now() + response.expires_in), // ~10 minutes
-		...COOKIE_DEFAULTS,
 	})
-	cookies.set('discord_refresh_token', response.refresh_token, {
-		expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-		...COOKIE_DEFAULTS,
+	setCookie(cookies, 'discord_refresh_token', response.refresh_token, {
+		expires: days(30),
 	})
 }

@@ -5,7 +5,8 @@ const DISCORD_ENDPOINT = `https://discord.com/api/oauth2/authorize?client_id=${D
 	DISCORD_REDIRECT_URI
 )}&response_type=code&scope=identify%20guilds.members.read&prompt=none`
 
-export const GET: RequestHandler = () => {
+export const GET: RequestHandler = ({ locals }) => {
 	console.log('begin /auth')
-	throw redirect(302, DISCORD_ENDPOINT)
+	console.log('sending state', locals.state)
+	throw redirect(302, DISCORD_ENDPOINT + `&state=${locals.state}`)
 }

@@ -1,4 +1,4 @@
-import { refresh, setCookies } from '$lib/discord'
+import { refresh, setCookies } from '$lib/server/discord'
 import type { RequestHandler } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
 		})
 	}
 
-  setCookies(cookies, response)
+	setCookies(cookies, response)
 
 	return new Response(
 		JSON.stringify({ discord_access_token: response.access_token }),

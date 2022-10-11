@@ -1,10 +1,6 @@
-import type { PageServerLoad, Actions } from './$types'
+import type { Actions } from './$types'
 
-export const load: PageServerLoad = async ({ parent }) => {
-	const data = await parent()
-	return data
-}
-
+// TODO: Replace this with socket.io
 export const actions: Actions = {
 	update: async ({ request, cookies }) => {
 		console.log('update action received!')

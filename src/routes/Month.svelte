@@ -3,12 +3,10 @@
 	import { getMonthData } from '$lib/month'
 	import type { CalendarDay } from '$lib/month'
 	import { onDestroy } from 'svelte'
-	import type { UserData } from './+page.server'
 
 	export let year: number
 	export let month: number
 	export let weekStart: 0 | 1
-	export let userData: UserData
 	export let toolMode: 1 | 2
 
 	$: monthData = getMonthData(year, month, weekStart)
@@ -24,7 +22,6 @@
 		if (e.button !== 0) return
 		day.marked = day.marked ? 0 : toolMode
 		monthData.days = monthData.days
-		userData = { users: ['hi'] }
 	}
 
 	function mouseDown(day: CalendarDay, e: PointerEvent) {
@@ -57,7 +54,6 @@
 		marking = false
 		unmarking = false
 		console.log('drag stop', day)
-		userData = { users: ['hi'] }
 	}
 
 	function outOfMonth(e: PointerEvent) {

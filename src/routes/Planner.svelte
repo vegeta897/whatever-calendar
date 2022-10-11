@@ -1,11 +1,9 @@
 <script lang="ts">
-	import type { UserData } from './+page.server'
 	import { enhance } from '$app/forms'
 	import Month from './Month.svelte'
 	import MonthMini from './MonthMini.svelte'
 	import { mondayName, sundayName, weekStart } from '$lib/month'
 
-	export let userData: UserData
 	export let discordUser: NonNullable<App.Locals['discordUser']>
 	export let discordGuild: NonNullable<App.Locals['discordGuild']>
 
@@ -24,7 +22,6 @@
 </script>
 
 <section>
-	{userData.users}
 	<img
 		width="24px"
 		style="border-radius: 12px;"
@@ -36,7 +33,7 @@
 		data-sveltekit-prefetch="off">Log out!</a
 	>
 	<form method="POST" action="?/update" use:enhance>
-		<input name="userData" hidden value={JSON.stringify(userData)} />
+		<!-- <input name="userData" hidden value={JSON.stringify(userData)} /> -->
 		<button>Save</button>
 	</form>
 	<div class="month-select">
@@ -46,7 +43,7 @@
 				class:focused={focusedMonth === month}
 				on:click={() => (focusedMonth = month)}
 			>
-				<MonthMini year={2022} {month} bind:userData weekStart={$weekStart} />
+				<MonthMini year={2022} {month} weekStart={$weekStart} />
 			</div>
 		{/each}
 	</div>
@@ -64,7 +61,6 @@
 		<Month
 			year={2022}
 			month={focusedMonth}
-			bind:userData
 			weekStart={$weekStart}
 			toolMode={tool === 'preferred' ? 1 : 2}
 		/>

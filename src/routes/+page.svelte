@@ -8,16 +8,16 @@
 
 	if (data.weekStart !== undefined) weekStart.set(data.weekStart as 0 | 1)
 	if (browser) {
-		weekStart.subscribe((value) => (document.cookie = `wec-weekStart=${value}`))
-
-		console.log(data.userData)
+		weekStart.subscribe((value) => {
+			// Save to user on server? Or in localstorage?
+		})
 		console.log(data.discordUser)
 		console.log(data.discordGuild)
 	}
 </script>
 
 <section>
-	<h1><small><span>w</span>/<span>e</span></small>Whenever</h1>
+	<h1><small><span>📅 w</span>/<span>e</span></small>Whenever</h1>
 	{#if !data.discordUser}
 		<a href="/api/auth" data-sveltekit-prefetch="off" style="font-size: 2em;"
 			>Log in!</a
@@ -34,14 +34,12 @@
 			Did you connect the right account?
 			<a href="/api/auth" data-sveltekit-prefetch="off">Try again here</a>
 		</p>
-	{:else if data.userData}
-		<Planner
-			discordUser={data.discordUser}
-			discordGuild={data.discordGuild}
-			userData={data.userData}
-		/>
+		<p>
+			Or, you can <a href="/api/logout" data-sveltekit-prefetch="off">log out</a
+			>
+		</p>
 	{:else}
-		Something is really wrong!
+		<Planner discordUser={data.discordUser} discordGuild={data.discordGuild} />
 	{/if}
 </section>
 
@@ -66,8 +64,10 @@
 		bottom: 1px;
 		background-color: var(--color-theme-1);
 		color: var(--color-bg-0);
-		padding: 0 3px;
+		padding: 0 3px 0 1px;
 		border-radius: 12px;
+		border-top-left-radius: 4px;
+		border-bottom-left-radius: 4px;
 	}
 
 	h1 small span {

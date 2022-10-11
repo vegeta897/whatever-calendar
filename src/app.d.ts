@@ -3,6 +3,8 @@
 // and what to do when importing types
 declare namespace App {
 	interface Locals {
+		session: string
+		state: string
 		discordUser?: {
 			id: string
 			/**
@@ -27,5 +29,10 @@ declare namespace App {
 			 */
 			roles: string[]
 		}
+	}
+	interface PageData {
+		discordUser?: Locals['discordUser']
+		discordGuild?: Locals['discordGuild']
+		weekStart?: number
 	}
 }

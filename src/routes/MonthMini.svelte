@@ -2,12 +2,10 @@
 	import { offInterval, onInterval } from '$lib/interval'
 	import { getMonthData } from '$lib/month'
 	import { onDestroy } from 'svelte'
-	import type { UserData } from './+page.server'
 
 	export let year: number
 	export let month: number
 	export let weekStart: 0 | 1
-	export let userData: UserData
 
 	$: monthData = getMonthData(year, month, weekStart)
 
