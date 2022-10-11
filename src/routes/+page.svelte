@@ -6,23 +6,27 @@
 
 	export let data: PageData
 
-	if (data.weekStart !== undefined) weekStart.set(+data.weekStart as 0 | 1)
+	if (data.weekStart !== undefined) weekStart.set(data.weekStart as 0 | 1)
 	if (browser) {
 		weekStart.subscribe((value) => (document.cookie = `wec-weekStart=${value}`))
+
+		console.log(data.userData)
+		console.log(data.discordUser)
+		console.log(data.discordGuild)
 	}
 </script>
 
 <section>
 	<h1><small><span>w</span>/<span>e</span></small>Whenever</h1>
-	{#if !data.discord}
+	{#if !data.discordUser}
 		<a href="/api/auth" data-sveltekit-prefetch="off" style="font-size: 2em;"
 			>Log in!</a
 		>
-	{:else if !data.discord.guild}
+	{:else if !data.discordGuild}
 		<h2>Something isn't right...</h2>
 		<p>
 			We can't find <code
-				>{data.discord.user.username}#{data.discord.user.discriminator}</code
+				>{data.discordUser.username}#{data.discordUser.discriminator}</code
 			>
 			in the <strong>Whatever Dudes</strong> server
 		</p>
@@ -30,8 +34,14 @@
 			Did you connect the right account?
 			<a href="/api/auth" data-sveltekit-prefetch="off">Try again here</a>
 		</p>
+	{:else if data.userData}
+		<Planner
+			discordUser={data.discordUser}
+			discordGuild={data.discordGuild}
+			userData={data.userData}
+		/>
 	{:else}
-		<Planner discord={data.discord} userData={data.userData} />
+		Something is really wrong!
 	{/if}
 </section>
 

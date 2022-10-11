@@ -6,20 +6,19 @@
 	import { mondayName, sundayName, weekStart } from '$lib/month'
 
 	export let userData: UserData
-	export let discord: App.Locals['discord']
-
-	console.log(discord)
+	export let discordUser: NonNullable<App.Locals['discordUser']>
+	export let discordGuild: NonNullable<App.Locals['discordGuild']>
 
 	const MONTHS = [10, 11, 12]
 	let focusedMonth: number = MONTHS[0]
 	let tool: 'preferred' | 'possible' = 'preferred'
 
-	const avatar = discord.guild?.avatar || discord.user.avatar
+	const avatar = discordGuild.avatar || discordUser.avatar
 	const avatarURL =
 		'https://cdn.discordapp.com/' +
 		(avatar
-			? `avatars/${discord.user.id}/${avatar}`
-			: `embed/avatars/${+discord.user.discriminator % 5}`) +
+			? `avatars/${discordUser.id}/${avatar}`
+			: `embed/avatars/${+discordUser.discriminator % 5}`) +
 		(avatar?.startsWith('a_') ? '.gif' : '.png') +
 		'?size=24'
 </script>
@@ -29,10 +28,10 @@
 	<img
 		width="24px"
 		style="border-radius: 12px;"
-		alt="{discord.guild?.nick || discord.user.username}'s avatar"
+		alt="{discordGuild.nick || discordUser.username}'s avatar"
 		src={avatarURL}
 	/>
-	{discord.guild?.nick || discord.user.username}<a
+	{discordGuild.nick || discordUser.username}<a
 		href="/api/logout"
 		data-sveltekit-prefetch="off">Log out!</a
 	>
