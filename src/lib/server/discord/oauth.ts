@@ -6,7 +6,11 @@ import {
 import type { RequestEvent } from '@sveltejs/kit'
 import { days, setCookie } from '$lib/server/cookies'
 
+export const AUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+	DISCORD_REDIRECT_URI
+)}&response_type=code&scope=identify&prompt=none`
 export const API_URL = 'https://discordapp.com/api'
+
 const TOKEN_URL = API_URL + '/oauth2/token'
 
 const DISCORD_REQUEST_DATA = {

@@ -1,4 +1,4 @@
-import { refresh, setCookies } from '$lib/server/discord'
+import { refresh, setCookies } from '$lib/server/discord/oauth'
 import type { RequestHandler } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ url, fetch, cookies }) => {

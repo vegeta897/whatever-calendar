@@ -6,6 +6,8 @@
 	export let year: number
 	export let month: number
 	export let weekStart: 0 | 1
+	export let focused: boolean
+	export let onClick: () => {}
 
 	$: monthData = getMonthData(year, month, weekStart)
 
@@ -24,7 +26,7 @@
 	onDestroy(() => offInterval(updateToday))
 </script>
 
-<div class="month-container">
+<div class="month-container" class:focused on:click={onClick}>
 	<h2>{monthData.name}</h2>
 	<ol class="month">
 		{#each monthData.days as day, i}
@@ -38,6 +40,18 @@
 </div>
 
 <style>
+	.month-container {
+		box-sizing: border-box;
+		border: 2px solid transparent;
+		flex: 1;
+		overflow: hidden;
+		transition: border-color 50ms ease-out;
+	}
+
+	.month-container.focused {
+		border-color: var(--color-theme-1);
+	}
+
 	h2 {
 		text-align: center;
 		font-size: 1em;
@@ -60,13 +74,21 @@
 		height: 24px;
 		background-color: rgba(255, 255, 255, 0.05);
 	}
+	.focused .day,
+	.month-container:hover .day {
+		background-color: rgba(255, 255, 255, 0.09);
+	}
 
 	.day.invalid {
 		background-color: rgba(255, 255, 255, 0.025);
 	}
+	.focused .day.invalid,
+	.month-container:hover .day.invalid {
+		background-color: rgba(255, 255, 255, 0.04);
+	}
 
 	.day.out-of-month {
-		background-color: transparent;
+		background-color: transparent !important;
 	}
 
 	@media (max-width: 480px) {

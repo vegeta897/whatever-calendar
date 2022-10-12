@@ -1,12 +1,14 @@
-import { getAccess, setCookies } from '$lib/server/discord'
+import { getAccess, setCookies } from '$lib/server/discord/oauth'
 import { redirect, type RequestHandler } from '@sveltejs/kit'
+import { sha256 } from 'hash-wasm'
 
 export const GET: RequestHandler = async ({ url, fetch, cookies, locals }) => {
 	console.log('begin /callback')
-	const state = url.searchParams.get('state')
-	if (state !== locals.state) {
+	const sentState = await sha256(locals.session)
+	const receivedState = url.searchParams.get('state')
+	if (receivedState !== sentState) {
 		console.error(
-			`Received mismatched state!\n  Sent:${locals.state}\n  Received:${state}`
+			`Received mismatched state!\n  Sent:${sentState}\n  Received:${receivedState}`
 		)
 		throw redirect(302, '/')
 	}

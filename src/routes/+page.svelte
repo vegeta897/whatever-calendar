@@ -9,10 +9,9 @@
 	if (data.weekStart !== undefined) weekStart.set(data.weekStart as 0 | 1)
 	if (browser) {
 		weekStart.subscribe((value) => {
-			// Save to user on server? Or in localstorage?
+			// Save to user on server? Or in cookie?
 		})
 		console.log(data.discordUser)
-		console.log(data.discordGuild)
 	}
 </script>
 
@@ -22,7 +21,7 @@
 		<a href="/api/auth" data-sveltekit-prefetch="off" style="font-size: 2em;"
 			>Log in!</a
 		>
-	{:else if !data.discordGuild}
+	{:else if !data.discordUser.member}
 		<h2>Something isn't right...</h2>
 		<p>
 			We can't find <code
@@ -38,8 +37,8 @@
 			Or, you can <a href="/api/logout" data-sveltekit-prefetch="off">log out</a
 			>
 		</p>
-	{:else}
-		<Planner discordUser={data.discordUser} discordGuild={data.discordGuild} />
+	{:else if data.discordUser.member}
+		<Planner discordUser={data.discordUser} />
 	{/if}
 </section>
 

@@ -2,8 +2,6 @@
 	import Header from './Header.svelte'
 	import './styles.css'
 	import type { LayoutServerData } from './$types'
-
-	export let data: LayoutServerData
 </script>
 
 <svelte:head>
