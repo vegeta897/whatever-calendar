@@ -4,16 +4,13 @@
 	import MonthMini from './MonthMini.svelte'
 	import { mondayName, sundayName, weekStart } from '$lib/month'
 
-	type NonNullDiscordUser = NonNullable<App.Locals['discordUser']>
-	export let discordUser: NonNullDiscordUser & {
-		member: NonNullable<NonNullDiscordUser['member']>
-	}
+	export let discordMember: DiscordMember
 
 	const MONTHS = [10, 11, 12]
 	let focusedMonth: number = MONTHS[0]
 	let tool: 'preferred' | 'possible' = 'preferred'
 
-	const username = discordUser.member.nick || discordUser.username
+	const username = discordMember.nick || discordMember.username
 </script>
 
 <section>
@@ -21,7 +18,7 @@
 		width="24px"
 		style="border-radius: 12px;"
 		alt="{username}'s avatar"
-		src={discordUser.member.avatarURL}
+		src={discordMember.avatarURL}
 	/>
 	{username}<a href="/api/logout" data-sveltekit-prefetch="off">Log out!</a>
 	<form method="POST" action="?/update" use:enhance>

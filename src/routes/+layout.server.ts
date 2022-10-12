@@ -4,11 +4,10 @@ import {
 	refresh,
 	setCookies,
 } from '$lib/server/discord/oauth'
-import { DISCORD_SERVER_ID } from '$env/static/private'
 import type { LayoutServerLoad } from './$types'
 import { getMemberInfo } from '$lib/server/discord/bot'
 
-export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
+export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 	console.log(new Date().toTimeString(), 'layout.server load!')
 	const pageData: App.PageData = {}
 	const refreshToken = cookies.get('discord_refresh_token')
@@ -40,7 +39,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
 	const discordUser = await discordUserRequest.json()
 	if (discordUser.id) {
 		console.log('got user', discordUser.id)
-		locals.discordUser = {
+		pageData.discordUser = {
 			id: discordUser.id,
 			username: discordUser.username,
 			discriminator: discordUser.discriminator,
@@ -48,11 +47,11 @@ export const load: LayoutServerLoad = async ({ cookies, locals, fetch }) => {
 	} else {
 		console.error('Error getting discord user', discordUser)
 	}
-	if (locals.discordUser) {
-		pageData.discordUser = locals.discordUser
-		const member = await getMemberInfo(locals.discordUser.id)
+	if (pageData.discordUser) {
+		const member = await getMemberInfo(pageData.discordUser.id)
 		if (member) {
-			pageData.discordUser.member = {
+			pageData.discordMember = {
+				...pageData.discordUser,
 				nick: member.nick,
 				avatarURL: member.avatarURL,
 			}

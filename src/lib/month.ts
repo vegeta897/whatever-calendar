@@ -5,7 +5,7 @@ export type CalendarDay = {
 	date: Date
 	day: number
 	inMonth: boolean
-	marked: 0|1|2
+	marked: 0 | 1 | 2
 	weekend: boolean
 }
 
@@ -19,6 +19,8 @@ const monday = new Date(sunday)
 monday.setDate(monday.getDate() + 1)
 export const sundayName = sunday.toLocaleDateString(locale, { weekday: 'long' })
 export const mondayName = monday.toLocaleDateString(locale, { weekday: 'long' })
+
+// TODO: Change this to cover all months, run only once (as needed)
 
 export function getMonthData(year: number, month: number, weekStart: 0 | 1) {
 	const monthStart = new Date()
