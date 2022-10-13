@@ -1,8 +1,12 @@
 import { deleteCookies } from '$lib/server/cookies'
+import { getData, modifyData } from '$lib/server/db'
 import { redirect, type RequestHandler } from '@sveltejs/kit'
 
-export const GET: RequestHandler = ({ cookies }) => {
+export const GET: RequestHandler = ({ cookies, locals }) => {
 	console.log('begin /logout')
 	deleteCookies(cookies)
+	modifyData({
+		sessions: getData().sessions.filter((s) => s.sessionID !== locals.session),
+	})
 	throw redirect(302, '/')
 }

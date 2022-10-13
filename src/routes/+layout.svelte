@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Header from './Header.svelte'
 	import './styles.css'
-	import type { LayoutServerData } from './$types'
 </script>
 
 <svelte:head>

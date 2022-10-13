@@ -20,7 +20,7 @@
 		alt="{username}'s avatar"
 		src={discordMember.avatarURL}
 	/>
-	{username}<a href="/api/logout" data-sveltekit-prefetch="off">Log out!</a>
+	{username}<a href="/api/logout" data-sveltekit-prefetch="off">Log out</a>
 	<form method="POST" action="?/update" use:enhance>
 		<!-- <input name="userData" hidden value={JSON.stringify(userData)} /> -->
 		<button>Save</button>
