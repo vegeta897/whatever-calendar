@@ -6,28 +6,25 @@ export const load: PageServerLoad = ({ cookies }) => {
 	const game = new Game(cookies.get('sverdle'))
 
 	return {
-		/**
-		 * The player's guessed words so far
-		 */
+		/** The player's guessed words so far */
 		guesses: game.guesses,
 
 		/**
-		 * An array of strings like '__x_c' corresponding to the guesses, where 'x' means
-		 * an exact match, and 'c' means a close match (right letter, wrong place)
+		 * An array of strings like '__x_c' corresponding to the guesses, where 'x'
+		 * means an exact match, and 'c' means a close match (right letter, wrong
+		 * place)
 		 */
 		answers: game.answers,
 
-		/**
-		 * The correct answer, revealed if the game is over
-		 */
+		/** The correct answer, revealed if the game is over */
 		answer: game.answers.length >= 6 ? game.answer : null,
 	}
 }
 
 export const actions: Actions = {
 	/**
-	 * Modify game state in reaction to a keypress. If client-side JavaScript
-	 * is available, this will happen in the browser instead of here
+	 * Modify game state in reaction to a keypress. If client-side JavaScript is
+	 * available, this will happen in the browser instead of here
 	 */
 	update: async ({ request, cookies }) => {
 		const game = new Game(cookies.get('sverdle'))
@@ -74,9 +71,7 @@ class Game {
 	answers: string[]
 	answer: string
 
-	/**
-	 * Create a game object from the player's cookie, or initialise a new game
-	 */
+	/** Create a game object from the player's cookie, or initialise a new game */
 	constructor(serialized: string | undefined) {
 		if (serialized) {
 			const [index, guesses, answers] = serialized.split('-')
@@ -94,8 +89,8 @@ class Game {
 	}
 
 	/**
-	 * Update game state based on a guess of a five-letter word. Returns
-	 * true if the guess was valid, false otherwise
+	 * Update game state based on a guess of a five-letter word. Returns true if
+	 * the guess was valid, false otherwise
 	 */
 	enter(letters: string[]) {
 		const word = letters.join('')
@@ -134,9 +129,7 @@ class Game {
 		return true
 	}
 
-	/**
-	 * Serialize game state so it can be set as a cookie
-	 */
+	/** Serialize game state so it can be set as a cookie */
 	toString() {
 		return `${this.index}-${this.guesses.join(' ')}-${this.answers.join(' ')}`
 	}

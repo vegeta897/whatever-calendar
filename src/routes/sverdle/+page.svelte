@@ -17,8 +17,8 @@
 	$: submittable = data.guesses[i]?.length === 5
 
 	/**
-	 * A map of classnames for all letters that have been guessed,
-	 * used for styling the keyboard
+	 * A map of classnames for all letters that have been guessed, used for
+	 * styling the keyboard
 	 */
 	let classnames: Record<string, 'exact' | 'close' | 'missing'>
 
@@ -41,8 +41,8 @@
 	}
 
 	/**
-	 * Modify the game state without making a trip to the server,
-	 * if client-side JavaScript is enabled
+	 * Modify the game state without making a trip to the server, if client-side
+	 * JavaScript is enabled
 	 */
 	function update(event: MouseEvent) {
 		const guess = data.guesses[i]
@@ -57,8 +57,8 @@
 	}
 
 	/**
-	 * Trigger form logic in response to a keydown event, so that
-	 * desktop users can use the keyboard to play the game
+	 * Trigger form logic in response to a keydown event, so that desktop users
+	 * can use the keyboard to play the game
 	 */
 	function keydown(event: KeyboardEvent) {
 		if (event.metaKey) return
