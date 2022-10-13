@@ -15,5 +15,11 @@ export function setCookie(
 	cookies.set(name, value, { path: '/', ...options })
 }
 
+export function deleteCookies(cookies: RequestEvent['cookies']) {
+	cookies.delete('discord_access_token', { path: '/', maxAge: -1 })
+	cookies.delete('discord_refresh_token', { path: '/', maxAge: -1 })
+	cookies.delete('wec-session', { path: '/', maxAge: -1 })
+}
+
 export const days = (days: number = 30) =>
 	new Date(Date.now() + days * 24 * 60 * 60 * 1000)

@@ -63,8 +63,8 @@
 		bottom: 1px;
 		background-color: var(--color-theme-1);
 		color: var(--color-bg-0);
-		padding: 0 3px 0 1px;
-		border-radius: 12px;
+		padding: 0 3px 0 2px;
+		border-radius: 16px;
 		border-top-left-radius: 4px;
 		border-bottom-left-radius: 4px;
 	}

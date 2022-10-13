@@ -28,9 +28,19 @@ export async function connectBot() {
 }
 
 export async function getMemberInfo(userID: string) {
-	const member = await discordServer.fetchMembers({
-		limit: 1,
-		userIDs: [userID],
-	})
-	return member[0]
+	const member = (
+		await discordServer.fetchMembers({
+			limit: 1,
+			userIDs: [userID],
+		})
+	)[0]
+	return (
+		member && {
+			id: member.id,
+			username: member.username,
+			discriminator: member.discriminator,
+			nick: member.nick,
+			avatarURL: member.avatarURL,
+		}
+	)
 }

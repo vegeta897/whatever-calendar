@@ -4,17 +4,13 @@
 
 type DiscordUser = {
 	id: string
-	/**
-	 * Global username, not including discriminator
-	 */
+	/** Global username, not including discriminator */
 	username: string
 	discriminator: string
 }
 
 type DiscordMember = DiscordUser & {
-	/**
-	 * User nickname for configured server, if they have one
-	 */
+	/** User nickname for configured server, if they have one */
 	nick: string | null
 	avatarURL: string
 }
@@ -22,6 +18,8 @@ type DiscordMember = DiscordUser & {
 declare namespace App {
 	interface Locals {
 		session: string
+		discordUser?: DiscordUser
+		discordMember?: DiscordMember
 	}
 
 	interface PageData {

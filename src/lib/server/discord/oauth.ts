@@ -19,21 +19,6 @@ const DISCORD_REQUEST_DATA = {
 	redirect_uri: DISCORD_REDIRECT_URI,
 } as const
 
-export function logRateLimitHeaders(headers: Headers) {
-	rateLimitHeaders.forEach(
-		(header) => headers.get(header) && console.log(header, headers.get(header))
-	)
-}
-
-const rateLimitHeaders = [
-	'X-RateLimit-Limit',
-	'X-RateLimit-Remaining',
-	'X-RateLimit-Reset',
-	'X-RateLimit-Reset-After',
-	'X-RateLimit-Bucket',
-	'X-RateLimit-Scope',
-] as const
-
 const fetchOptions = (data: Record<string, string>) => {
 	return {
 		method: 'POST',
@@ -81,4 +66,64 @@ export async function setCookies(
 	setCookie(cookies, 'discord_refresh_token', response.refresh_token, {
 		expires: days(30),
 	})
+}
+
+/**
+ * Gets user info from Discord API
+ *
+ * @remarks
+ *   Requires a valid access or refresh token stored in `cookies`
+ * @param cookies - The `cookies` object from a RequestEvent object
+ * @param fetch - The `fetch` function from a RequestEvent object
+ * @returns (Promise) `DiscordUser` if successful, `void` if not
+ */
+export async function getUser(
+	cookies: RequestEvent['cookies'],
+	fetch: RequestEvent['fetch']
+): Promise<DiscordUser | void> {
+	const refreshToken = cookies.get('discord_refresh_token')
+	if (!refreshToken) return
+	let accessToken = cookies.get('discord_access_token')
+	console.log('refresh:', refreshToken)
+	console.log('access:', accessToken)
+	if (!accessToken) {
+		console.log('Have refresh token, no access token')
+		const refreshed = await refresh(refreshToken, fetch)
+		if (refreshed.error) {
+			console.error('Discord auth refresh error:', refreshed.error)
+		} else {
+			setCookies(cookies, refreshed)
+			console.log('refreshed!', refreshed)
+			accessToken = refreshed.access_token
+		}
+	}
+	if (!accessToken) return
+	console.log('getting user info...')
+	const userRequest = await fetch(`${API_URL}/users/@me`, {
+		headers: { Authorization: `Bearer ${accessToken}` },
+	})
+	logRateLimitHeaders(userRequest.headers)
+	const user = await userRequest.json()
+	if (user.id) {
+		console.log('got user', user.id)
+		return {
+			id: user.id,
+			username: user.username,
+			discriminator: user.discriminator,
+		}
+	}
+	console.error('Error getting discord user', user)
+}
+
+function logRateLimitHeaders(headers: Headers) {
+	;[
+		'X-RateLimit-Limit',
+		'X-RateLimit-Remaining',
+		'X-RateLimit-Reset',
+		'X-RateLimit-Reset-After',
+		'X-RateLimit-Bucket',
+		'X-RateLimit-Scope',
+	].forEach(
+		(header) => headers.get(header) && console.log(header, headers.get(header))
+	)
 }

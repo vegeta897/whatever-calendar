@@ -11,11 +11,11 @@ type DBData = {
 	sessions: Session[]
 } & Record<string, any>
 
-type Session = {
+type Session = Readonly<{
 	sessionID: string
-	discordUserID?: string // TODO: Is this needed? We get discord user every request
+	discordID: string
 	expires: number
-}
+}>
 
 // Use JSON file for storage
 const adapter = new JSONFile<DBData>('./db.json')
