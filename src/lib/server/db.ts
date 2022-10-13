@@ -1,7 +1,7 @@
 import { Low, JSONFile } from 'lowdb'
 
 // https://stackoverflow.com/a/59700012/2612679
-type DeepReadonly<T> = T extends Function
+type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-eslint/ban-types
 	? T
 	: T extends object
 	? { readonly [K in keyof T]: DeepReadonly<T[K]> }

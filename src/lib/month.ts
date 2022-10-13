@@ -36,8 +36,9 @@ export function getMonthData(year: number, month: number, weekStart: 0 | 1) {
 	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
 	const weekdayNames: string[] = []
-	let i = 0
+	// let i = 0
 	while (true) {
+		// eslint-disable-line no-constant-condition
 		if (weekdayNames.length < 7)
 			weekdayNames.push(dayLooper.toLocaleString(locale, { weekday: 'short' }))
 		days.push({
@@ -54,7 +55,7 @@ export function getMonthData(year: number, month: number, weekStart: 0 | 1) {
 			dayLooper.getDay() === weekStart
 		)
 			break
-		if (i++ > 50) break
+		// if (i++ > 50) break
 	}
 
 	return {
