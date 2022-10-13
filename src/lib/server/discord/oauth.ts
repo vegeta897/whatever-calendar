@@ -75,14 +75,14 @@ export async function setCookies(
  *   Requires a valid access or refresh token stored in `cookies`
  * @param cookies - The `cookies` object from a RequestEvent object
  * @param fetch - The `fetch` function from a RequestEvent object
- * @returns (Promise) `DiscordUser` if successful, `void` if not
+ * @returns (Promise) `DiscordUser` if successful, `undefined` if not
  */
 export async function getUser(
 	cookies: RequestEvent['cookies'],
 	fetch: RequestEvent['fetch']
-): Promise<DiscordUser | void> {
+): Promise<DiscordUser | undefined> {
 	const refreshToken = cookies.get('discord_refresh_token')
-	if (!refreshToken) return
+	if (!refreshToken) return undefined
 	let accessToken = cookies.get('discord_access_token')
 	console.log('refresh:', refreshToken)
 	console.log('access:', accessToken)
@@ -93,11 +93,11 @@ export async function getUser(
 			console.error('Discord auth refresh error:', refreshed.error)
 		} else {
 			setCookies(cookies, refreshed)
-			console.log('refreshed!', refreshed)
+			console.log('refreshed!')
 			accessToken = refreshed.access_token
 		}
 	}
-	if (!accessToken) return
+	if (!accessToken) return undefined
 	console.log('getting user info...')
 	const userRequest = await fetch(`${API_URL}/users/@me`, {
 		headers: { Authorization: `Bearer ${accessToken}` },

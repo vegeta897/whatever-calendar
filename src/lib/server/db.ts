@@ -27,6 +27,15 @@ export function getData(): DeepReadonly<DBData> {
 	return db.data!
 }
 
+export function getSession(id?: string): Session | undefined {
+	if (!id) return undefined
+	return db.data!.sessions.find((s) => s.sessionID === id)
+}
+
+export function addSession(session: Session) {
+	modifyData({ sessions: [...db.data!.sessions, session] })
+}
+
 export function modifyData(data: Partial<DBData>) {
 	db.data = <DBData>{ ...db.data, ...data }
 	queueWriteData()

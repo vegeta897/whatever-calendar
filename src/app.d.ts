@@ -18,6 +18,7 @@ type DiscordMember = DiscordUser & {
 declare namespace App {
 	interface Locals {
 		session: string
+		discordID?: string
 		discordUser?: DiscordUser
 		discordMember?: DiscordMember
 	}
