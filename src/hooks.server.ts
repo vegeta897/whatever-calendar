@@ -57,7 +57,7 @@ const handleDiscord: Handle = async ({ event, resolve }) => {
 				addSession({
 					sessionID: event.locals.session,
 					discordID: event.locals.discordID,
-					expires: days(30).getTime(),
+					expires: days(14).getTime(),
 				})
 			}
 		}
