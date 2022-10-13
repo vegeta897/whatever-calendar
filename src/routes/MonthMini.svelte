@@ -1,19 +1,23 @@
 <script lang="ts">
-	import { offInterval, onInterval } from '$lib/interval'
-	import { getMonthData } from '$lib/month'
+	import { onInterval } from '$lib/interval'
+	import { MONTH_NAMES, type CalendarDay } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
+	import { browser } from '$app/environment'
 
 	export let year: number
 	export let month: number
+	export let days: CalendarDay[]
 	export let weekStart: 0 | 1
 	export let focused: boolean
 	export let onClick: () => {}
 
-	$: monthData = getMonthData(year, month, weekStart)
+	const monthDays = days.filter(
+		(day) => day.year === year && day.month === month
+	)
+	$: preMonthDays = (7 + monthDays[0].weekday - weekStart) % 7
 
 	let today = new Date()
 	today.setHours(0, 0, 0, 0)
-	$: today
 
 	const updateToday = () => {
 		const now = new Date()
@@ -22,19 +26,17 @@
 			today = now
 		}
 	}
-	onInterval(updateToday)
-	onDestroy(() => offInterval(updateToday))
+	if (browser) onInterval(updateToday, onDestroy)
 </script>
 
 <div class="month-container" class:focused on:click={onClick}>
-	<h2>{monthData.name}</h2>
+	<h2>{MONTH_NAMES[month - 1]}</h2>
 	<ol class="month">
-		{#each monthData.days as day, i}
-			<li
-				class="day"
-				class:invalid={day.date < today}
-				class:out-of-month={!day.inMonth}
-			/>
+		{#each Array(preMonthDays) as _}
+			<li class="day out-of-month" />
+		{/each}
+		{#each monthDays as day}
+			<li class="day" class:invalid={day.date < today} />
 		{/each}
 	</ol>
 </div>
@@ -53,10 +55,13 @@
 	}
 
 	h2 {
-		text-align: center;
-		font-size: 1em;
-		color: rgba(255, 255, 255, 0.6);
+		font-size: 1.2em;
+		color: rgba(255, 255, 255, 0.4);
 		margin: 0.5rem 0;
+	}
+
+	.focused h2 {
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.month {

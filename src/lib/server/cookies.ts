@@ -21,5 +21,5 @@ export function deleteCookies(cookies: RequestEvent['cookies']) {
 	cookies.delete('wec-session', { path: '/', maxAge: -1 })
 }
 
-export const days = (days = 30) =>
+export const days = (days: number) =>
 	new Date(Date.now() + days * 24 * 60 * 60 * 1000)

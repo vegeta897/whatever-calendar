@@ -2,15 +2,10 @@
 	import type { PageData } from './$types'
 	import Planner from './Planner.svelte'
 	import { browser } from '$app/environment'
-	import { weekStart } from '$lib/month'
 
 	export let data: PageData
 
-	if (data.weekStart !== undefined) weekStart.set(data.weekStart as 0 | 1)
 	if (browser) {
-		weekStart.subscribe((value) => {
-			// Save to user on server? Or in cookie?
-		})
 		console.log(data.discordMember || data.discordUser)
 	}
 </script>
@@ -53,7 +48,7 @@
 	h1 {
 		width: 100%;
 		font-size: 2em;
-		margin: 0 0 1rem;
+		margin: 0;
 	}
 
 	h1 small {

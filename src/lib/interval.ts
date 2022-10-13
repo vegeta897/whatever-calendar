@@ -1,13 +1,15 @@
 const listeners: Set<() => void> = new Set()
 
-export function onInterval(callback: () => void) {
+export function onInterval(
+	callback: () => void,
+	onDestroy: (cb: () => void) => void
+) {
 	listeners.add(callback)
-}
-
-export function offInterval(callback: () => void) {
-	if (!listeners.has(callback))
-		console.error('offInterval received unregistered callback!')
-	listeners.delete(callback)
+	onDestroy(() => {
+		if (!listeners.has(callback))
+			console.error('offInterval received unregistered callback!')
+		listeners.delete(callback)
+	})
 }
 
 setInterval(() => {

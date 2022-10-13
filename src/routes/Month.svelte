@@ -1,17 +1,26 @@
 <script lang="ts">
-	import { offInterval, onInterval } from '$lib/interval'
-	import { getMonthData } from '$lib/month'
-	import type { CalendarDay } from '$lib/month'
+	import { onInterval } from '$lib/interval'
+	import {
+		getCalendarDays,
+		getWeekdayNames,
+		MONTH_NAMES,
+		mondayName,
+		sundayName,
+	} from '$lib/calendar'
+	import type { CalendarDay } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
+	import { browser } from '$app/environment'
 
 	export let year: number
 	export let month: number
+	export let days: CalendarDay[]
 	export let weekStart: 0 | 1
 	export let toolMode: 1 | 2
 
-	$: monthData = getMonthData(year, month, weekStart)
+	$: weekdayNames = getWeekdayNames(weekStart)
+	$: calendarDays = getCalendarDays(days, year, month, weekStart)
 
-	// TODO: Create reactive userDays array that matches indexes with monthData.days
+	// TODO: Create reactive userDays array that matches indexes with days array
 
 	let marking = false
 	let unmarking = false
@@ -21,7 +30,7 @@
 	function dayClick(day: CalendarDay, e: MouseEvent) {
 		if (e.button !== 0) return
 		day.marked = day.marked ? 0 : toolMode
-		monthData.days = monthData.days
+		days = days
 	}
 
 	function mouseDown(day: CalendarDay, e: PointerEvent) {
@@ -35,7 +44,7 @@
 			marking = true
 			day.marked = toolMode
 		}
-		monthData.days = monthData.days
+		days = days
 	}
 	function mouseEnter(day: CalendarDay, e: PointerEvent) {
 		if (!marking && !unmarking) return
@@ -46,7 +55,7 @@
 			return
 		}
 		day.marked = marking ? toolMode : 0
-		monthData.days = monthData.days
+		days = days
 	}
 	function mouseUp(day: CalendarDay, e: PointerEvent) {
 		if (e.button !== 0) return
@@ -65,7 +74,6 @@
 
 	let today = new Date()
 	today.setHours(0, 0, 0, 0)
-	$: today
 
 	const updateToday = () => {
 		const now = new Date()
@@ -74,18 +82,26 @@
 			today = now
 		}
 	}
-	onInterval(updateToday)
-	onDestroy(() => offInterval(updateToday))
+	if (browser) onInterval(updateToday, onDestroy)
 </script>
 
-<h2>{monthData.name}</h2>
+<div class="header">
+	<h2>{MONTH_NAMES[month - 1]}</h2>
+	<div>
+		<label for="week-start">Start of week:</label>
+		<select id="week-start" bind:value={weekStart}>
+			<option value={0}>{sundayName}</option>
+			<option value={1}>{mondayName}</option>
+		</select>
+	</div>
+</div>
 <ol class="weekdays">
-	{#each monthData.weekdayNames as weekdayName}
+	{#each weekdayNames as weekdayName}
 		<li class="weekday">{weekdayName}</li>
 	{/each}
 </ol>
 <ol class="month" on:pointerleave={outOfMonth}>
-	{#each monthData.days as day, i}
+	{#each calendarDays as day, i}
 		<li
 			class="day"
 			on:pointerdown={(e) => mouseDown(day, e)}
@@ -96,7 +112,7 @@
 			class:possible={day.marked === 2}
 			class:weekend={day.weekend}
 			class:invalid={day.date < today}
-			class:out-of-month={!day.inMonth}
+			class:out-of-month={day.month !== month}
 		>
 			<div class="day-upper">
 				<div class="day-upper-left">
@@ -113,10 +129,21 @@
 </ol>
 
 <style>
+	.header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		margin: 0.8rem 0;
+	}
+
+	.header label {
+		margin-right: 0.2em;
+	}
+
 	h2 {
-		text-align: center;
-		font-size: 1.5em;
-		margin: 1rem 0;
+		font-size: 2em;
+		margin: 0 1rem 0 0;
+		flex-grow: 1;
 	}
 
 	ol {
