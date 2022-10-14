@@ -138,9 +138,14 @@
 
 <div class="header">
 	<h2>{MONTH_NAMES[month - 1]}</h2>
-	<form method="POST" action="?/update" use:enhance>
+	<form
+		method="POST"
+		action="?/update"
+		use:enhance
+		on:submit={() => (unsaved = false)}
+	>
 		<input name="myMarks" hidden value={JSON.stringify(myMarks)} />
-		<button disabled={!unsaved} on:click={() => (unsaved = false)}>Save</button>
+		<button disabled={!unsaved}>Save</button>
 	</form>
 	<div>
 		<label for="week-start">Start of week:</label>
