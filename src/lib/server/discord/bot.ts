@@ -4,7 +4,9 @@ import { Client, Guild } from 'eris'
 let botConnected = false
 let discordServer: Guild
 const bot = new Client(DISCORD_BOT_TOKEN)
-bot.on('error', (error) => console.log(error))
+
+// @ts-ignore Error does have a code property 1006 for "Connection reset by peer"
+bot.on('error', (error) => error.code !== 1006 && console.log(error))
 
 export async function connectBot() {
 	const promise = new Promise<void>((resolve) => {
