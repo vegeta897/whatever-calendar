@@ -43,6 +43,7 @@
 	$: calendarDays = getCalendarDays(days, year, month, weekStart)
 
 	let unsaved = false
+	let saving = false
 	let marking = false
 	let unmarking = false
 	const dragDays: Set<CalendarDay> = new Set()
@@ -141,11 +142,17 @@
 	<form
 		method="POST"
 		action="?/update"
-		use:enhance
-		on:submit={() => (unsaved = false)}
+		use:enhance={() => {
+			unsaved = false
+			saving = true
+			return async ({ update }) => {
+				saving = false
+				update()
+			}
+		}}
 	>
 		<input name="myMarks" hidden value={JSON.stringify(myMarks)} />
-		<button disabled={!unsaved}>Save</button>
+		<button disabled={!unsaved}>{saving ? 'Saving...' : 'Save'}</button>
 	</form>
 	<div>
 		<label for="week-start">Start of week:</label>
