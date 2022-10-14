@@ -2,5 +2,14 @@
 	import { page } from '$app/stores'
 </script>
 
-<h1>Error {$page.status}</h1>
-<h2>{($page.error && $page.error.message) || 'Unknown error occurred!'}</h2>
+<h1>{$page.error?.name || `Error ${$page.status}`}</h1>
+<h2>{@html $page.error?.message || 'Unknown error occurred!'}</h2>
+
+<style>
+	h1 {
+		color: var(--color-text-strong);
+	}
+	h2 {
+		text-align: center;
+	}
+</style>

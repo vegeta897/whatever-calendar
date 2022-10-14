@@ -16,4 +16,9 @@ declare namespace App {
 		marks?: Record<string, Record<string, Mark>>
 		users?: Record<string, WheneverUser>
 	}
+
+	interface Error {
+		message: string
+		name: string
+	}
 }
