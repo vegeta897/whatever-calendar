@@ -9,7 +9,8 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 
 type DBData = {
 	sessions: Session[]
-} & Record<string, any>
+	marks: Record<string, Record<string, Mark>>
+}
 
 type Session = Readonly<{
 	sessionID: string
@@ -21,7 +22,7 @@ type Session = Readonly<{
 const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 await db.read()
-db.data ||= { users: [], sessions: [] }
+db.data ||= { marks: {}, sessions: [] }
 
 export function getData(): DeepReadonly<DBData> {
 	return db.data!

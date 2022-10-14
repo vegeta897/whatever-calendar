@@ -1,14 +1,13 @@
 import { browser } from '$app/environment'
-import { writable } from 'svelte/store'
 
 export type CalendarDay = {
 	date: Date
 	day: number
 	month: number
 	year: number
-	marked: 0 | 1 | 2
 	weekday: number
 	weekend: boolean
+	YYYYMMDD: string
 }
 
 export function getDays(year: number, months: number[]) {
@@ -18,16 +17,20 @@ export function getDays(year: number, months: number[]) {
 	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
 	while (dayLooper <= finalDay) {
-		const day: CalendarDay = {
+		const day: Omit<CalendarDay, 'YYYYMMDD'> = {
 			date: new Date(dayLooper),
 			day: dayLooper.getDate(),
 			month: dayLooper.getMonth() + 1,
 			year: dayLooper.getFullYear(),
-			marked: 0,
 			weekday: dayLooper.getDay(),
 			weekend: [0, 6].includes(dayLooper.getDay()),
 		}
-		days.push(day)
+		days.push({
+			...day,
+			YYYYMMDD: `${zeroPad(day.year!)}-${zeroPad(day.month!)}-${zeroPad(
+				day.day!
+			)}`,
+		})
 		dayLooper.setDate(dayLooper.getDate() + 1)
 	}
 	return days
@@ -87,4 +90,8 @@ for (let i = 0; i < 12; i++) {
 	MONTH_NAMES[month.getMonth()] = month.toLocaleString(locale, {
 		month: 'long',
 	})
+}
+
+function zeroPad(number: number) {
+	return number.toString().padStart(2, '0')
 }

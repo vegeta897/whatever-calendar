@@ -7,6 +7,8 @@
 
 	if (browser) {
 		console.log(data.discordMember || data.discordUser)
+		console.log(data.marks)
+		console.log(data.users)
 	}
 </script>
 
@@ -33,7 +35,11 @@
 			>
 		</p>
 	{:else}
-		<Planner discordMember={data.discordMember} />
+		<Planner
+			discordMember={data.discordMember}
+			marks={data.marks || {}}
+			users={data.users || {}}
+		/>
 	{/if}
 </section>
 

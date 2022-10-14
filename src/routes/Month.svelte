@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms'
 	import { onInterval } from '$lib/interval'
 	import {
 		getCalendarDays,
@@ -14,55 +15,105 @@
 	export let year: number
 	export let month: number
 	export let days: CalendarDay[]
+	export let users: Record<string, WheneverUser>
+	export let marks: Record<string, Record<string, Mark>>
+	export let myUserID: string
 	export let weekStart: 0 | 1
 	export let toolMode: 1 | 2
+
+	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
+	// If you have a reactive variable, and bind it to a component,
+	// any update made to it in that component will re-run the reactive statement
+	// regardless of the dependencies of the reactive statement
+
+	let myMarks: Record<string, Mark | null>
+	$: myMarks = getMyMarks(marks)
+	function getMyMarks(allMarks: typeof marks) {
+		const myNewMarks: typeof myMarks = { ...myMarks }
+		for (const [yyyymmdd, dayMarks] of Object.entries(allMarks)) {
+			for (const [userID, mark] of Object.entries(dayMarks)) {
+				if (userID !== myUserID) continue
+				myNewMarks[yyyymmdd] ||= { ...mark }
+			}
+		}
+		return myNewMarks
+	}
 
 	$: weekdayNames = getWeekdayNames(weekStart)
 	$: calendarDays = getCalendarDays(days, year, month, weekStart)
 
-	// TODO: Create reactive userDays array that matches indexes with days array
-
+	let unsaved = false
 	let marking = false
 	let unmarking = false
+	const dragDays: Set<CalendarDay> = new Set()
 
 	// TODO: Need to listen to mouse events outside of day boxes
 
 	function dayClick(day: CalendarDay, e: MouseEvent) {
 		if (e.button !== 0) return
-		day.marked = day.marked ? 0 : toolMode
-		days = days
+		const myMark = myMarks[day.YYYYMMDD]
+		// console.log('drag start', day)
+		if (myMark?.type === toolMode) {
+			unmarking = true
+			myMarks[day.YYYYMMDD] = null
+		} else {
+			marking = true
+			myMarks[day.YYYYMMDD] = {
+				type: toolMode,
+				createTimestamp: Date.now(),
+				lastModifyTimestamp: Date.now(),
+			}
+		}
+		unsaved = true
 	}
 
 	function mouseDown(day: CalendarDay, e: PointerEvent) {
 		if (e.button !== 0) return
 		if (day.date < today) return
-		console.log('drag start', day)
-		if (day.marked === toolMode) {
+		dragDays.add(day)
+		const myMark = myMarks[day.YYYYMMDD]
+		// console.log('drag start', day)
+		if (myMark?.type === toolMode) {
 			unmarking = true
-			day.marked = 0
+			myMarks[day.YYYYMMDD] = null
 		} else {
 			marking = true
-			day.marked = toolMode
+			myMarks[day.YYYYMMDD] = {
+				type: toolMode,
+				createTimestamp: Date.now(),
+				lastModifyTimestamp: Date.now(),
+			}
 		}
-		days = days
+		unsaved = true
 	}
 	function mouseEnter(day: CalendarDay, e: PointerEvent) {
 		if (!marking && !unmarking) return
-		console.log(e.button, e.buttons)
+		if (dragDays.has(day)) return
+		dragDays.add(day)
+		// console.log(e.button, e.buttons)
 		if ((e.buttons & 1) === 0) {
 			marking = false
 			unmarking = false
 			return
 		}
-		day.marked = marking ? toolMode : 0
-		days = days
+		if (unmarking) {
+			myMarks[day.YYYYMMDD] = null
+		} else {
+			myMarks[day.YYYYMMDD] = {
+				type: toolMode,
+				createTimestamp: Date.now(),
+				lastModifyTimestamp: Date.now(),
+			}
+		}
+		unsaved = true
 	}
 	function mouseUp(day: CalendarDay, e: PointerEvent) {
 		if (e.button !== 0) return
 		if (!marking && !unmarking) return
+		dragDays.clear()
 		marking = false
 		unmarking = false
-		console.log('drag stop', day)
+		// console.log('drag stop', day)
 	}
 
 	function outOfMonth(e: PointerEvent) {
@@ -87,6 +138,10 @@
 
 <div class="header">
 	<h2>{MONTH_NAMES[month - 1]}</h2>
+	<form method="POST" action="?/update" use:enhance>
+		<input name="myMarks" hidden value={JSON.stringify(myMarks)} />
+		<button disabled={!unsaved} on:click={() => (unsaved = false)}>Save</button>
+	</form>
 	<div>
 		<label for="week-start">Start of week:</label>
 		<select id="week-start" bind:value={weekStart}>
@@ -102,14 +157,13 @@
 </ol>
 <ol class="month" on:pointerleave={outOfMonth}>
 	{#each calendarDays as day, i}
+		{@const dayMarks = marks[day.YYYYMMDD] || {}}
 		<li
 			class="day"
 			on:pointerdown={(e) => mouseDown(day, e)}
 			on:pointerup={(e) => mouseUp(day, e)}
 			on:pointerenter={(e) => mouseEnter(day, e)}
 			on:dblclick={(e) => e.preventDefault()}
-			class:preferred={day.marked === 1}
-			class:possible={day.marked === 2}
 			class:weekend={day.weekend}
 			class:invalid={day.date < today}
 			class:out-of-month={day.month !== month}
@@ -119,11 +173,27 @@
 					{day.day}
 				</div>
 				<div class="day-upper-right">
-					{#if day.marked === 1} <div class="circle" />{/if}
-					{#if day.marked === 2} <div class="circle circle-empty" />{/if}
+					{#if myMarks[day.YYYYMMDD]}
+						<div
+							class="circle"
+							class:circle-empty={myMarks[day.YYYYMMDD]?.type === 2}
+						/>
+					{/if}
 				</div>
 			</div>
-			<div class="day-lower" />
+			<div class="day-lower">
+				{#each Object.entries(dayMarks) as [userID, mark]}
+					{#if userID !== myUserID}
+						<div
+							class="circle small"
+							class:circle-empty={mark.type === 2}
+							style="border-color: {users[userID].color
+								? '#' + users[userID].color.toString(16).padStart(6, '0')
+								: 'var(--color-theme-1)'};"
+						/>
+					{/if}
+				{/each}
+			</div>
 		</li>
 	{/each}
 </ol>
@@ -143,12 +213,17 @@
 	h2 {
 		font-size: 2em;
 		margin: 0 1rem 0 0;
+	}
+
+	form {
 		flex-grow: 1;
+		position: relative;
+		top: -4px;
 	}
 
 	ol {
 		display: grid;
-		grid-template-columns: repeat(7, 1fr);
+		grid-template-columns: repeat(7, minmax(0, 1fr));
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -184,6 +259,7 @@
 		align-items: flex-start;
 		cursor: default;
 		user-select: none;
+		height: 32px;
 		padding-top: 6px;
 	}
 
@@ -201,7 +277,10 @@
 	.day .day-lower {
 		display: flex;
 		flex-grow: 1;
+		flex-direction: row-reverse;
+		justify-content: flex-end;
 		align-items: center;
+		padding-left: 0.4em;
 	}
 
 	.day .circle {
@@ -216,6 +295,21 @@
 
 	.day .circle.circle-empty {
 		border-width: 5px;
+	}
+
+	.day .circle.small {
+		width: 20px;
+		height: 20px;
+		border-width: 10px;
+		border-radius: 10px;
+	}
+
+	.day .circle.circle-empty.small {
+		border-width: 4px;
+	}
+
+	.day .circle.small:not(:last-child) {
+		margin-left: -12px;
 	}
 
 	.day.weekend {

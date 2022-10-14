@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms'
 	import Month from './Month.svelte'
 	import MonthMini from './MonthMini.svelte'
 	import { getDays } from '$lib/calendar'
@@ -7,6 +6,8 @@
 	import { cubicOut } from 'svelte/easing'
 
 	export let discordMember: DiscordMember
+	export let marks: Record<string, Record<string, Mark>>
+	export let users: Record<string, WheneverUser>
 
 	const YEAR = 2022
 	const MONTHS = [10, 11, 12]
@@ -68,6 +69,9 @@
 						year={YEAR}
 						{month}
 						{days}
+						{marks}
+						myUserID={discordMember.id}
+						{users}
 						bind:weekStart
 						toolMode={tool === 'preferred' ? 1 : 2}
 					/>

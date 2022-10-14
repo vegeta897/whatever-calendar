@@ -46,3 +46,23 @@ export async function getMemberInfo(userID: string) {
 		}
 	)
 }
+
+export async function getMembers(
+	userIDs: string[]
+): Promise<Record<string, WheneverUser>> {
+	console.log('fetching userIDs', userIDs)
+	const members = await discordServer.fetchMembers({ userIDs })
+	const memberObj: Record<string, WheneverUser> = {}
+	members.forEach((member) => {
+		memberObj[member.id] = {
+			color:
+				member.roles // Get color of highest role for member
+					.map((r) => discordServer.roles.get(r))
+					.sort((a, b) => b!.position - a!.position)
+					.find((r) => r!.color !== 0)?.color || 0,
+			name: member.nick || member.username,
+			avatarURL: member.avatarURL,
+		}
+	})
+	return memberObj
+}
