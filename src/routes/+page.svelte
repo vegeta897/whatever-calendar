@@ -2,8 +2,11 @@
 	import type { PageData } from './$types'
 	import Planner from './Planner.svelte'
 	import { browser } from '$app/environment'
+	import { weekStart } from '$lib/calendar'
 
 	export let data: PageData
+
+	weekStart.set(data.weekStart || 0)
 
 	if (browser) {
 		console.log(data.discordMember || data.discordUser)
@@ -35,11 +38,7 @@
 			>
 		</p>
 	{:else}
-		<Planner
-			discordMember={data.discordMember}
-			marks={data.marks || {}}
-			users={data.users || {}}
-		/>
+		<Planner />
 	{/if}
 </section>
 

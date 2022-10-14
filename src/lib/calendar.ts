@@ -1,4 +1,11 @@
 import { browser } from '$app/environment'
+import { readable, writable } from 'svelte/store'
+
+export const YEAR = 2022
+export const MONTHS = [10, 11, 12] as const
+
+export const days = readable<CalendarDay[]>(getDays())
+export const weekStart = writable<0 | 1>(0)
 
 export type CalendarDay = {
 	date: Date
@@ -10,10 +17,10 @@ export type CalendarDay = {
 	YYYYMMDD: string
 }
 
-export function getDays(year: number, months: number[]) {
-	const startDay = new Date(year, months[0] - 1, -5) // Include 6 days before start
-	const finalMonth = months[months.length - 1]
-	const finalDay = new Date(year, finalMonth, 6) // Include 6 days after final
+function getDays(): CalendarDay[] {
+	const startDay = new Date(YEAR, MONTHS[0] - 1, -5) // Include 6 days before start
+	const finalMonth = MONTHS[MONTHS.length - 1]
+	const finalDay = new Date(YEAR, finalMonth, 6) // Include 6 days after final
 	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
 	while (dayLooper <= finalDay) {

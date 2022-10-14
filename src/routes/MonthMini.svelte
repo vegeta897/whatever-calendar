@@ -1,20 +1,18 @@
 <script lang="ts">
 	import { onInterval } from '$lib/interval'
-	import { MONTH_NAMES, type CalendarDay } from '$lib/calendar'
+	import { days, MONTH_NAMES, weekStart } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
 
 	export let year: number
 	export let month: number
-	export let days: CalendarDay[]
-	export let weekStart: 0 | 1
 	export let focused: boolean
 	export let onClick: () => {}
 
-	const monthDays = days.filter(
+	const monthDays = $days.filter(
 		(day) => day.year === year && day.month === month
 	)
-	$: preMonthDays = (7 + monthDays[0].weekday - weekStart) % 7
+	$: preMonthDays = (7 + monthDays[0].weekday - $weekStart) % 7
 
 	let today = new Date()
 	today.setHours(0, 0, 0, 0)

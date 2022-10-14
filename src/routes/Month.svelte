@@ -7,19 +7,22 @@
 		MONTH_NAMES,
 		mondayName,
 		sundayName,
+		weekStart,
+		days,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
+	import { page } from '$app/stores'
 
 	export let year: number
 	export let month: number
-	export let days: CalendarDay[]
-	export let users: Record<string, WheneverUser>
-	export let marks: Record<string, Record<string, Mark>>
-	export let myUserID: string
-	export let weekStart: 0 | 1
-	export let toolMode: 1 | 2
+
+	let toolMode: 1 | 2 = 1
+
+	const myUserID = $page.data.discordMember!.id
+	const marks = $page.data.marks!
+	const users = $page.data.users!
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
@@ -39,8 +42,8 @@
 		return myNewMarks
 	}
 
-	$: weekdayNames = getWeekdayNames(weekStart)
-	$: calendarDays = getCalendarDays(days, year, month, weekStart)
+	$: weekdayNames = getWeekdayNames($weekStart)
+	$: calendarDays = getCalendarDays($days, year, month, $weekStart)
 
 	let unsaved = false
 	let saving = false
@@ -138,27 +141,40 @@
 </script>
 
 <div class="header">
-	<h2>{MONTH_NAMES[month - 1]}</h2>
-	<form
-		method="POST"
-		action="?/update"
-		use:enhance={() => {
-			unsaved = false
-			saving = true
-			return async ({ update }) => {
-				saving = false
-				update()
-			}
-		}}
-	>
-		<input name="myMarks" hidden value={JSON.stringify(myMarks)} />
-		<button disabled={!unsaved}>{saving ? 'Saving...' : 'Save'}</button>
-	</form>
+	<div class="header-left">
+		<h2>{MONTH_NAMES[month - 1]}</h2>
+		<form
+			method="POST"
+			action="?/update"
+			use:enhance={() => {
+				unsaved = false
+				saving = true
+				return async ({ update }) => {
+					saving = false
+					update()
+				}
+			}}
+		>
+			<input name="myMarks" hidden value={JSON.stringify(myMarks)} />
+			<button disabled={!unsaved}>{saving ? 'Saving...' : 'Save'}</button>
+		</form>
+		<div class="tools">
+			<label>
+				<input type="radio" bind:group={toolMode} name="tool" value={1} />
+				Preferred
+			</label>
+			<label>
+				<input type="radio" bind:group={toolMode} name="tool" value={2} />
+				Possible
+			</label>
+		</div>
+	</div>
 	<div>
 		<label for="week-start">Start of week:</label>
-		<select id="week-start" bind:value={weekStart}>
-			<option value={0}>{sundayName}</option>
-			<option value={1}>{mondayName}</option>
+		<select id="week-start" bind:value={$weekStart}>
+			<!-- Use selected property to show correct option on intial render -->
+			<option selected={$weekStart === 0} value={0}>{sundayName}</option>
+			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
 	</div>
 </div>
@@ -216,10 +232,13 @@
 		flex-wrap: wrap;
 		align-items: baseline;
 		margin: 0.8rem 0;
+		gap: 0.3rem;
 	}
-
-	.header label {
-		margin-right: 0.2em;
+	.header-left {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		flex-grow: 1;
 	}
 
 	h2 {
@@ -228,9 +247,23 @@
 	}
 
 	form {
-		flex-grow: 1;
 		position: relative;
 		top: -4px;
+		margin-right: 1rem;
+	}
+
+	.header label {
+		margin-right: 0.2em;
+	}
+
+	.tools {
+		background: rgba(255, 255, 255, 0.08);
+		padding: 5px 5px 0 5px;
+		position: relative;
+		top: -3px;
+		margin-left: -4px;
+		margin-top: 4px;
+		height: 1.6rem;
 	}
 
 	ol {

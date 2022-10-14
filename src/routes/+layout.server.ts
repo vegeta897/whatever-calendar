@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 		console.timeEnd('getMembers')
 		const weekStart = cookies.get('wec-weekStart')
 		if (weekStart !== undefined) {
-			pageData.weekStart = +weekStart
+			pageData.weekStart = +weekStart as 0 | 1
 		}
 	}
 	return pageData

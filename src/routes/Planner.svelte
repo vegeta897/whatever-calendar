@@ -1,27 +1,25 @@
 <script lang="ts">
 	import Month from './Month.svelte'
 	import MonthMini from './MonthMini.svelte'
-	import { getDays } from '$lib/calendar'
+	import { MONTHS, weekStart, YEAR } from '$lib/calendar'
 	import { fade } from 'svelte/transition'
 	import { cubicOut } from 'svelte/easing'
+	import { browser } from '$app/environment'
+	import { page } from '$app/stores'
+	import { serialize } from 'cookie'
 
-	export let discordMember: DiscordMember
-	export let marks: Record<string, Record<string, Mark>>
-	export let users: Record<string, WheneverUser>
-
-	const YEAR = 2022
-	const MONTHS = [10, 11, 12]
+	const discordMember = $page.data.discordMember!
 
 	let focusedMonth: number = MONTHS[0]
-	let tool: 'preferred' | 'possible' = 'preferred'
-	let weekStart: 0 | 1 = 0
 
-	// weekStart.subscribe((value) => {
-	// 	// Save to user on server? Or in cookie?
-	// 	// Save locale in cookie too, to SSR with correct language
-	// })
-
-	let days = getDays(YEAR, MONTHS)
+	if (browser) {
+		weekStart.subscribe((value) => {
+			document.cookie = serialize(`wec-weekStart`, `${value}`, {
+				maxAge: 90 * 24 * 60 * 60,
+			})
+			// Save locale in cookie too, to SSR with correct language
+		})
+	}
 
 	const username = discordMember.nick || discordMember.username
 </script>
@@ -41,22 +39,10 @@
 			<MonthMini
 				year={YEAR}
 				{month}
-				{days}
-				{weekStart}
 				focused={focusedMonth === month}
 				onClick={() => (focusedMonth = month)}
 			/>
 		{/each}
-	</div>
-	<div class="tools">
-		<label>
-			<input type="radio" bind:group={tool} name="tool" value="preferred" />
-			Preferred
-		</label>
-		<label>
-			<input type="radio" bind:group={tool} name="tool" value="possible" />
-			Possible
-		</label>
 	</div>
 	<div class="big-month-container">
 		{#each MONTHS as month}
@@ -65,16 +51,7 @@
 					class="big-month"
 					transition:fade={{ duration: 100, easing: cubicOut }}
 				>
-					<Month
-						year={YEAR}
-						{month}
-						{days}
-						{marks}
-						myUserID={discordMember.id}
-						{users}
-						bind:weekStart
-						toolMode={tool === 'preferred' ? 1 : 2}
-					/>
+					<Month year={YEAR} {month} />
 				</div>
 			{/if}
 		{/each}
