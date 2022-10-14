@@ -18,7 +18,7 @@ export const actions: Actions = {
 			string,
 			Mark | null
 		>
-		console.log(userMarks)
+		// console.log(userMarks)
 		const marks = { ...getData().marks }
 		for (const [yyyymmdd, mark] of Object.entries(userMarks)) {
 			if (mark) {

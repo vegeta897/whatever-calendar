@@ -50,7 +50,6 @@ export async function getMemberInfo(userID: string) {
 export async function getMembers(
 	userIDs: string[]
 ): Promise<Record<string, WheneverUser>> {
-	console.log('fetching userIDs', userIDs)
 	const members = await discordServer.fetchMembers({ userIDs })
 	const memberObj: Record<string, WheneverUser> = {}
 	members.forEach((member) => {
