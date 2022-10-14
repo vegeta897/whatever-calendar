@@ -12,7 +12,7 @@ declare namespace App {
 	interface PageData {
 		discordUser?: DiscordUser
 		discordMember?: DiscordMember
-		weekStart?: number
+		weekStart?: 0 | 1
 		marks?: Record<string, Record<string, Mark>>
 		users?: Record<string, WheneverUser>
 	}
