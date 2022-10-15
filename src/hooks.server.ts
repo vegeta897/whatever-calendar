@@ -1,11 +1,19 @@
 import { days, setCookie } from '$lib/server/cookies'
-import { addSession, getData, getSession, modifyData } from '$lib/server/db'
-import { connectBot, getMemberInfo } from '$lib/server/discord/bot'
+import {
+	addSession,
+	getData,
+	getSession,
+	getWheneverUserIDs,
+	modifyData,
+} from '$lib/server/db'
+import { connectBot, getMember, getMembers } from '$lib/server/discord/bot'
 import { getUser } from '$lib/server/discord/oauth'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
 await connectBot()
+await getMembers(getWheneverUserIDs(), true)
+setInterval(() => getMembers(getWheneverUserIDs(), true), 15 * 60 * 1000) // 15 minutes
 
 const handleSession: Handle = async ({ event, resolve }) => {
 	console.log('begin handleSession', event.routeId)
@@ -36,15 +44,14 @@ const handleDiscord: Handle = async ({ event, resolve }) => {
 	if (event.routeId?.startsWith('api/')) return await resolve(event)
 	// This session isn't stored if there is no discord ID
 	const newSession = !event.locals.discordID
-	if (!event.locals.discordID) {
+	if (newSession) {
 		console.log('no discord ID, getting user info')
 		event.locals.discordUser = await getUser(event.cookies, event.fetch)
-		if (event.locals.discordUser)
-			event.locals.discordID = event.locals.discordUser.id
+		event.locals.discordID = event.locals.discordUser?.id
 	}
 	if (event.locals.discordID) {
 		console.log('have user ID, getting member info')
-		const discordMember = await getMemberInfo(event.locals.discordID)
+		const discordMember = await getMember(event.locals.discordID)
 		// If the user is a server member, save member data and store their session
 		if (discordMember) {
 			event.locals.discordMember = discordMember

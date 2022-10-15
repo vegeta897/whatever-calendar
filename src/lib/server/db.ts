@@ -37,6 +37,15 @@ export function addSession(session: Session) {
 	modifyData({ sessions: [...db.data!.sessions, session] })
 }
 
+export function getWheneverUserIDs() {
+	// Build set of all member IDs
+	const userIDs: Set<string> = new Set()
+	for (const markDay of Object.values(db.data!.marks)) {
+		Object.keys(markDay).forEach((userID) => userIDs.add(userID))
+	}
+	return [...userIDs]
+}
+
 export function modifyData(data: Partial<DBData>) {
 	db.data = <DBData>{ ...db.data, ...data }
 	queueWriteData()
@@ -52,7 +61,11 @@ let writing = false
 async function writeData() {
 	if (!dirty || writing) return
 	writing = true
-	await db.write()
+	try {
+		await db.write()
+	} catch (e) {
+		console.log(new Date(), 'Error writing to DB!', e)
+	}
 	writing = false
 	dirty = false
 }

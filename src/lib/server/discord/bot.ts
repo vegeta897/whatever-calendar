@@ -16,11 +16,11 @@ export async function connectBot() {
 			bot.on('ready', async () => {
 				if (!botConnected) {
 					botConnected = true
-					resolve()
 					discordServer = bot.guilds.get(DISCORD_SERVER_ID)!
 					console.log(
 						`Discord bot online, connected to "${discordServer.name}"`
 					)
+					resolve()
 				}
 			})
 			bot.connect()
@@ -29,13 +29,9 @@ export async function connectBot() {
 	return promise
 }
 
-export async function getMemberInfo(userID: string) {
-	const member = (
-		await discordServer.fetchMembers({
-			limit: 1,
-			userIDs: [userID],
-		})
-	)[0]
+export async function getMember(userID: string) {
+	await getMembers([userID])
+	const member = discordServer.members.get(userID)
 	return (
 		member && {
 			id: member.id,
@@ -47,21 +43,34 @@ export async function getMemberInfo(userID: string) {
 	)
 }
 
+let fetchingMembers: Promise<void>
+const memberFetchTimes: Map<string, number> = new Map()
+
 export async function getMembers(
-	userIDs: string[]
+	userIDs: string[],
+	noCache = false
 ): Promise<Record<string, WheneverUser>> {
-	const members = await discordServer.fetchMembers({ userIDs })
-	const memberObj: Record<string, WheneverUser> = {}
-	members.forEach((member) => {
-		memberObj[member.id] = {
+	await fetchingMembers // Wait for fetch if one is in progress
+	if (noCache || userIDs.some((id) => !discordServer.members.has(id))) {
+		await (fetchingMembers = new Promise(async (res) => {
+			const fetched = await discordServer.fetchMembers({ userIDs })
+			fetched.forEach(({ id }) => memberFetchTimes.set(id, Date.now()))
+			res()
+		}))
+	}
+	const members: Record<string, WheneverUser> = {}
+	discordServer.members.forEach(({ id, roles, username, nick, avatarURL }) => {
+		// Don't include members not requested
+		if (!userIDs.includes(id)) return
+		members[id] = {
 			color:
-				member.roles // Get color of highest role for member
+				roles // Get color of highest role for member
 					.map((r) => discordServer.roles.get(r))
 					.sort((a, b) => b!.position - a!.position)
 					.find((r) => r!.color !== 0)?.color || 0,
-			name: member.nick || member.username,
-			avatarURL: member.avatarURL,
+			name: nick || username,
+			avatarURL,
 		}
 	})
-	return memberObj
+	return members
 }
