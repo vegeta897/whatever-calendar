@@ -178,53 +178,60 @@
 		</select>
 	</div>
 </div>
-<ol class="weekdays">
-	{#each weekdayNames as weekdayName}
-		<li class="weekday">{weekdayName}</li>
-	{/each}
-</ol>
-<ol class="month" on:pointerleave={outOfMonth}>
-	{#each calendarDays as day, i}
-		{@const dayMarks = marks[day.YYYYMMDD] || {}}
-		<li
-			class="day"
-			on:pointerdown={(e) => mouseDown(day, e)}
-			on:pointerup={(e) => mouseUp(day, e)}
-			on:pointerenter={(e) => mouseEnter(day, e)}
-			on:dblclick={(e) => e.preventDefault()}
-			class:weekend={day.weekend}
-			class:invalid={day.date < today}
-			class:out-of-month={day.month !== month}
-		>
-			<div class="day-upper">
-				<div class="day-upper-left">
-					{day.day}
+<div class="calendar">
+	<ol class="weekdays">
+		{#each weekdayNames as weekdayName}
+			<li class="weekday">{weekdayName}</li>
+		{/each}
+	</ol>
+	<ol class="month" on:pointerleave={outOfMonth}>
+		{#each calendarDays as day, i}
+			{@const dayMarks = marks[day.YYYYMMDD] || {}}
+			<li
+				class="day"
+				on:pointerdown={(e) => mouseDown(day, e)}
+				on:pointerup={(e) => mouseUp(day, e)}
+				on:pointerenter={(e) => mouseEnter(day, e)}
+				on:dblclick={(e) => e.preventDefault()}
+				class:weekend={day.weekend}
+				class:invalid={day.date < today}
+				class:out-of-month={day.month !== month}
+			>
+				<div class="day-upper">
+					<div class="day-upper-left">
+						{day.day}
+					</div>
+					<div class="day-upper-right">
+						{#if myMarks[day.YYYYMMDD]}
+							<div
+								class="circle"
+								class:circle-empty={myMarks[day.YYYYMMDD]?.type === 2}
+								style={users[myUserID].color
+									? 'border-color: #' +
+									  users[myUserID].color.toString(16).padStart(6, '0')
+									: ''}
+							/>
+						{/if}
+					</div>
 				</div>
-				<div class="day-upper-right">
-					{#if myMarks[day.YYYYMMDD]}
-						<div
-							class="circle"
-							class:circle-empty={myMarks[day.YYYYMMDD]?.type === 2}
-						/>
-					{/if}
+				<div class="day-lower">
+					{#each Object.entries(dayMarks) as [userID, mark]}
+						{#if userID !== myUserID}
+							<div
+								class="circle small"
+								class:circle-empty={mark.type === 2}
+								style={users[userID].color
+									? 'border-color: #' +
+									  users[userID].color.toString(16).padStart(6, '0')
+									: ''}
+							/>
+						{/if}
+					{/each}
 				</div>
-			</div>
-			<div class="day-lower">
-				{#each Object.entries(dayMarks) as [userID, mark]}
-					{#if userID !== myUserID}
-						<div
-							class="circle small"
-							class:circle-empty={mark.type === 2}
-							style="border-color: {users[userID].color
-								? '#' + users[userID].color.toString(16).padStart(6, '0')
-								: 'var(--color-theme-1)'};"
-						/>
-					{/if}
-				{/each}
-			</div>
-		</li>
-	{/each}
-</ol>
+			</li>
+		{/each}
+	</ol>
+</div>
 
 <style>
 	.header {
@@ -266,6 +273,16 @@
 		height: 1.6rem;
 	}
 
+	.calendar {
+		background: var(--color-bg-1);
+		padding: 1px;
+	}
+
+	.weekdays {
+		margin: 0.5rem 0;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
 	ol {
 		display: grid;
 		grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -273,11 +290,6 @@
 		margin: 0;
 		padding: 0;
 		text-align: center;
-	}
-
-	.weekdays {
-		margin-bottom: 0.8rem;
-		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.month {

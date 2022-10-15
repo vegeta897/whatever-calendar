@@ -43,6 +43,8 @@
 	.month-container {
 		box-sizing: border-box;
 		border: 2px solid transparent;
+		/* background: var(--color-bg-1);
+		padding: 1px; */
 		flex: 1;
 		overflow: hidden;
 		transition: border-color 50ms ease-out;

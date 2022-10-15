@@ -18,8 +18,10 @@
 <section>
 	<h1><small><span>📅 w</span>/<span>e</span></small>Whenever</h1>
 	{#if !data.discordUser}
-		<a href="/api/auth" data-sveltekit-prefetch="off" style="font-size: 2em;"
-			>Log in!</a
+		<a
+			href="/api/auth"
+			data-sveltekit-prefetch="off"
+			style="font-size: 2em; margin-top: 1em;">Log in!</a
 		>
 	{:else if !data.discordMember}
 		<h2>Something isn't right...</h2>
