@@ -1,3 +1,4 @@
+import { dev } from '$app/environment'
 import { days, setCookie } from '$lib/server/cookies'
 import {
 	addSession,
@@ -13,7 +14,10 @@ import { sequence } from '@sveltejs/kit/hooks'
 
 await connectBot()
 await getMembers(getWheneverUserIDs(), true)
-setInterval(() => getMembers(getWheneverUserIDs(), true), 15 * 60 * 1000) // 15 minutes
+if (!dev) {
+	// HMR in dev mode will cause setInterval to run over and over
+	setInterval(() => getMembers(getWheneverUserIDs(), true), 15 * 60 * 1000) // 15 minutes
+}
 
 const handleSession: Handle = async ({ event, resolve }) => {
 	console.log('begin handleSession', event.routeId)
