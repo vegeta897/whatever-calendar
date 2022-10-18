@@ -14,6 +14,7 @@
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
+	import Star from './Star.svelte'
 
 	export let year: number
 	export let month: number
@@ -21,8 +22,8 @@
 	let toolMode: 1 | 2 = 1
 
 	const myUserID = $page.data.discordMember!.id
-	const marks = $page.data.marks!
-	const users = $page.data.users!
+	$: marks = $page.data.marks!
+	$: users = $page.data.users!
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
@@ -203,28 +204,42 @@
 					</div>
 					<div class="day-upper-right">
 						{#if myMarks[day.YYYYMMDD]}
-							<div
-								class="circle"
-								class:circle-empty={myMarks[day.YYYYMMDD]?.type === 2}
-								style={users[myUserID].color
-									? 'border-color: #' +
-									  users[myUserID].color.toString(16).padStart(6, '0')
-									: ''}
-							/>
+							{#if myMarks[day.YYYYMMDD]?.type === 1}
+								<Star
+									fill={users[myUserID].color
+										? '#' + users[myUserID].color.toString(16).padStart(6, '0')
+										: undefined}
+								/>
+							{:else}
+								<div
+									class="circle"
+									style={users[myUserID].color
+										? 'border-color: #' +
+										  users[myUserID].color.toString(16).padStart(6, '0')
+										: ''}
+								/>
+							{/if}
 						{/if}
 					</div>
 				</div>
 				<div class="day-lower">
 					{#each Object.entries(dayMarks) as [userID, mark]}
 						{#if userID !== myUserID}
-							<div
-								class="circle small"
-								class:circle-empty={mark.type === 2}
-								style={users[userID].color
-									? 'border-color: #' +
-									  users[userID].color.toString(16).padStart(6, '0')
-									: ''}
-							/>
+							{#if mark.type === 1}
+								<Star
+									fill={users[userID].color
+										? '#' + users[userID].color.toString(16).padStart(6, '0')
+										: undefined}
+								/>
+							{:else}
+								<div
+									class="circle small"
+									style={users[userID].color
+										? 'border-color: #' +
+										  users[userID].color.toString(16).padStart(6, '0')
+										: ''}
+								/>
+							{/if}
 						{/if}
 					{/each}
 				</div>
@@ -316,19 +331,21 @@
 		align-items: flex-start;
 		cursor: default;
 		user-select: none;
-		height: 32px;
+		height: 36px;
 		padding-top: 6px;
 	}
 
 	.day .day-upper-left {
 		padding-left: 0.4em;
 		display: flex;
-		flex-grow: 1;
 	}
 
 	.day .day-upper-right {
 		display: flex;
 		flex-grow: 1;
+		justify-content: center;
+		margin-top: -4px;
+		max-height: 100%;
 	}
 
 	.day .day-lower {
@@ -338,6 +355,7 @@
 		justify-content: flex-end;
 		align-items: center;
 		padding-left: 0.4em;
+		height: 28px;
 	}
 
 	.day .circle {
@@ -398,6 +416,10 @@
 			font-size: 0.9em;
 		}
 
+		.day .day-upper {
+			height: 20px;
+		}
+
 		.day .circle {
 			width: 20px;
 			height: 20px;
@@ -406,6 +428,21 @@
 
 		.day .circle.circle-empty {
 			border-width: 3.125px;
+		}
+
+		.day .circle.small {
+			width: 12px;
+			height: 12px;
+			border-width: 6px;
+			border-radius: 6px;
+		}
+
+		.day .circle.circle-empty.small {
+			border-width: 3px;
+		}
+
+		.day .circle.small:not(:last-child) {
+			margin-left: -6px;
 		}
 	}
 </style>

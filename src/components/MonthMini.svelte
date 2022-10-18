@@ -3,17 +3,22 @@
 	import { days, MONTH_NAMES, weekStart } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
+	import { page } from '$app/stores'
 
 	export let year: number
 	export let month: number
 	export let focused: boolean
 	export let onClick: () => {}
 
+	$: marks = $page.data.marks!
+	$: users = $page.data.users!
+
 	const monthDays = $days.filter(
 		(day) => day.year === year && day.month === month
 	)
 	$: preMonthDays = (7 + monthDays[0].weekday - $weekStart) % 7
 
+	// Move this up to Planner?
 	let today = new Date()
 	today.setHours(0, 0, 0, 0)
 
@@ -34,7 +39,19 @@
 			<li class="day out-of-month" />
 		{/each}
 		{#each monthDays as day}
-			<li class="day" class:invalid={day.date < today} />
+			{@const dayMarks = marks[day.YYYYMMDD] || {}}
+			<li class="day" class:invalid={day.date < today}>
+				{#each Object.entries(dayMarks) as [userID, mark]}
+					<div
+						class="circle"
+						class:circle-empty={mark.type === 2}
+						style={users[userID].color
+							? 'border-color: #' +
+							  users[userID].color.toString(16).padStart(6, '0')
+							: ''}
+					/>
+				{/each}
+			</li>
 		{/each}
 	</ol>
 </div>
@@ -78,7 +95,13 @@
 	.day {
 		height: 24px;
 		background-color: rgba(255, 255, 255, 0.05);
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: flex-end;
+		align-items: center;
+		padding-left: 18%;
 	}
+
 	.focused .day,
 	.month-container:hover .day {
 		background-color: rgba(255, 255, 255, 0.09);
@@ -87,6 +110,7 @@
 	.day.invalid {
 		background-color: rgba(255, 255, 255, 0.025);
 	}
+
 	.focused .day.invalid,
 	.month-container:hover .day.invalid {
 		background-color: rgba(255, 255, 255, 0.04);
@@ -96,9 +120,45 @@
 		background-color: transparent !important;
 	}
 
+	.day .circle {
+		box-sizing: border-box;
+		width: 12px;
+		height: 12px;
+		border-width: 6px;
+		border-radius: 6px;
+		border-style: solid;
+		border-color: var(--color-theme-1);
+	}
+
+	.day .circle.circle-empty {
+		border-width: 3px;
+	}
+
+	.day .circle:not(:last-child) {
+		margin-left: -6px;
+	}
+
 	@media (max-width: 480px) {
 		.day {
 			height: 16px;
+		}
+
+		.day .circle {
+			box-sizing: border-box;
+			width: 6px;
+			height: 6px;
+			border-width: 3px;
+			border-radius: 3px;
+			border-style: solid;
+			border-color: var(--color-theme-1);
+		}
+
+		.day .circle.circle-empty {
+			border-width: 2px;
+		}
+
+		.day .circle:not(:last-child) {
+			margin-left: -3px;
 		}
 	}
 </style>

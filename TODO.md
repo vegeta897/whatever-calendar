@@ -2,6 +2,7 @@
 
 ## High-priority
 
+- Replace Eris with discord.js
 - Handle time-zone differences, specifially America vs. NZ
 - Validate data coming from client
 - Improve marking behavior on desktop and mobile

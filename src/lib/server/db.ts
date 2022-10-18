@@ -51,6 +51,8 @@ export function modifyData(data: Partial<DBData>) {
 	queueWriteData()
 }
 
+// TODO: This might be unecessary? Conflicts may have been caused by HMR
+// LowDB uses Steno under the hood which should be handling any conflicts
 let dirty = false
 function queueWriteData() {
 	dirty = true

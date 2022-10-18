@@ -1,5 +1,8 @@
 const listeners: Set<() => void> = new Set()
 
+let interval: NodeJS.Timer
+import.meta.hot?.on('vite:beforeUpdate', () => clearInterval(interval))
+
 export function onInterval(
 	callback: () => void,
 	onDestroy: (cb: () => void) => void
@@ -10,10 +13,9 @@ export function onInterval(
 			console.error('offInterval received unregistered callback!')
 		listeners.delete(callback)
 	})
+	interval ||= setInterval(() => {
+		for (const listener of listeners) {
+			listener()
+		}
+	}, 1000)
 }
-
-setInterval(() => {
-	for (const listener of listeners) {
-		listener()
-	}
-}, 1000)
