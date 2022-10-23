@@ -18,9 +18,10 @@ export type CalendarDay = {
 }
 
 function getDays(): CalendarDay[] {
-	const startDay = new Date(YEAR, MONTHS[0] - 1, -5) // Include 6 days before start
+	const startDay = new Date()
+	startDay.setHours(0, 0, 0, 0)
 	const finalMonth = MONTHS[MONTHS.length - 1]
-	const finalDay = new Date(YEAR, finalMonth, 6) // Include 6 days after final
+	const finalDay = new Date(YEAR, finalMonth, 0)
 	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
 	while (dayLooper <= finalDay) {
@@ -90,12 +91,16 @@ for (let i = 0; i < 7; i++) {
 }
 
 export const MONTH_NAMES: string[] = []
+export const MONTH_ABBREV: string[] = []
 // Don't use today's date because setMonth could result in the wrong month if it's e.g. the 31st
 const month = new Date(2000, 0)
 for (let i = 0; i < 12; i++) {
 	month.setMonth(i)
 	MONTH_NAMES[month.getMonth()] = month.toLocaleString(locale, {
 		month: 'long',
+	})
+	MONTH_ABBREV[month.getMonth()] = month.toLocaleString(locale, {
+		month: 'short',
 	})
 }
 

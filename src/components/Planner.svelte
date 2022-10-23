@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Month from './Month.svelte'
+	import Calendar from './Calendar.svelte'
 	import MonthMini from './MonthMini.svelte'
 	import { MONTHS, weekStart, YEAR } from '$lib/calendar'
 	import { fade } from 'svelte/transition'
@@ -9,6 +9,7 @@
 	import { serialize } from 'cookie'
 
 	const discordMember = $page.data.discordMember!
+	const username = discordMember.nick || discordMember.username
 
 	let focusedMonth: number = MONTHS[0]
 
@@ -20,21 +21,19 @@
 			// Save locale in cookie too, to SSR with correct language
 		})
 	}
-
-	const username = discordMember.nick || discordMember.username
 </script>
 
-<section>
+<section
+	style="--color-user:#{discordMember.color.toString(16).padStart(6, '0')};"
+>
 	<div class="header">
-		<img
-			width="24px"
-			style="border-radius: 12px;"
-			alt="{username}'s avatar"
-			src={discordMember.avatarURL}
-		/>
-		{username}<a href="/api/logout" data-sveltekit-prefetch="off">Log out</a>
+		<img width="24px" alt="{username}'s avatar" src={discordMember.avatarURL} />
+		<span class="username">{username}</span><a
+			href="/api/logout"
+			data-sveltekit-prefetch="off">Log out</a
+		>
 	</div>
-	<div class="month-select">
+	<!-- <div class="month-select">
 		{#each MONTHS as month}
 			<MonthMini
 				year={YEAR}
@@ -43,7 +42,7 @@
 				onClick={() => (focusedMonth = month)}
 			/>
 		{/each}
-	</div>
+	</div> -->
 	<div class="big-month-container">
 		{#each MONTHS as month}
 			{#if month === focusedMonth}
@@ -51,7 +50,7 @@
 					class="big-month"
 					transition:fade={{ duration: 100, easing: cubicOut }}
 				>
-					<Month year={YEAR} {month} />
+					<Calendar />
 				</div>
 			{/if}
 		{/each}
@@ -67,6 +66,17 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
+	}
+
+	.header img {
+		border-radius: 15px;
+		border: 3px solid var(--color-user);
+		margin-right: 0.2rem;
+	}
+
+	.username {
+		color: var(--color-user);
+		font-weight: bold;
 	}
 
 	.month-select {

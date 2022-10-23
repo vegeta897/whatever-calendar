@@ -11,6 +11,8 @@ declare global {
 		/** User nickname for configured server, if they have one */
 		nick: string | null
 		avatarURL: string
+		/** Hex color in base 10 - 0 if no color */
+		color: number
 	}
 
 	type WheneverUser = {

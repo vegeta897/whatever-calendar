@@ -29,7 +29,9 @@ export async function connectBot() {
 	return promise
 }
 
-export async function getMember(userID: string) {
+export async function getMember(
+	userID: string
+): Promise<DiscordMember | undefined> {
 	await getMembers([userID])
 	const member = discordServer.members.get(userID)
 	return (
@@ -39,6 +41,11 @@ export async function getMember(userID: string) {
 			discriminator: member.discriminator,
 			nick: member.nick,
 			avatarURL: member.avatarURL,
+			color:
+				member.roles // Get color of highest role for member
+					.map((r) => discordServer.roles.get(r))
+					.sort((a, b) => b!.position - a!.position)
+					.find((r) => r!.color !== 0)?.color || 0,
 		}
 	)
 }

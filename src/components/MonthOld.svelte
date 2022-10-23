@@ -14,7 +14,7 @@
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
-	import Star from './Star.svelte'
+	import Dot from './Dot.svelte'
 
 	export let year: number
 	export let month: number
@@ -205,11 +205,7 @@
 					<div class="day-upper-right">
 						{#if myMarks[day.YYYYMMDD]}
 							{#if myMarks[day.YYYYMMDD]?.type === 1}
-								<Star
-									fill={users[myUserID].color
-										? '#' + users[myUserID].color.toString(16).padStart(6, '0')
-										: undefined}
-								/>
+								<Dot color={users[myUserID].color} />
 							{:else}
 								<div
 									class="circle"
@@ -226,11 +222,7 @@
 					{#each Object.entries(dayMarks) as [userID, mark]}
 						{#if userID !== myUserID}
 							{#if mark.type === 1}
-								<Star
-									fill={users[userID].color
-										? '#' + users[userID].color.toString(16).padStart(6, '0')
-										: undefined}
-								/>
+								<Dot color={users[userID].color} />
 							{:else}
 								<div
 									class="circle small"
