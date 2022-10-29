@@ -1,8 +1,8 @@
 import { browser } from '$app/environment'
 import { readable, writable } from 'svelte/store'
 
-export const YEAR = 2022
-export const MONTHS = [10, 11, 12] as const
+const END_YEAR = 2022
+const END_MONTH = 12
 
 export const days = readable<CalendarDay[]>(getDays())
 export const weekStart = writable<0 | 1>(0)
@@ -20,22 +20,21 @@ export type CalendarDay = {
 function getDays(): CalendarDay[] {
 	const startDay = new Date()
 	startDay.setHours(0, 0, 0, 0)
-	const finalMonth = MONTHS[MONTHS.length - 1]
-	const finalDay = new Date(YEAR, finalMonth, 0)
+	const finalDay = new Date(END_YEAR, END_MONTH, 0)
 	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
 	while (dayLooper <= finalDay) {
 		const day: Omit<CalendarDay, 'YYYYMMDD'> = {
 			date: new Date(dayLooper),
 			day: dayLooper.getDate(),
-			month: dayLooper.getMonth() + 1,
+			month: dayLooper.getMonth(),
 			year: dayLooper.getFullYear(),
 			weekday: dayLooper.getDay(),
 			weekend: [0, 6].includes(dayLooper.getDay()),
 		}
 		days.push({
 			...day,
-			YYYYMMDD: `${zeroPad(day.year!)}-${zeroPad(day.month!)}-${zeroPad(
+			YYYYMMDD: `${zeroPad(day.year!)}-${zeroPad(day.month! + 1)}-${zeroPad(
 				day.day!
 			)}`,
 		})
@@ -44,29 +43,16 @@ function getDays(): CalendarDay[] {
 	return days
 }
 
-export function getCalendarDays(
-	days: CalendarDay[],
-	year: number,
-	month: number,
-	weekStart: 0 | 1
-) {
-	const monthDays = days.filter(
-		(day) => day.year === year && day.month === month
+export function sameDay(dateA: Date, dateB: Date) {
+	return (
+		dateA.getFullYear() === dateB.getFullYear() &&
+		dateA.getMonth() === dateB.getMonth() &&
+		dateA.getDate() === dateB.getDate()
 	)
-	const preDays = days.slice(
-		days.indexOf(monthDays[0]) - ((7 + monthDays[0].weekday - weekStart) % 7),
-		days.indexOf(monthDays[0])
-	)
-	const lastDay = monthDays[monthDays.length - 1]
-	const postDays = days.slice(
-		days.indexOf(lastDay) + 1,
-		days.indexOf(lastDay) + (7 - lastDay.weekday + weekStart)
-	)
-	return [...preDays, ...monthDays, ...postDays]
 }
 
 export function getWeekdayNames(weekStart: 0 | 1) {
-	return weekStart === 0 ? WEEKDAY_NAMES : WEEKDAY_NAMES_START_MON
+	return weekStart === 0 ? WEEKDAY_NAMES_SHORT : WEEKDAY_NAMES_START_MON
 }
 
 const locale = (browser && navigator.language) || 'default'
@@ -78,15 +64,19 @@ monday.setDate(monday.getDate() + 1)
 export const sundayName = sunday.toLocaleDateString(locale, { weekday: 'long' })
 export const mondayName = monday.toLocaleDateString(locale, { weekday: 'long' })
 
-const WEEKDAY_NAMES: string[] = []
+export const WEEKDAY_NAMES: string[] = []
+const WEEKDAY_NAMES_SHORT: string[] = []
 const WEEKDAY_NAMES_START_MON: string[] = []
 const weekday = new Date(2000, 0)
 for (let i = 0; i < 7; i++) {
-	const name = weekday.toLocaleString(locale, {
+	WEEKDAY_NAMES[weekday.getDay()] = weekday.toLocaleString(locale, {
+		weekday: 'long',
+	})
+	const shortName = weekday.toLocaleString(locale, {
 		weekday: 'short',
 	})
-	WEEKDAY_NAMES[weekday.getDay()] = name
-	WEEKDAY_NAMES_START_MON[(weekday.getDay() + 6) % 7] = name
+	WEEKDAY_NAMES_SHORT[weekday.getDay()] = shortName
+	WEEKDAY_NAMES_START_MON[(weekday.getDay() + 6) % 7] = shortName
 	weekday.setDate(weekday.getDate() + 1)
 }
 

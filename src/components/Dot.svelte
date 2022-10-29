@@ -4,6 +4,8 @@
 	export let mini = false
 	export let plus = false
 
+	let imgError = false
+
 	$: borderColorStyle = user.color
 		? `border-color: #${user.color.toString(16).padStart(6, '0')};` +
 		  (plus ? '' : `background: #${user.color.toString(16).padStart(6, '0')}`)
@@ -13,7 +15,12 @@
 <div style={borderColorStyle} class:expanded class:mini class:plus>
 	{#if expanded}
 		<svg viewBox="0 0 1 1"><path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" /></svg>
-		<img src={user.avatarURL} alt="{user.name}'s avatar" />
+		<img
+			src={user.avatarURL}
+			alt="{user.name}'s avatar"
+			class:hidden={imgError}
+			on:error={() => (imgError = true)}
+		/>
 	{/if}
 </div>
 
@@ -68,6 +75,10 @@
 
 	.plus img {
 		transform: scale(0);
+	}
+
+	img.hidden {
+		display: none;
 	}
 
 	svg {

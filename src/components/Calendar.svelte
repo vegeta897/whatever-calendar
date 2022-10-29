@@ -2,14 +2,13 @@
 	import { enhance } from '$app/forms'
 	import { onInterval } from '$lib/interval'
 	import {
-		getCalendarDays,
 		getWeekdayNames,
-		MONTH_NAMES,
 		mondayName,
 		sundayName,
 		weekStart,
 		days,
 		MONTH_ABBREV,
+		sameDay,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
@@ -17,7 +16,8 @@
 	import { page } from '$app/stores'
 	import Dot from './Dot.svelte'
 	import { crossfade } from 'svelte/transition'
-	import { trusted } from 'svelte/internal'
+	import DayDetail from './DayDetail.svelte'
+	import { goto } from '$app/navigation'
 
 	let toolMode: 1 | 2 = 1
 
@@ -55,7 +55,7 @@
 	// $: calendarDays = getCalendarDays($days, year, month, $weekStart)
 
 	let dayHover: CalendarDay | null = null
-	let daysSelected: Set<CalendarDay> = new Set()
+	export let daySelected: CalendarDay | null = null
 	let unsaved = false
 	let saving = false
 	let marking = false
@@ -82,13 +82,16 @@
 		unsaved = true
 	}
 
-	function mouseDown(day: CalendarDay, e: PointerEvent) {
-		if (daysSelected.has(day)) {
-			daysSelected.delete(day)
+	function clickDay(day: CalendarDay) {
+		if (daySelected === day) {
+			goto('/calendar', { noscroll: true, replaceState: true })
 		} else {
-			daysSelected.add(day)
+			goto(`/${day.YYYYMMDD}`, { noscroll: true, replaceState: true })
 		}
-		daysSelected = daysSelected // For reactivity
+	}
+
+	function mouseDown(day: CalendarDay, e: PointerEvent) {
+		return
 		if (e.button !== 0) return
 		if (day.date < today) return
 		dragDays.add(day)
@@ -147,8 +150,6 @@
 	let today = new Date()
 	today.setHours(0, 0, 0, 0)
 
-	const isToday = (day: CalendarDay) => day.date.getTime() === today.getTime()
-
 	const updateToday = () => {
 		const now = new Date()
 		if (now.getDate() !== today.getDate()) {
@@ -161,19 +162,26 @@
 	const [send, receive] = crossfade({ duration: 50 })
 </script>
 
+<!-- TODO: Fix header to top of page when scrolled out of view -->
 <div class="header">
+	<div>
+		<label for="week-start">Start of week:</label>
+		<select id="week-start" bind:value={$weekStart}>
+			<!-- Use selected property to show correct option on intial render -->
+			<option selected={$weekStart === 0} value={0}>{sundayName}</option>
+			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
+		</select>
+	</div>
 	<div class="header-left">
+		<!-- TODO: Move this into DayDetail -->
 		<form
 			method="POST"
-			action="?/update"
+			action="?/marks"
 			use:enhance={() => {
 				unsaved = false
 				saving = true
 				return async ({ update }) => {
-					// TODO: Apply "saving" class to modified days, with a lil animation
 					saving = false
-					daysSelected.clear()
-					daysSelected = daysSelected
 					update()
 				}
 			}}
@@ -192,14 +200,6 @@
 			</label>
 		</div>
 	</div>
-	<div>
-		<label for="week-start">Start of week:</label>
-		<select id="week-start" bind:value={$weekStart}>
-			<!-- Use selected property to show correct option on intial render -->
-			<option selected={$weekStart === 0} value={0}>{sundayName}</option>
-			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
-		</select>
-	</div>
 </div>
 <div class="calendar">
 	<!-- TODO: Move this into month ol? -->
@@ -211,6 +211,7 @@
 	<ol class="month" on:pointerleave={outOfMonth}>
 		{#each $days as day, i}
 			{@const dayMarks = notMyMarks[day.YYYYMMDD] || {}}
+			{@const myMark = myMarks[day.YYYYMMDD]}
 			{@const prevDay = $days[i - 1]}
 			{#if day.date >= today}
 				<li
@@ -220,39 +221,42 @@
 					on:mouseenter={(e) => mouseEnter(day, e)}
 					on:mouseleave={() => (dayHover = null)}
 					on:dblclick={(e) => e.preventDefault()}
-					class:expanded={dayHover === day || daysSelected.has(day)}
-					class:selected={daysSelected.has(day)}
+					class:expanded={dayHover === day && day !== daySelected}
+					class:selected={day === daySelected}
 					class:weekend={day.weekend}
-					style={isToday(day)
+					class:first-column={day.weekday === $weekStart}
+					style={sameDay(day.date, today)
 						? `grid-column:${((7 + day.weekday - $weekStart) % 7) + 1};`
 						: ''}
+					on:click={() => clickDay(day)}
 				>
-					{#if isToday(day) || prevDay?.month === day.month - 1}
-						<div class="month-label">{MONTH_ABBREV[day.month - 1]}</div>
+					{#if sameDay(day.date, today) || day.month !== prevDay?.month}
+						<div class="month-label">{MONTH_ABBREV[day.month]}</div>
 					{/if}
 					<div class="day-date">{day.day}</div>
 					<div class="day-lower">
-						{#if dayHover === day || daysSelected.has(day)}
+						{#if dayHover === day && day !== daySelected}
 							<div
 								class="day-marks-large"
-								class:four-marks={Object.values(dayMarks).length + 1 === 4}
+								class:four-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) ===
+									4}
+								class:six-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) ===
+									6}
 								in:send={{ key: day.YYYYMMDD }}
 								out:receive={{ key: day.YYYYMMDD }}
 							>
-								{#each Object.entries(dayMarks) as [userID, mark]}
-									<Dot
+								{#each Object.entries(dayMarks) as [userID, mark]}<Dot
 										user={users[userID]}
 										expanded={true}
-										mini={Object.values(dayMarks).length >= 7}
-									/>
-								{/each}
-
-								<Dot
-									user={users[myUserID]}
-									expanded={true}
-									mini={Object.values(dayMarks).length >= 7}
-									plus={!myMarks[day.YYYYMMDD]}
-								/>
+										mini={Object.values(dayMarks).length + 1 >= 7}
+									/>{/each}
+								{#if myMark}<Dot
+										user={users[myUserID]}
+										expanded={true}
+										mini={Object.values(dayMarks).length + 1 >= 7}
+									/>{/if}
 							</div>
 						{:else}
 							<div
@@ -267,13 +271,18 @@
 								{#each Object.entries(dayMarks) as [userID, mark]}
 									<Dot user={users[userID]} />
 								{/each}
-								{#if myMarks[day.YYYYMMDD]}
-									<Dot user={users[myUserID]} />
-								{/if}
+								{#if myMark}<Dot user={users[myUserID]} /> {/if}
 							</div>
 						{/if}
 					</div>
 				</li>
+				{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
+					<DayDetail
+						day={daySelected}
+						marks={notMyMarks[daySelected.YYYYMMDD] || {}}
+						myMark={myMarks[daySelected.YYYYMMDD]}
+					/>
+				{/if}
 			{/if}
 		{/each}
 	</ol>
@@ -281,17 +290,17 @@
 
 <style>
 	.header {
+		width: 100%;
 		display: flex;
 		flex-wrap: wrap;
-		align-items: baseline;
+		align-items: center;
+		justify-content: space-between;
 		margin: 0.8rem 0;
-		gap: 0.3rem;
 	}
 	.header-left {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: baseline;
-		flex-grow: 1;
 	}
 
 	form {
@@ -357,7 +366,7 @@
 		flex-direction: column;
 		/* justify-content: space-between; */
 		align-items: center;
-		cursor: default;
+		cursor: pointer;
 		user-select: none;
 	}
 
@@ -387,14 +396,14 @@
 		opacity: 0;
 	}
 
-	.day:not(:first-child) .month-label:before {
+	.day:not(:first-child):not(.first-column):not(.selected) .month-label:before {
 		content: '';
 		position: absolute;
-		height: 61px;
+		height: 55px;
 		width: 3px;
 		border-radius: 1.5px;
 		top: 28px;
-		left: -38px;
+		left: -37px;
 		background: rgba(255, 255, 255, 0.25);
 	}
 
@@ -405,6 +414,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		transform: translateY(-4px);
 		transition: transform 50ms ease-out;
 	}
 
@@ -466,6 +476,10 @@
 
 	.day-marks-large.four-marks {
 		width: 60px;
+	}
+
+	.day-marks-large.six-marks {
+		width: 90px;
 	}
 
 	@media (max-width: 640px) {

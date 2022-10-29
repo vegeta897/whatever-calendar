@@ -1,5 +1,10 @@
 # TODO
 
+## Working on
+
+- Root page is a login page, redirects to /me if logged in
+- Other than /me, there is /2022-11-15 to pre-select specific days
+
 ## High-priority
 
 - Replace Eris with discord.js
