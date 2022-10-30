@@ -9,6 +9,7 @@
 		days,
 		MONTH_ABBREV,
 		sameDay,
+		getPreDays,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { onDestroy } from 'svelte'
@@ -29,6 +30,9 @@
 	// If you have a reactive variable, and bind it to a component,
 	// any update made to it in that component will re-run the reactive statement
 	// regardless of the dependencies of the reactive statement
+
+	// TODO: Do we need to separate myMarks anymore?
+	// Should marks be stored in an array? Should notes?
 
 	let myMarks: Record<string, Mark | null>
 	$: myMarks = Object.fromEntries(
@@ -155,10 +159,16 @@
 		if (now.getDate() !== today.getDate()) {
 			now.setHours(0, 0, 0, 0)
 			today = now
+			if (daySelected && daySelected.date < today) {
+				clickDay(daySelected) // Will navigate to /calendar
+			}
 		}
 	}
 	if (browser) onInterval(updateToday, onDestroy)
 
+	$: preDays = getPreDays($days, today, $weekStart)
+
+	// Crossfading expanded day views
 	const [send, receive] = crossfade({ duration: 50 })
 </script>
 
@@ -209,6 +219,9 @@
 		{/each}
 	</ol>
 	<ol class="month" on:pointerleave={outOfMonth}>
+		{#each preDays as day}<li class="day pre-day">
+				<div class="day-date">{day}</div>
+			</li>{/each}
 		{#each $days as day, i}
 			{@const dayMarks = notMyMarks[day.YYYYMMDD] || {}}
 			{@const myMark = myMarks[day.YYYYMMDD]}
@@ -225,16 +238,18 @@
 					class:selected={day === daySelected}
 					class:weekend={day.weekend}
 					class:first-column={day.weekday === $weekStart}
-					style={sameDay(day.date, today)
-						? `grid-column:${((7 + day.weekday - $weekStart) % 7) + 1};`
-						: ''}
 					on:click={() => clickDay(day)}
 				>
-					{#if sameDay(day.date, today) || day.month !== prevDay?.month}
+					{#if sameDay(day.date, today) || day.day === 1}
+						{#if day.day === 1 && day.weekday !== $weekStart}
+							<div class="month-divider" />
+						{/if}
 						<div class="month-label">{MONTH_ABBREV[day.month]}</div>
 					{/if}
-					<div class="day-date">{day.day}</div>
-					<div class="day-lower">
+					<div class="day-date" class:day-today={sameDay(day.date, today)}>
+						{day.day}
+					</div>
+					<div class="day-marks">
 						{#if dayHover === day && day !== daySelected}
 							<div
 								class="day-marks-large"
@@ -247,31 +262,39 @@
 								in:send={{ key: day.YYYYMMDD }}
 								out:receive={{ key: day.YYYYMMDD }}
 							>
-								{#each Object.entries(dayMarks) as [userID, mark]}<Dot
-										user={users[userID]}
-										expanded={true}
-										mini={Object.values(dayMarks).length + 1 >= 7}
-									/>{/each}
 								{#if myMark}<Dot
 										user={users[myUserID]}
 										expanded={true}
 										mini={Object.values(dayMarks).length + 1 >= 7}
 									/>{/if}
+								{#each Object.entries(dayMarks) as [userID, mark]}<Dot
+										user={users[userID]}
+										expanded={true}
+										mini={Object.values(dayMarks).length + 1 >= 7}
+									/>{/each}
 							</div>
 						{:else}
 							<div
 								class="day-marks-small"
-								class:six-marks={Object.values(dayMarks).length >= 5}
-								class:eight-marks={Object.values(dayMarks).length >= 7}
-								class:ten-marks={Object.values(dayMarks).length >= 9}
-								class:twelve-marks={Object.values(dayMarks).length >= 11}
+								class:six-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) >=
+									5}
+								class:eight-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) >=
+									7}
+								class:ten-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) >=
+									9}
+								class:twelve-marks={Object.values(dayMarks).length +
+									(myMark ? 1 : 0) >=
+									11}
 								in:send={{ key: day.YYYYMMDD }}
 								out:receive={{ key: day.YYYYMMDD }}
 							>
+								{#if myMark}<Dot user={users[myUserID]} />{/if}
 								{#each Object.entries(dayMarks) as [userID, mark]}
 									<Dot user={users[userID]} />
 								{/each}
-								{#if myMark}<Dot user={users[myUserID]} /> {/if}
 							</div>
 						{/if}
 					</div>
@@ -281,6 +304,8 @@
 						day={daySelected}
 						marks={notMyMarks[daySelected.YYYYMMDD] || {}}
 						myMark={myMarks[daySelected.YYYYMMDD]}
+						rightAlignDay={daySelected.weekday === ($weekStart + 6) % 7}
+						leftAlignDay={daySelected.weekday === $weekStart}
 					/>
 				{/if}
 			{/if}
@@ -359,7 +384,9 @@
 		border-radius: 20px;
 		border: 3px solid transparent;
 		/* background-color: rgba(255, 255, 255, 0.06); */
-		transition: background-color 50ms ease-out, color 50ms ease-out;
+		transition: background-color 50ms ease-out, color 50ms ease-out,
+			height 50ms ease-out, margin-bottom 50ms ease-out,
+			border-radius 50ms ease-out;
 		position: relative;
 		touch-action: manipulation;
 		display: flex;
@@ -370,16 +397,26 @@
 		user-select: none;
 	}
 
-	.day:first-child .day-date {
+	.day.pre-day {
+		cursor: default;
+		color: rgba(255, 255, 255, 0.2);
+	}
+
+	.day-date.day-today {
 		text-decoration: underline;
 	}
 
 	.day.selected {
-		border-color: var(--color-user);
+		/* border-color: var(--color-user); */
+		background: rgba(0, 0, 0, 0.25);
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		height: 124px;
+		margin-bottom: -8px;
 	}
 
 	.day.expanded {
-		background-color: rgba(0, 0, 0, 0.2);
+		background-color: rgba(0, 0, 0, 0.25);
 		color: rgba(255, 255, 255, 0.9);
 		transition: none;
 	}
@@ -392,19 +429,21 @@
 		transition: opacity 50ms ease-out;
 	}
 
-	.day.expanded .month-label {
-		opacity: 0;
-	}
-
-	.day:not(:first-child):not(.first-column):not(.selected) .month-label:before {
-		content: '';
+	.day:not(.selected):not(.expanded) .month-divider {
 		position: absolute;
 		height: 55px;
 		width: 3px;
 		border-radius: 1.5px;
-		top: 28px;
-		left: -37px;
+		top: 26px;
+		left: -4px;
 		background: rgba(255, 255, 255, 0.25);
+		pointer-events: none;
+		transition: opacity 50ms ease-out;
+	}
+	.day.expanded .month-label,
+	.day.selected .month-divider,
+	.day.expanded .month-divider {
+		opacity: 0;
 	}
 
 	.day-date {
@@ -425,17 +464,13 @@
 
 	/* TODO: Don't animate dots, just fade/swipe between expanded and normal views */
 
-	.day-lower {
+	.day-marks {
 		display: grid;
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 		justify-items: center;
 		margin-top: 50%;
 		height: 50%;
-	}
-
-	.day.expanded .day-lower {
-		/* transform: translateY(-9px); */
 	}
 
 	.day-marks-small,
@@ -483,6 +518,7 @@
 	}
 
 	@media (max-width: 640px) {
+		/* TODO: This all needs to be redone */
 		ol {
 			grid-template-columns: repeat(7, 45px);
 			row-gap: 4px;
@@ -500,10 +536,7 @@
 			top: -2px;
 		}
 
-		.day-upper {
-			padding-top: 9px;
-		}
-		.day-lower {
+		.day-marks {
 			padding-top: 0.5px;
 		}
 	}

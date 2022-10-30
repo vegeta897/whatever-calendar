@@ -44,7 +44,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 }
 
 const handleDiscord: Handle = async ({ event, resolve }) => {
-	// API routes only need the session
+	// Auth API routes only need the session
 	if (event.routeId?.startsWith('api/')) return await resolve(event)
 	// This session isn't stored if there is no discord ID
 	const newSession = !event.locals.discordID
@@ -56,10 +56,10 @@ const handleDiscord: Handle = async ({ event, resolve }) => {
 	if (event.locals.discordID) {
 		console.log('have user ID, getting member info')
 		const discordMember = await getMember(event.locals.discordID)
-		// If the user is a server member, save member data and store their session
+		// If the user is a server member, attach member data and store their session
 		if (discordMember) {
 			event.locals.discordMember = discordMember
-			event.locals.discordUser = {
+			event.locals.discordUser ||= {
 				id: discordMember.id,
 				username: discordMember.username,
 				discriminator: discordMember.discriminator,

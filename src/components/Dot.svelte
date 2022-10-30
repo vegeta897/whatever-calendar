@@ -6,13 +6,21 @@
 
 	let imgError = false
 
-	$: borderColorStyle = user.color
-		? `border-color: #${user.color.toString(16).padStart(6, '0')};` +
-		  (plus ? '' : `background: #${user.color.toString(16).padStart(6, '0')}`)
+	$: borderColor = user.color
+		? `#${user.color.toString(16).padStart(6, '0')}`
 		: ''
+	$: backgroundColor = plus
+		? ''
+		: `#${user.color.toString(16).padStart(6, '0')}`
 </script>
 
-<div style={borderColorStyle} class:expanded class:mini class:plus>
+<div
+	style:border-color={borderColor}
+	style:background-color={backgroundColor}
+	class:expanded
+	class:mini
+	class:plus
+>
 	{#if expanded}
 		<svg viewBox="0 0 1 1"><path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" /></svg>
 		<img
@@ -83,7 +91,7 @@
 
 	svg {
 		position: absolute;
-		transition: transform 90ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
+		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
 	}
 
 	.plus svg {
@@ -93,6 +101,9 @@
 		stroke-width: 0.1;
 		stroke: #fff;
 		fill: none;
+	}
+
+	:global(*:hover) > div.plus svg {
 		transform: rotate(90deg);
 	}
 

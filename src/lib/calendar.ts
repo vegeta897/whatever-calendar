@@ -18,6 +18,7 @@ export type CalendarDay = {
 }
 
 function getDays(): CalendarDay[] {
+	// This takes less than a millisecond, better to run on client than transfer the data
 	const startDay = new Date()
 	startDay.setHours(0, 0, 0, 0)
 	const finalDay = new Date(END_YEAR, END_MONTH, 0)
@@ -41,6 +42,20 @@ function getDays(): CalendarDay[] {
 		dayLooper.setDate(dayLooper.getDate() + 1)
 	}
 	return days
+}
+
+export function getPreDays(
+	days: CalendarDay[],
+	before: Date,
+	weekStart: 0 | 1
+) {
+	const preDays: number[] = []
+	const preDayLooper = new Date(days.find((d) => sameDay(d.date, before))!.date)
+	while (preDayLooper.getDay() !== weekStart) {
+		preDayLooper.setDate(preDayLooper.getDate() - 1)
+		preDays.push(preDayLooper.getDate())
+	}
+	return preDays.reverse()
 }
 
 export function sameDay(dateA: Date, dateB: Date) {

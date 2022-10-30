@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import Planner from '../components/Planner.svelte'
 	import { browser } from '$app/environment'
-	import { weekStart } from '$lib/calendar'
 
 	export let data: PageData
 

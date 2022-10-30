@@ -9,11 +9,20 @@
 	export let day: CalendarDay
 	export let marks: Record<string, Mark>
 	export let myMark: Mark | null
+	export let rightAlignDay = false
+	export let leftAlignDay = false
 
 	const myUserID = $page.data.discordMember!.id
 	$: users = $page.data.users!
 
 	let newNote: string
+	let saving = false
+
+	$: cornerStyle = rightAlignDay
+		? 'border-top-right-radius: 0;'
+		: leftAlignDay
+		? 'border-top-left-radius: 0;'
+		: ''
 
 	let element: HTMLElement
 	onMount(() => {
@@ -23,24 +32,50 @@
 	})
 </script>
 
-<div class="day-detail" in:fly={{ duration: 100, y: -80 }} bind:this={element}>
+<div
+	class="day-detail"
+	in:fly={{ duration: 100, y: -80 }}
+	bind:this={element}
+	style={cornerStyle}
+>
 	<h3 class="day-heading">
 		{WEEKDAY_NAMES[day.weekday]},
 		{MONTH_NAMES[day.month]}
 		{day.day}
 	</h3>
+	<h4>
+		{#if myMark}You and {Object.entries(marks).length} others
+		{:else}{Object.entries(marks).length} people{/if}
+	</h4>
 	<div class="marks">
-		{Object.entries(marks).length} people
+		<form
+			method="POST"
+			action="?/marks"
+			use:enhance={() => {
+				saving = true
+				return async ({ update }) => {
+					saving = false
+					update()
+				}
+			}}
+		>
+			<input
+				name="mark"
+				hidden
+				value={JSON.stringify({ day: day.YYYYMMDD, mark: !myMark })}
+			/>
+			<button class="user-mark my-mark" class:marked={myMark}>
+				<Dot user={users[myUserID]} expanded={true} plus={!myMark} />
+				{#if myMark}<span>{users[myUserID].name}</span>
+				{:else}<span>Add me</span>{/if}
+			</button>
+		</form>
 		{#each Object.entries(marks) as [userID, mark]}
 			<div class="user-mark">
 				<Dot user={users[userID]} expanded={true} />
-				<span class="username">{users[userID].name}</span>
+				<span>{users[userID].name}</span>
 			</div>
 		{/each}
-		<div class="user-mark">
-			<Dot user={users[myUserID]} expanded={true} plus={!myMark} />
-			{#if myMark}<span class="username">{users[myUserID].name}</span>{/if}
-		</div>
 	</div>
 	<div class="notes">
 		<form
@@ -67,43 +102,67 @@
 <style>
 	.day-detail {
 		width: 100%;
+		box-sizing: border-box;
 		grid-column: 1 / 8;
 		display: flex;
 		flex-wrap: wrap;
 		background: rgba(0, 0, 0, 0.25);
 		padding: 10px 16px;
 		border-radius: 20px;
+		transition: border-radius 50ms ease-out;
+	}
+
+	h3,
+	h4 {
+		width: 100%;
+		font-weight: 400;
 	}
 
 	.day-heading {
-		width: 100%;
 		font-size: 2em;
-		font-weight: 400;
-		margin: 4px 0 14px;
+		margin: 4px 0 6px;
 		color: rgba(255, 255, 255, 0.5);
+	}
+
+	h4 {
+		margin: 0 0 10px 4px;
 	}
 
 	.marks {
 		display: flex;
 		flex-wrap: wrap;
-		width: 50%;
+		width: 60%;
 	}
 
 	.user-mark {
 		display: flex;
 		align-items: center;
+		color: var(--color-text);
 		background: rgba(0, 0, 0, 0.4);
-		padding: 8px 10px;
-		margin-right: 6px;
-		margin-bottom: 4px;
+		padding: 7px 9px;
+		margin: 0 6px 4px 0;
 		border-radius: 12px;
+		transition: background-color 50ms ease-out;
 	}
 
-	.username {
+	.my-mark {
+		border: 2px solid var(--color-user);
+		cursor: pointer;
+	}
+
+	.my-mark:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.user-mark span {
 		margin-left: 5px;
 	}
 
+	.my-mark:not(.marked):hover span {
+		color: #fff;
+	}
+
 	.notes {
-		width: 50%;
+		width: 40%;
 	}
 </style>
