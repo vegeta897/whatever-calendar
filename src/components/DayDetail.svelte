@@ -14,6 +14,7 @@
 
 	const myUserID = $page.data.discordMember!.id
 	$: users = $page.data.users!
+	$: otherMarkCount = Object.keys(marks).length
 
 	let newNote: string
 	let saving = false
@@ -44,8 +45,15 @@
 		{day.day}
 	</h3>
 	<h4>
-		{#if myMark}You and {Object.entries(marks).length} others
-		{:else}{Object.entries(marks).length} people{/if}
+		{#if otherMarkCount > 0}
+			{#if myMark}
+				You and {otherMarkCount} other{otherMarkCount > 1 ? 's' : ''}
+			{:else}
+				{otherMarkCount} {otherMarkCount > 1 ? 'people' : 'person'}
+			{/if}
+		{:else if myMark}
+			You're on your own here
+		{/if}
 	</h4>
 	<div class="marks">
 		<form
@@ -59,20 +67,17 @@
 				}
 			}}
 		>
-			<input
-				name="mark"
-				hidden
-				value={JSON.stringify({ day: day.YYYYMMDD, mark: !myMark })}
-			/>
-			<button class="user-mark my-mark" class:marked={myMark}>
-				<Dot user={users[myUserID]} expanded={true} plus={!myMark} />
+			<input name="day" hidden value={day.YYYYMMDD} />
+			<input name="mark" hidden value={!myMark} />
+			<button disabled={saving} class="user-mark my-mark" class:marked={myMark}>
+				<Dot user={users[myUserID]} avatar={true} mark={myMark} />
 				{#if myMark}<span>{users[myUserID].name}</span>
 				{:else}<span>Add me</span>{/if}
 			</button>
 		</form>
 		{#each Object.entries(marks) as [userID, mark]}
 			<div class="user-mark">
-				<Dot user={users[userID]} expanded={true} />
+				<Dot user={users[userID]} avatar={true} {mark} />
 				<span>{users[userID].name}</span>
 			</div>
 		{/each}

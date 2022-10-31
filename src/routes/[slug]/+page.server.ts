@@ -26,10 +26,11 @@ export const actions: Actions = {
 			})
 		}
 		// TODO: Validate incoming data
-		const data = await request.formData()
-		const markInput = data.get('mark')
-		if (markInput) {
-			const { day, mark } = JSON.parse(markInput as string)
+		// TODO: Insert await sleep to test slow server UX
+		const formData = await request.formData()
+		if (formData.has('mark')) {
+			const mark = JSON.parse(formData.get('mark') as string)
+			const day = formData.get('day') as string
 			const marks = { ...getData().marks }
 			if (mark) {
 				marks[day] = {
@@ -51,7 +52,7 @@ export const actions: Actions = {
 			}
 			modifyData({ marks })
 		} else {
-			const userMarks = JSON.parse(data.get('myMarks') as string) as Record<
+			const userMarks = JSON.parse(formData.get('myMarks') as string) as Record<
 				string,
 				Mark | null
 			>

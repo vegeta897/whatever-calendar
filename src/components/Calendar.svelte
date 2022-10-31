@@ -264,13 +264,15 @@
 							>
 								{#if myMark}<Dot
 										user={users[myUserID]}
-										expanded={true}
+										avatar={true}
 										mini={Object.values(dayMarks).length + 1 >= 7}
+										mark={myMark}
 									/>{/if}
-								{#each Object.entries(dayMarks) as [userID, mark]}<Dot
+								{#each Object.entries(dayMarks) as [userID, mark], i}<Dot
 										user={users[userID]}
-										expanded={true}
+										avatar={true}
 										mini={Object.values(dayMarks).length + 1 >= 7}
+										{mark}
 									/>{/each}
 							</div>
 						{:else}
@@ -291,9 +293,9 @@
 								in:send={{ key: day.YYYYMMDD }}
 								out:receive={{ key: day.YYYYMMDD }}
 							>
-								{#if myMark}<Dot user={users[myUserID]} />{/if}
+								{#if myMark}<Dot user={users[myUserID]} mark={myMark} />{/if}
 								{#each Object.entries(dayMarks) as [userID, mark]}
-									<Dot user={users[userID]} />
+									<Dot user={users[userID]} {mark} />
 								{/each}
 							</div>
 						{/if}
@@ -449,7 +451,7 @@
 	.day-date {
 		font-size: 2.2em;
 		position: absolute;
-		height: 100%;
+		height: 110px; /* Height of .day less padding */
 		display: flex;
 		justify-content: center;
 		align-items: center;

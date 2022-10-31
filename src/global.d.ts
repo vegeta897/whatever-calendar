@@ -22,6 +22,8 @@ declare global {
 		name: string
 		/** Discord avatar URL */
 		avatarURL: string
+		/** Indicates whether user is the client */
+		me?: boolean
 	}
 
 	type Mark = {

@@ -10,6 +10,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 		pageData.discordMember = locals.discordMember
 		pageData.marks = getData().marks
 		pageData.users = await getMembers(getWheneverUserIDs())
+		pageData.users[locals.discordMember.id].me = true
 		const weekStart = cookies.get('wec-weekStart')
 		if (weekStart !== undefined) {
 			pageData.weekStart = +weekStart as 0 | 1

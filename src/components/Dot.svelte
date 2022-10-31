@@ -1,34 +1,35 @@
 <script lang="ts">
 	export let user: WheneverUser
-	export let expanded = false
+	export let avatar = false
 	export let mini = false
-	export let plus = false
+	export let mark: Mark | null
 
 	let imgError = false
-
-	$: borderColor = user.color
-		? `#${user.color.toString(16).padStart(6, '0')}`
-		: ''
-	$: backgroundColor = plus
-		? ''
-		: `#${user.color.toString(16).padStart(6, '0')}`
 </script>
 
 <div
-	style:border-color={borderColor}
-	style:background-color={backgroundColor}
-	class:expanded
+	style:border-color={user.color
+		? `#${user.color.toString(16).padStart(6, '0')}`
+		: ''}
+	style:background-color={mark
+		? `#${user.color.toString(16).padStart(6, '0')}`
+		: ''}
+	class:avatar
 	class:mini
-	class:plus
+	class:unmarked={!mark}
 >
-	{#if expanded}
-		<svg viewBox="0 0 1 1"><path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" /></svg>
+	{#if avatar}
 		<img
 			src={user.avatarURL}
 			alt="{user.name}'s avatar"
 			class:hidden={imgError}
 			on:error={() => (imgError = true)}
 		/>
+		{#if user.me}
+			<svg class="plus" viewBox="0 0 1 1"
+				><path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" /></svg
+			>
+		{/if}
 	{/if}
 </div>
 
@@ -44,26 +45,27 @@
 		position: relative;
 	}
 
-	div.expanded {
+	div.avatar {
 		border-radius: 14px;
 		width: 26px;
 		height: 26px;
 	}
 
-	div.expanded.mini {
+	div.avatar.mini {
 		border-radius: 11px;
 		width: 22px;
 		height: 22px;
 	}
 
-	div.plus {
+	div.unmarked {
 		background: none;
 	}
 
-	div:not(.plus) {
+	/* div:not(.avatar):not(.plus) {
 		animation-name: bounce;
-		animation-duration: 90ms;
-	}
+		animation-timing-function: ease-out;
+		animation-duration: 250ms;
+	} */
 
 	img {
 		pointer-events: none;
@@ -81,7 +83,7 @@
 		border-radius: 8px;
 	}
 
-	.plus img {
+	div.unmarked img {
 		transform: scale(0);
 	}
 
@@ -91,33 +93,41 @@
 
 	svg {
 		position: absolute;
-		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
+		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11),
+			opacity 100ms ease-out, background-color 100ms ease-out;
 	}
 
-	.plus svg {
+	svg {
 		display: block;
 		width: 20px;
 		height: 20px;
+		border-radius: 10px;
 		stroke-width: 0.1;
 		stroke: #fff;
 		fill: none;
 	}
 
-	:global(*:hover) > div.plus svg {
+	:not(.unmarked) svg {
+		transform: rotate(0);
+		opacity: 0;
+	}
+
+	:global(*:hover) > .unmarked svg {
 		transform: rotate(90deg);
 	}
 
-	.plus.mini svg {
-		width: 16px;
-		height: 16px;
+	:global(*:hover) > :not(.unmarked) svg {
+		transform: rotate(-45deg);
+		background-color: rgba(0, 0, 0, 0.7);
+		opacity: 1;
 	}
 
 	@keyframes bounce {
 		0% {
-			transform: scale(1);
+			transform: scale(0);
 		}
-		20% {
-			transform: scale(0.8);
+		30% {
+			transform: scale(1.2);
 		}
 		100% {
 			transform: scale(1);
