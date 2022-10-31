@@ -1,9 +1,14 @@
 import { browser } from '$app/environment'
-import { readable, writable } from 'svelte/store'
+import { get, readable, writable } from 'svelte/store'
+import { onInterval } from './interval'
 
 const END_YEAR = 2022
 const END_MONTH = 12
 
+const _today = new Date()
+_today.setHours(0, 0, 0, 0)
+
+export const today = writable<Date>(_today)
 export const days = readable<CalendarDay[]>(getDays())
 export const weekStart = writable<0 | 1>(0)
 
@@ -19,11 +24,11 @@ export type CalendarDay = {
 
 function getDays(): CalendarDay[] {
 	// This takes less than a millisecond, better to run on client than transfer the data
+	const days: CalendarDay[] = []
 	const startDay = new Date()
 	startDay.setHours(0, 0, 0, 0)
-	const finalDay = new Date(END_YEAR, END_MONTH, 0)
-	const days: CalendarDay[] = []
 	const dayLooper = new Date(startDay)
+	const finalDay = new Date(END_YEAR, END_MONTH, 0)
 	while (dayLooper <= finalDay) {
 		const day: Omit<CalendarDay, 'YYYYMMDD'> = {
 			date: new Date(dayLooper),
@@ -57,6 +62,15 @@ export function getPreDays(
 	}
 	return preDays.reverse()
 }
+
+const updateToday = () => {
+	const now = new Date()
+	if (now.getDate() !== get(today).getDate()) {
+		now.setHours(0, 0, 0, 0)
+		today.set(now)
+	}
+}
+if (browser) onInterval(updateToday)
 
 export function sameDay(dateA: Date, dateB: Date) {
 	return (

@@ -2,15 +2,21 @@
 	import { fly } from 'svelte/transition'
 	import { page } from '$app/stores'
 	import Dot from './Dot.svelte'
-	import { MONTH_NAMES, WEEKDAY_NAMES, type CalendarDay } from '$lib/calendar'
+	import {
+		MONTH_NAMES,
+		WEEKDAY_NAMES,
+		weekStart,
+		type CalendarDay,
+	} from '$lib/calendar'
 	import { onMount } from 'svelte'
 	import { enhance } from '$app/forms'
 
 	export let day: CalendarDay
 	export let marks: Record<string, Mark>
 	export let myMark: Mark | null
-	export let rightAlignDay = false
-	export let leftAlignDay = false
+
+	$: rightAlignDay = day.weekday === ($weekStart + 6) % 7
+	$: leftAlignDay = day.weekday === $weekStart
 
 	const myUserID = $page.data.discordMember!.id
 	$: users = $page.data.users!
@@ -52,7 +58,7 @@
 				{otherMarkCount} {otherMarkCount > 1 ? 'people' : 'person'}
 			{/if}
 		{:else if myMark}
-			You're on your own here
+			It's just you
 		{/if}
 	</h4>
 	<div class="marks">
@@ -70,7 +76,12 @@
 			<input name="day" hidden value={day.YYYYMMDD} />
 			<input name="mark" hidden value={!myMark} />
 			<button disabled={saving} class="user-mark my-mark" class:marked={myMark}>
-				<Dot user={users[myUserID]} avatar={true} mark={myMark} />
+				<Dot
+					user={users[myUserID]}
+					avatar={true}
+					mark={myMark}
+					markable={true}
+				/>
 				{#if myMark}<span>{users[myUserID].name}</span>
 				{:else}<span>Add me</span>{/if}
 			</button>
