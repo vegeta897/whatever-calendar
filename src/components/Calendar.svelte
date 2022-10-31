@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms'
 	import {
 		getWeekdayNames,
 		mondayName,
@@ -11,9 +10,10 @@
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { page } from '$app/stores'
-	import { crossfade } from 'svelte/transition'
 	import Day from './Day.svelte'
 	import { goto } from '$app/navigation'
+	import { browser } from '$app/environment'
+	import DayDetail from './DayDetail.svelte'
 
 	const myUserID = $page.data.discordMember!.id
 	$: marks = $page.data.marks!
@@ -51,18 +51,22 @@
 
 	export let daySelected: CalendarDay | null = null
 
-	// TODO: Need to listen to mouse events outside of day boxes
-
 	$: preDays = getPreDays($days, $today, $weekStart)
 
-	today.subscribe((value) => {
-		if (daySelected && daySelected.date < value) {
-			goto('/calendar', { noscroll: true, replaceState: true })
+	$: {
+		if (browser) {
+			if (!daySelected || daySelected.date < $today) {
+				gotoSlug('calendar')
+			} else if (daySelected) {
+				gotoSlug(daySelected.YYYYMMDD)
+			}
 		}
-	})
+	}
 
-	// Crossfading expanded day views
-	const [send, receive] = crossfade({ duration: 50 })
+	function gotoSlug(slug: string) {
+		if ($page.params.slug === slug) return
+		goto(`/${slug}`, { noscroll: true, replaceState: true })
+	}
 </script>
 
 <!-- TODO: Fix header to top of page when scrolled out of view -->
@@ -77,13 +81,10 @@
 	</div>
 </div>
 <div class="calendar">
-	<!-- TODO: Move this into month ol? -->
-	<ol class="weekdays">
+	<ol class="month">
 		{#each weekdayNames as weekdayName}
 			<li class="weekday">{weekdayName}</li>
 		{/each}
-	</ol>
-	<ol class="month">
 		{#each preDays as day}<li class="pre-day">
 				<div class="day-date">{day}</div>
 			</li>{/each}
@@ -92,6 +93,13 @@
 			{@const myMark = myMarks[day.YYYYMMDD]}
 			{#if day.date >= $today}
 				<Day {day} bind:daySelected {dayMarks} {myMark} />
+			{/if}
+			{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
+				<DayDetail
+					day={daySelected}
+					marks={notMyMarks[daySelected.YYYYMMDD] || {}}
+					myMark={myMarks[daySelected.YYYYMMDD]}
+				/>
 			{/if}
 		{/each}
 	</ol>
@@ -117,13 +125,7 @@
 		align-items: center;
 	}
 
-	.weekdays {
-		font-size: 1.2em;
-		margin: 0.5rem 0;
-		color: rgba(255, 255, 255, 0.4);
-	}
-
-	ol {
+	.month {
 		display: grid;
 		grid-template-columns: repeat(7, 116px);
 		row-gap: 8px;
@@ -132,6 +134,12 @@
 		margin: 0;
 		padding: 0;
 		justify-items: center;
+	}
+
+	.weekday {
+		font-size: 1.2em;
+		margin: 0.5rem 0;
+		color: rgba(255, 255, 255, 0.4);
 	}
 
 	.pre-day {

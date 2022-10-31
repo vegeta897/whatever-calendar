@@ -1,11 +1,9 @@
 <script lang="ts">
 	import type { CalendarDay } from '$lib/calendar'
-	import { weekStart, sameDay, today, MONTH_ABBREV, days } from '$lib/calendar'
-	import { goto } from '$app/navigation'
+	import { weekStart, sameDay, today, MONTH_ABBREV } from '$lib/calendar'
 	import { crossfade } from 'svelte/transition'
 	import Dot from './Dot.svelte'
 	import { page } from '$app/stores'
-	import DayDetail from './DayDetail.svelte'
 
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
@@ -16,14 +14,6 @@
 	$: users = $page.data.users!
 
 	let hover = false
-
-	function clickDay(day: CalendarDay) {
-		if (daySelected === day) {
-			goto('/calendar', { noscroll: true, replaceState: true })
-		} else {
-			goto(`/${day.YYYYMMDD}`, { noscroll: true, replaceState: true })
-		}
-	}
 
 	// Crossfading expanded day views
 	const [send, receive] = crossfade({ duration: 50 })
@@ -37,7 +27,7 @@
 	class:selected={day === daySelected}
 	class:weekend={day.weekend}
 	class:first-column={day.weekday === $weekStart}
-	on:click={() => clickDay(day)}
+	on:click={() => (daySelected = day === daySelected ? null : day)}
 >
 	{#if sameDay(day.date, $today) || day.day === 1}
 		{#if day.day === 1 && day.weekday !== $weekStart}
@@ -92,9 +82,6 @@
 		{/if}
 	</div>
 </li>
-{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
-	<DayDetail day={daySelected} marks={dayMarks} {myMark} />
-{/if}
 
 <style>
 	.day {
