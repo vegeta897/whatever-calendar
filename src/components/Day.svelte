@@ -7,11 +7,9 @@
 
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
-	export let dayMarks: Record<string, Mark>
-	export let myMark: Mark | null
+	export let dayMarks: Mark[]
 	export let onClick: (day: CalendarDay) => void
 
-	const myUserID = $page.data.discordMember!.id
 	$: users = $page.data.users!
 
 	let hover = false
@@ -43,41 +41,29 @@
 		{#if hover && day !== daySelected}
 			<div
 				class="day-marks-large"
-				class:four-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) ===
-					4}
-				class:six-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) ===
-					6}
+				class:four-marks={dayMarks.length === 4}
+				class:six-marks={dayMarks.length === 6}
 				in:send={{ key: day.YYYYMMDD }}
 				out:receive={{ key: day.YYYYMMDD }}
 			>
-				{#if myMark}<Dot
-						user={users[myUserID]}
+				{#each dayMarks as mark, i (mark.userID)}<Dot
 						avatar={true}
-						mini={Object.values(dayMarks).length + 1 >= 7}
-						mark={myMark}
-					/>{/if}
-				{#each Object.entries(dayMarks) as [userID, mark], i}<Dot
-						user={users[userID]}
-						avatar={true}
-						mini={Object.values(dayMarks).length + 1 >= 7}
-						{mark}
+						mini={dayMarks.length >= 7}
+						user={users[mark.userID]}
 					/>{/each}
 			</div>
 		{:else}
 			<div
 				class="day-marks-small"
-				class:six-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) >= 5}
-				class:eight-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) >=
-					7}
-				class:ten-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) >= 9}
-				class:twelve-marks={Object.values(dayMarks).length + (myMark ? 1 : 0) >=
-					11}
+				class:six-marks={dayMarks.length >= 5}
+				class:eight-marks={dayMarks.length >= 7}
+				class:ten-marks={dayMarks.length >= 9}
+				class:twelve-marks={dayMarks.length >= 11}
 				in:send={{ key: day.YYYYMMDD }}
 				out:receive={{ key: day.YYYYMMDD }}
 			>
-				{#if myMark}<Dot user={users[myUserID]} mark={myMark} />{/if}
-				{#each Object.entries(dayMarks) as [userID, mark]}
-					<Dot user={users[userID]} {mark} />
+				{#each dayMarks as mark (mark.userID)}
+					<Dot user={users[mark.userID]} />
 				{/each}
 			</div>
 		{/if}

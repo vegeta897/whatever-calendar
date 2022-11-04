@@ -9,7 +9,8 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 
 type DBData = {
 	sessions: Session[]
-	marks: Record<string, Record<string, Mark>>
+	marks: Mark[]
+	notes: Note[]
 }
 
 type Session = Readonly<{
@@ -22,7 +23,7 @@ type Session = Readonly<{
 const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 await db.read()
-db.data ||= { marks: {}, sessions: [] }
+db.data ||= { marks: [], notes: [], sessions: [] }
 
 export function getData(): DeepReadonly<DBData> {
 	return db.data!
@@ -39,11 +40,7 @@ export function addSession(session: Session) {
 
 export function getWheneverUserIDs() {
 	// Build set of all member IDs
-	const userIDs: Set<string> = new Set()
-	for (const markDay of Object.values(db.data!.marks)) {
-		Object.keys(markDay).forEach((userID) => userIDs.add(userID))
-	}
-	return [...userIDs]
+	return [...new Set(db.data!.marks.map((m) => m.userID))]
 }
 
 export function modifyData(data: Partial<DBData>) {

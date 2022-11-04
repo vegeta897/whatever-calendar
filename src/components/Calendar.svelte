@@ -12,7 +12,6 @@
 	import { page } from '$app/stores'
 	import Day from './Day.svelte'
 	import { goto } from '$app/navigation'
-	import { browser } from '$app/environment'
 	import DayDetail from './DayDetail.svelte'
 
 	const myUserID = $page.data.discordMember!.id
@@ -22,30 +21,6 @@
 	// If you have a reactive variable, and bind it to a component,
 	// any update made to it in that component will re-run the reactive statement
 	// regardless of the dependencies of the reactive statement
-
-	// TODO: Do we need to separate myMarks anymore?
-	// Should marks be stored in an array? Should notes?
-
-	let myMarks: Record<string, Mark | null>
-	$: myMarks = Object.fromEntries(
-		Object.entries(marks)
-			.map(([yyyymmdd, dayMarks]) => [
-				yyyymmdd,
-				dayMarks[myUserID] ? dayMarks[myUserID] : false,
-			])
-			.filter(([, myMarkOrFalse]) => myMarkOrFalse !== false)
-	)
-	let notMyMarks: Record<string, Record<string, Mark>>
-	$: notMyMarks = Object.fromEntries(
-		Object.entries(marks)
-			.map(([yyyymmdd, dayMarks]) => [
-				yyyymmdd,
-				Object.fromEntries(
-					Object.entries(dayMarks).filter(([userID]) => userID !== myUserID)
-				),
-			])
-			.filter(([, dayMarks]) => Object.entries(dayMarks).length !== 0)
-	)
 
 	$: weekdayNames = getWeekdayNames($weekStart)
 
@@ -75,20 +50,18 @@
 		{#each weekdayNames as weekdayName}
 			<li class="weekday">{weekdayName}</li>
 		{/each}
-		{#each preDays as day}<li class="pre-day">
+		{#each preDays as day (day)}<li class="pre-day">
 				<div class="day-date">{day}</div>
 			</li>{/each}
-		{#each $days as day, i}
-			{@const dayMarks = notMyMarks[day.YYYYMMDD] || {}}
-			{@const myMark = myMarks[day.YYYYMMDD]}
+		{#each $days as day, i (day.YYYYMMDD)}
+			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
 			{#if day.date >= $today}
-				<Day {day} bind:daySelected {dayMarks} {myMark} onClick={dayOnClick} />
+				<Day {day} bind:daySelected {dayMarks} onClick={dayOnClick} />
 			{/if}
 			{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
 				<DayDetail
 					day={daySelected}
-					marks={notMyMarks[daySelected.YYYYMMDD] || {}}
-					myMark={myMarks[daySelected.YYYYMMDD]}
+					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
 				/>
 			{/if}
 		{/each}

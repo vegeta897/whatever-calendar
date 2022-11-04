@@ -22,8 +22,11 @@ export type CalendarDay = {
 	YYYYMMDD: string
 }
 
+// Experimenting with dates based on the "oldest" time zone
+// const dayTest = new Date('2022-11-05T00:00:00.000-12:00')
+
 function getDays(): CalendarDay[] {
-	// This takes less than a millisecond, better to run on client than transfer the data
+	// This takes less than 1ms, better to run on client than transfer the data
 	const days: CalendarDay[] = []
 	const startDay = new Date()
 	startDay.setHours(0, 0, 0, 0)

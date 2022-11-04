@@ -10,14 +10,15 @@ declare global {
 	type DiscordMember = DiscordUser & {
 		/** User nickname for configured server, if they have one */
 		nick: string | null
+		/** Discord avatar URL */
 		avatarURL: string
-		/** Hex color in base 10 - 0 if no color */
-		color: number
+		/** Hex color in #FFFFFF format */
+		color?: string
 	}
 
 	type WheneverUser = {
-		/** Hex color in base 10 - 0 if no color */
-		color: number
+		/** Hex color in #FFFFFF format */
+		color?: string
 		/** Guild nickname, or fallback to username */
 		name: string
 		/** Discord avatar URL */
@@ -27,9 +28,13 @@ declare global {
 	}
 
 	type Mark = {
-		type: number // TODO: Create mark types
-		note?: string
-		createTimestamp: Readonly<number>
-		lastModifyTimestamp: number
+		YYYYMMDD: Readonly<string>
+		userID: Readonly<string>
+		timestamp: Readonly<number>
+	}
+
+	type Note = Mark & {
+		text: string
+		lastEditTimestamp: number
 	}
 }

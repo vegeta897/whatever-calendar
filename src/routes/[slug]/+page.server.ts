@@ -25,57 +25,28 @@ export const actions: Actions = {
 				message: 'Your session was lost, please connect to Discord again',
 			})
 		}
+		const userID = locals.discordMember.id
 		// TODO: Validate incoming data
 		// TODO: Insert await sleep to test slow server UX
 		const formData = await request.formData()
-		if (formData.has('mark')) {
-			const mark = JSON.parse(formData.get('mark') as string)
-			const day = formData.get('day') as string
-			const marks = { ...getData().marks }
-			if (mark) {
-				marks[day] = {
-					...(marks[day] || {}),
-					[locals.discordMember.id]: {
-						type: 1,
-						createTimestamp: Date.now(),
-						lastModifyTimestamp: Date.now(),
-					},
-				}
-			} else if (marks[day]) {
-				// Get marks object excluding the user's deleted mark
-				const { [locals.discordMember.id]: _, ...otherMarks } = marks[day]
-				if (Object.values(otherMarks).length > 0) {
-					marks[day] = otherMarks
-				} else {
-					delete marks[day] // Delete date entirely if no other marks left
-				}
+		if (!formData.has('mark')) throw 'Request invalid, missing "mark" form data'
+		const doMark = JSON.parse(formData.get('mark') as string)
+		const YYYYMMDD = formData.get('day') as string
+		const marks = [...getData().marks]
+		if (doMark) {
+			const existingMark = marks.find(
+				(m) => m.userID === userID && m.YYYYMMDD === YYYYMMDD
+			)
+			if (!existingMark) {
+				marks.push({ YYYYMMDD, userID, timestamp: Date.now() })
+				modifyData({ marks })
 			}
-			modifyData({ marks })
 		} else {
-			const userMarks = JSON.parse(formData.get('myMarks') as string) as Record<
-				string,
-				Mark | null
-			>
-			// console.log(userMarks)
-			const marks = { ...getData().marks }
-			for (const [yyyymmdd, mark] of Object.entries(userMarks)) {
-				if (mark) {
-					marks[yyyymmdd] = {
-						...(marks[yyyymmdd] || {}),
-						[locals.discordMember.id]: mark,
-					}
-				} else if (marks[yyyymmdd]) {
-					// Get marks object excluding the user's deleted mark
-					const { [locals.discordMember.id]: _, ...otherMarks } =
-						marks[yyyymmdd]
-					if (Object.values(otherMarks).length > 0) {
-						marks[yyyymmdd] = otherMarks
-					} else {
-						delete marks[yyyymmdd] // Delete date entirely if no other marks left
-					}
-				}
-			}
-			modifyData({ marks })
+			modifyData({
+				marks: marks.filter(
+					(m) => m.userID !== userID || m.YYYYMMDD !== YYYYMMDD
+				),
+			})
 		}
 	},
 	notes: async ({ request, locals }) => {

@@ -2,22 +2,20 @@
 	export let user: WheneverUser
 	export let avatar = false
 	export let mini = false
-	export let mark: Mark | null
+	export let unmarked = false
 	export let markable = false
+	export let note = false
 
 	let imgError = false
 </script>
 
 <div
-	style:border-color={user.color
-		? `#${user.color.toString(16).padStart(6, '0')}`
-		: ''}
-	style:background-color={mark
-		? `#${user.color.toString(16).padStart(6, '0')}`
-		: ''}
+	style:border-color={user.color}
+	style:background-color={unmarked ? '' : user.color}
 	class:avatar
 	class:mini
-	class:unmarked={!mark}
+	class:unmarked
+	class:note
 >
 	{#if avatar}
 		<img
@@ -44,6 +42,15 @@
 		height: 12px;
 		margin: 2px;
 		position: relative;
+	}
+
+	/* TODO: Note indicator; this doesn't look half bad! */
+	div.note:not(.avatar)::before {
+		content: '*';
+		color: #fff;
+		position: relative;
+		top: -9px;
+		right: -4px;
 	}
 
 	div.avatar {

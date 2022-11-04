@@ -34,20 +34,17 @@ export async function getMember(
 ): Promise<DiscordMember | undefined> {
 	await getMembers([userID])
 	const member = discordServer.members.get(userID)
-	return (
-		member && {
-			id: member.id,
-			username: member.username,
-			discriminator: member.discriminator,
-			nick: member.nick,
-			avatarURL: member.avatarURL,
-			color:
-				member.roles // Get color of highest role for member
-					.map((r) => discordServer.roles.get(r))
-					.sort((a, b) => b!.position - a!.position)
-					.find((r) => r!.color !== 0)?.color || 0,
-		}
-	)
+	if (!member) return undefined
+	const discordMember: DiscordMember = {
+		id: member.id,
+		username: member.username,
+		discriminator: member.discriminator,
+		nick: member.nick,
+		avatarURL: member.avatarURL,
+	}
+	const color = getMemberColor(member.roles)
+	if (color) discordMember.color = `#${color.toString(16).padStart(6, '0')}`
+	return discordMember
 }
 
 let fetchingMembers: Promise<void>
@@ -70,14 +67,20 @@ export async function getMembers(
 		// Don't include members not requested
 		if (!userIDs.includes(id)) return
 		members[id] = {
-			color:
-				roles // Get color of highest role for member
-					.map((r) => discordServer.roles.get(r))
-					.sort((a, b) => b!.position - a!.position)
-					.find((r) => r!.color !== 0)?.color || 0,
 			name: nick || username,
 			avatarURL,
 		}
+		const color = getMemberColor(roles)
+		if (color) members[id].color = `#${color.toString(16).padStart(6, '0')}`
 	})
 	return members
+}
+
+function getMemberColor(roles: string[]): number {
+	return (
+		roles // Get color of highest role for member
+			.map((r) => discordServer.roles.get(r))
+			.sort((a, b) => b!.position - a!.position)
+			.find((r) => r!.color !== 0)?.color || 0
+	)
 }

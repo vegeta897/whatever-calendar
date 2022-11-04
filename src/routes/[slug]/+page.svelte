@@ -2,7 +2,7 @@
 	import type { PageData } from './$types'
 	import Calendar from '../../components/Calendar.svelte'
 	import { browser } from '$app/environment'
-	import { weekStart, days } from '$lib/calendar'
+	import { weekStart } from '$lib/calendar'
 	import { serialize } from 'cookie'
 
 	export let data: PageData
@@ -23,9 +23,7 @@
 	}
 </script>
 
-<section
-	style="--color-user:#{discordMember.color.toString(16).padStart(6, '0')};"
->
+<section style="--color-user: {discordMember.color || 'var(--color-theme-1)'};">
 	<div class="header">
 		<img width="24px" alt="{username}'s avatar" src={discordMember.avatarURL} />
 		<span class="username">{username}</span><a

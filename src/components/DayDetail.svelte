@@ -12,15 +12,16 @@
 	import { enhance } from '$app/forms'
 
 	export let day: CalendarDay
-	export let marks: Record<string, Mark>
-	export let myMark: Mark | null
+	export let marks: Mark[]
+
+	const myUserID = $page.data.discordMember!.id
+
+	$: myMark = marks.find((mark) => mark.userID === myUserID)
+	$: users = $page.data.users!
+	$: otherMarkCount = marks.length - (myMark ? 1 : 0)
 
 	$: rightAlignDay = day.weekday === ($weekStart + 6) % 7
 	$: leftAlignDay = day.weekday === $weekStart
-
-	const myUserID = $page.data.discordMember!.id
-	$: users = $page.data.users!
-	$: otherMarkCount = Object.keys(marks).length
 
 	let newNote: string
 	let saving = false
@@ -80,16 +81,16 @@
 				<Dot
 					user={users[myUserID]}
 					avatar={true}
-					mark={myMark}
+					unmarked={!myMark}
 					markable={true}
 				/>
 				{#if myMark}<span>{users[myUserID].name}</span>
 				{:else}<span>Add me</span>{/if}
 			</button>
 		</form>
-		{#each Object.entries(marks) as [userID, mark]}
+		{#each marks.filter((m) => m !== myMark) as { userID } (userID)}
 			<div class="user-mark">
-				<Dot user={users[userID]} avatar={true} {mark} />
+				<Dot user={users[userID]} avatar={true} />
 				<span>{users[userID].name}</span>
 			</div>
 		{/each}
