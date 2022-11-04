@@ -34,7 +34,8 @@
 	let element: HTMLElement
 	onMount(() => {
 		setTimeout(() => {
-			element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+			element &&
+				element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 		}, 100) // Delay matches duration of fly transition
 	})
 </script>

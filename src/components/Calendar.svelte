@@ -53,23 +53,13 @@
 
 	$: preDays = getPreDays($days, $today, $weekStart)
 
-	$: {
-		if (browser) {
-			if (!daySelected || daySelected.date < $today) {
-				gotoSlug('calendar')
-			} else if (daySelected) {
-				gotoSlug(daySelected.YYYYMMDD)
-			}
-		}
-	}
-
-	function gotoSlug(slug: string) {
-		if ($page.params.slug === slug) return
-		goto(`/${slug}`, { noscroll: true, replaceState: true })
+	function dayOnClick(day: CalendarDay) {
+		const newSlug = day === daySelected ? 'calendar' : day.YYYYMMDD
+		goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 	}
 </script>
 
-<!-- TODO: Fix header to top of page when scrolled out of view -->
+<!-- TODO: Affix header to top of page when scrolled out of view -->
 <div class="header">
 	<div>
 		<label for="week-start">Start of week:</label>
@@ -92,7 +82,7 @@
 			{@const dayMarks = notMyMarks[day.YYYYMMDD] || {}}
 			{@const myMark = myMarks[day.YYYYMMDD]}
 			{#if day.date >= $today}
-				<Day {day} bind:daySelected {dayMarks} {myMark} />
+				<Day {day} bind:daySelected {dayMarks} {myMark} onClick={dayOnClick} />
 			{/if}
 			{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
 				<DayDetail

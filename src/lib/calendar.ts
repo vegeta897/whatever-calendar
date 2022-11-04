@@ -65,6 +65,8 @@ export function getPreDays(
 
 const updateToday = () => {
 	const now = new Date()
+	// TODO: Make this follow one time-zone for all clients,
+	// otherwise people will see days go inactive at different times
 	if (now.getDate() !== get(today).getDate()) {
 		now.setHours(0, 0, 0, 0)
 		today.set(now)

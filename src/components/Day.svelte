@@ -9,6 +9,7 @@
 	export let daySelected: CalendarDay | null
 	export let dayMarks: Record<string, Mark>
 	export let myMark: Mark | null
+	export let onClick: (day: CalendarDay) => void
 
 	const myUserID = $page.data.discordMember!.id
 	$: users = $page.data.users!
@@ -27,7 +28,7 @@
 	class:selected={day === daySelected}
 	class:weekend={day.weekend}
 	class:first-column={day.weekday === $weekStart}
-	on:click={() => (daySelected = day === daySelected ? null : day)}
+	on:click={() => onClick(day)}
 >
 	{#if sameDay(day.date, $today) || day.day === 1}
 		{#if day.day === 1 && day.weekday !== $weekStart}

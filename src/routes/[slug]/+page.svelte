@@ -33,7 +33,7 @@
 			data-sveltekit-prefetch="off">Log out</a
 		>
 	</div>
-	<Calendar daySelected={$days.find((d) => d.YYYYMMDD === data.day)} />
+	<Calendar daySelected={data.day} />
 </section>
 
 <style>
