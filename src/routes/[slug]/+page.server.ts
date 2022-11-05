@@ -92,7 +92,6 @@ export const actions: Actions = {
 		const deletedNote = notes.find(
 			(n) => `${n.YYYYMMDD}:${n.userID}:${n.timestamp}` === noteID
 		)
-		console.log('note to delete:', deletedNote)
 		if (!deletedNote) {
 			throw error(400, {
 				name: 'Oops...',

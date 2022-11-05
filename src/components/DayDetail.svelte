@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition'
 	import { page } from '$app/stores'
 	import Dot from './Dot.svelte'
+	import Notes from './Notes.svelte'
 	import {
 		MONTH_NAMES,
 		WEEKDAY_NAMES,
@@ -24,14 +25,7 @@
 	$: rightAlignDay = day.weekday === ($weekStart + 6) % 7
 	$: leftAlignDay = day.weekday === $weekStart
 
-	let addingNote = false
-	let noteText: string
 	let saving = false
-	let noteTextArea: HTMLTextAreaElement
-
-	$: if (noteTextArea) {
-		noteTextArea.focus()
-	}
 
 	$: cornerStyle = rightAlignDay
 		? 'border-top-right-radius: 0;'
@@ -109,56 +103,7 @@
 		</div>
 	</div>
 	<div class="column">
-		<div class="notes">
-			<ol>
-				{#each notes as note (note.userID + note.timestamp)}
-					{@const user = users[note.userID]}
-					<li>
-						<span class="username" style="color: {user.color}">{user.name}</span
-						>
-						<span class="note-text">{note.text}</span>
-						{#if note.userID === myUserID}
-							<form method="POST" action="?/deleteNote" use:enhance>
-								<input
-									name="noteID"
-									hidden
-									value={`${day.YYYYMMDD}:${note.userID}:${note.timestamp}`}
-								/>
-								<button>Delete Note</button>
-							</form>
-						{/if}
-					</li>
-				{/each}
-			</ol>
-			{#if !addingNote}
-				<button on:click={() => (addingNote = true)}>Add Note</button>
-			{/if}
-			{#if addingNote}
-				<form
-					class="add-note"
-					method="POST"
-					action="?/addNote"
-					use:enhance={() => {
-						// unsaved = false
-						// saving = true
-						return async ({ update }) => {
-							// saving = false
-							noteText = ''
-							addingNote = false
-							update()
-						}
-					}}
-				>
-					<input name="day" hidden value={day.YYYYMMDD} />
-					<textarea
-						name="noteText"
-						bind:value={noteText}
-						bind:this={noteTextArea}
-					/>
-					<button disabled={!noteText}>Save Note</button>
-				</form>
-			{/if}
-		</div>
+		<Notes {notes} {day} />
 		<!-- TODO: Show user notes, and textbox for user to type a note 
 	 Store notes separately from marks. A note can have an icon like X or ?
    shows alongside marks on calendar days in the user's color -->
@@ -211,7 +156,7 @@
 		color: var(--color-text);
 		background: rgba(0, 0, 0, 0.4);
 		padding: 7px 9px;
-		margin: 0 6px 4px 0;
+		margin: 0 6px 6px 0;
 		border-radius: 12px;
 		transition: background-color 50ms ease-out;
 	}
@@ -231,82 +176,5 @@
 
 	.my-mark:not(.marked):hover span {
 		color: #fff;
-	}
-
-	.notes {
-		width: 100%;
-	}
-
-	.notes ol {
-		list-style: none;
-		margin: 12px 0;
-		padding: 0;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.notes li {
-		width: 100%;
-		background: rgba(255, 255, 255, 0.06);
-		border-radius: 16px;
-		padding: 8px 40px 8px 20px;
-		margin-bottom: 8px;
-		box-sizing: border-box;
-		position: relative;
-	}
-
-	.notes li .username {
-		font-weight: 700;
-		margin-right: 5px;
-	}
-
-	.notes li .note-text {
-		white-space: pre-wrap;
-	}
-
-	.notes li form {
-		width: 0;
-		height: 0;
-		margin: 0;
-	}
-
-	.notes li button {
-		font-size: 0;
-		padding: 0;
-		width: 24px;
-		height: 24px;
-		position: absolute;
-		right: 8px;
-		top: 6px;
-		background: none;
-		border: none;
-		cursor: pointer;
-		overflow: hidden;
-	}
-
-	.notes li button:after {
-		font-size: 32px;
-		line-height: 24px;
-		height: 24px;
-		color: rgba(255, 255, 255, 0.2);
-		transition: color 100ms ease-out;
-		content: '\00d7';
-	}
-
-	.notes li button:hover:after {
-		color: rgba(255, 255, 255, 0.8);
-	}
-
-	.notes form.add-note {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.notes textarea {
-		font-size: 1em;
-		min-height: 60px;
-	}
-
-	.notes button {
 	}
 </style>
