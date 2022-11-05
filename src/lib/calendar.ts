@@ -8,6 +8,9 @@ const END_MONTH = 12
 const _today = new Date()
 _today.setHours(0, 0, 0, 0)
 
+// TODO: This only runs once when the server starts, instead of on each request
+// So "today" and "days" remains the same as time goes on
+// Need to refresh on each request! Put this in Calendar.svelte
 export const today = writable<Date>(_today)
 export const days = readable<CalendarDay[]>(getDays())
 export const weekStart = writable<0 | 1>(0)

@@ -34,6 +34,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Whenever{daySelected ? ` ${daySelected.YYYYMMDD}` : ''}</title>
+</svelte:head>
 <!-- TODO: Affix header to top of page when scrolled out of view -->
 <div class="header">
 	<div>
