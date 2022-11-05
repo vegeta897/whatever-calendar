@@ -14,8 +14,8 @@
 	import { goto } from '$app/navigation'
 	import DayDetail from './DayDetail.svelte'
 
-	const myUserID = $page.data.discordMember!.id
 	$: marks = $page.data.marks!
+	$: notes = $page.data.notes!
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
@@ -62,6 +62,7 @@
 				<DayDetail
 					day={daySelected}
 					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
+					notes={notes.filter((n) => n.YYYYMMDD === daySelected?.YYYYMMDD)}
 				/>
 			{/if}
 		{/each}

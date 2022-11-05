@@ -23,10 +23,9 @@
 <a
 	href="/{day === daySelected ? 'calendar' : day.YYYYMMDD}"
 	data-sveltekit-prefetch="off"
-	on:click={(e) => {
+	on:click|preventDefault={() => {
 		onClick(day)
 		hover = false
-		e.preventDefault() // Progresive enhancement
 	}}
 >
 	<li

@@ -97,6 +97,10 @@ button {
 	font-family: inherit;
 }
 
+textarea {
+	font-family: var(--font-mono);
+}
+
 button:focus:not(:focus-visible) {
 	outline: none;
 }

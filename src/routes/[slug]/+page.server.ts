@@ -16,20 +16,20 @@ export const load: PageServerLoad = ({ locals, params }) => {
 	// return { day: params.slug, server: true }
 }
 
+// TODO: Validate incoming data
+// TODO: Insert await sleep to test slow server UX
 export const actions: Actions = {
-	marks: async ({ request, locals }) => {
-		console.log('marks action received!')
-		if (!locals.discordMember) {
-			throw error(401, {
+	mark: async ({ request, locals }) => {
+		console.log('mark action received!')
+		checkAuth(locals.discordMember)
+		const formData = await request.formData()
+		if (!formData.has('mark')) {
+			throw error(400, {
 				name: 'Oops...',
-				message: 'Your session was lost, please connect to Discord again',
+				message: 'Request invalid, missing "mark" form data',
 			})
 		}
 		const userID = locals.discordMember.id
-		// TODO: Validate incoming data
-		// TODO: Insert await sleep to test slow server UX
-		const formData = await request.formData()
-		if (!formData.has('mark')) throw 'Request invalid, missing "mark" form data'
 		const doMark = JSON.parse(formData.get('mark') as string)
 		const YYYYMMDD = formData.get('day') as string
 		const marks = [...getData().marks]
@@ -49,13 +49,73 @@ export const actions: Actions = {
 			})
 		}
 	},
-	notes: async ({ request, locals }) => {
-		console.log('notes action received!')
-		if (!locals.discordMember) {
-			throw error(401, {
+	addNote: async ({ request, locals }) => {
+		console.log('addNote action received!')
+		checkAuth(locals.discordMember)
+		const formData = await request.formData()
+		if (!formData.has('noteText')) {
+			throw error(400, {
 				name: 'Oops...',
-				message: 'Your session was lost, please connect to Discord again',
+				message: 'Request invalid, missing "noteText" form data',
 			})
 		}
+		const userID = locals.discordMember.id
+		const noteText = formData.get('noteText') as string
+		const YYYYMMDD = formData.get('day') as string
+		const notes = [...getData().notes]
+		modifyData({
+			notes: [
+				...notes,
+				{
+					YYYYMMDD,
+					userID,
+					text: noteText.trim(),
+					timestamp: Date.now(),
+					lastEditTimestamp: Date.now(),
+				},
+			],
+		})
 	},
+	deleteNote: async ({ request, locals }) => {
+		console.log('deleteNote action received!')
+		checkAuth(locals.discordMember)
+		const formData = await request.formData()
+		if (!formData.has('noteID')) {
+			throw error(400, {
+				name: 'Oops...',
+				message: 'Request invalid, missing "noteID" form data',
+			})
+		}
+		const userID = locals.discordMember.id
+		const noteID = formData.get('noteID') as string
+		const notes = [...getData().notes]
+		const deletedNote = notes.find(
+			(n) => `${n.YYYYMMDD}:${n.userID}:${n.timestamp}` === noteID
+		)
+		console.log('note to delete:', deletedNote)
+		if (!deletedNote) {
+			throw error(400, {
+				name: 'Oops...',
+				message: 'It looks like that note was already deleted!',
+			})
+		}
+		if (deletedNote.userID !== userID) {
+			throw error(401, {
+				name: 'Oops...',
+				message: 'You are not authorized to delete that note!',
+			})
+		}
+		modifyData({ notes: notes.filter((n) => n !== deletedNote) })
+	},
+}
+
+function checkAuth(
+	discordMember?: DiscordMember
+): asserts discordMember is DiscordMember {
+	if (!discordMember) {
+		throw error(401, {
+			name: 'Oops...',
+			message: 'Your session was lost, please connect to Discord again',
+		})
+	}
 }
