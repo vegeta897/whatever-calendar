@@ -4,6 +4,7 @@
 	import { crossfade } from 'svelte/transition'
 	import Dot from './Dot.svelte'
 	import { page } from '$app/stores'
+	import { browser } from '$app/environment'
 
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
@@ -13,71 +14,87 @@
 	$: users = $page.data.users!
 
 	let hover = false
+	let noJS = !browser
 
 	// Crossfading expanded day views
 	const [send, receive] = crossfade({ duration: 50 })
 </script>
 
-<li
-	class="day"
-	on:mouseenter={() => (hover = true)}
-	on:mouseleave={() => (hover = false)}
-	class:expanded={hover && day !== daySelected}
-	class:selected={day === daySelected}
-	class:weekend={day.weekend}
-	class:first-column={day.weekday === $weekStart}
-	on:click={() => onClick(day)}
+<a
+	href="/{day === daySelected ? 'calendar' : day.YYYYMMDD}"
+	data-sveltekit-prefetch="off"
+	on:click={() => {
+		onClick(day)
+		hover = false
+		return false // Progresive enhancement
+	}}
 >
-	{#if sameDay(day.date, $today) || day.day === 1}
-		{#if day.day === 1 && day.weekday !== $weekStart}
-			<div class="month-divider" />
+	<li
+		class="day"
+		on:mouseenter={() => (hover = day !== daySelected)}
+		on:mouseleave={() => (hover = false)}
+		class:selected={day === daySelected}
+		class:weekend={day.weekend}
+		class:first-column={day.weekday === $weekStart}
+		class:noJS
+	>
+		{#if sameDay(day.date, $today) || day.day === 1}
+			{#if day.day === 1 && day.weekday !== $weekStart}
+				<div class="month-divider" />
+			{/if}
+			<div class="month-label">{MONTH_ABBREV[day.month]}</div>
 		{/if}
-		<div class="month-label">{MONTH_ABBREV[day.month]}</div>
-	{/if}
-	<div class="day-date" class:day-today={sameDay(day.date, $today)}>
-		{day.day}
-	</div>
-	<div class="day-marks">
-		{#if hover && day !== daySelected}
-			<div
-				class="day-marks-large"
-				class:four-marks={dayMarks.length === 4}
-				class:six-marks={dayMarks.length === 6}
-				in:send={{ key: day.YYYYMMDD }}
-				out:receive={{ key: day.YYYYMMDD }}
-			>
-				{#each dayMarks as mark, i (mark.userID)}<Dot
-						avatar={true}
-						mini={dayMarks.length >= 7}
-						user={users[mark.userID]}
-					/>{/each}
-			</div>
-		{:else}
-			<div
-				class="day-marks-small"
-				class:six-marks={dayMarks.length >= 5}
-				class:eight-marks={dayMarks.length >= 7}
-				class:ten-marks={dayMarks.length >= 9}
-				class:twelve-marks={dayMarks.length >= 11}
-				in:send={{ key: day.YYYYMMDD }}
-				out:receive={{ key: day.YYYYMMDD }}
-			>
-				{#each dayMarks as mark (mark.userID)}
-					<Dot user={users[mark.userID]} />
-				{/each}
-			</div>
-		{/if}
-	</div>
-</li>
+		<div class="day-date" class:day-today={sameDay(day.date, $today)}>
+			{day.day}
+		</div>
+		<div class="day-marks">
+			{#if hover || noJS}
+				<div
+					class="day-marks-large"
+					class:four-marks={dayMarks.length === 4}
+					in:send={{ key: day.YYYYMMDD }}
+					out:receive={{ key: day.YYYYMMDD }}
+				>
+					{#each dayMarks as mark, i (mark.userID)}<Dot
+							avatar={true}
+							mini={dayMarks.length >= 7}
+							user={users[mark.userID]}
+						/>{/each}
+				</div>
+			{/if}
+			{#if !hover || noJS}
+				<div
+					class="day-marks-small"
+					class:six-marks={dayMarks.length >= 5}
+					class:eight-marks={dayMarks.length >= 7}
+					class:ten-marks={dayMarks.length >= 9}
+					class:twelve-marks={dayMarks.length >= 11}
+					in:send={{ key: day.YYYYMMDD }}
+					out:receive={{ key: day.YYYYMMDD }}
+				>
+					{#each dayMarks as mark (mark.userID)}
+						<Dot user={users[mark.userID]} />
+					{/each}
+				</div>
+			{/if}
+		</div>
+	</li>
+</a>
 
 <style>
+	a {
+		color: var(--color-text);
+		display: block;
+		width: calc(100%);
+		height: 116px;
+	}
+
 	.day {
 		width: calc(100%);
 		height: 116px;
 		box-sizing: border-box;
 		border-radius: 20px;
 		border: 3px solid transparent;
-		/* background-color: rgba(255, 255, 255, 0.06); */
 		transition: background-color 50ms ease-out, color 50ms ease-out,
 			height 50ms ease-out, margin-bottom 50ms ease-out,
 			border-radius 50ms ease-out;
@@ -85,9 +102,7 @@
 		touch-action: manipulation;
 		display: flex;
 		flex-direction: column;
-		/* justify-content: space-between; */
 		align-items: center;
-		cursor: pointer;
 		user-select: none;
 	}
 
@@ -96,7 +111,6 @@
 	}
 
 	.day.selected {
-		/* border-color: var(--color-user); */
 		background: rgba(0, 0, 0, 0.25);
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
@@ -104,7 +118,7 @@
 		margin-bottom: -8px;
 	}
 
-	.day.expanded {
+	.day:not(.selected):hover {
 		background-color: rgba(0, 0, 0, 0.25);
 		color: rgba(255, 255, 255, 0.9);
 		transition: none;
@@ -118,7 +132,7 @@
 		transition: opacity 50ms ease-out;
 	}
 
-	.day:not(.selected):not(.expanded) .month-divider {
+	.day:not(.selected) .month-divider {
 		position: absolute;
 		height: 55px;
 		width: 3px;
@@ -129,9 +143,9 @@
 		pointer-events: none;
 		transition: opacity 50ms ease-out;
 	}
-	.day.expanded .month-label,
+	.day:hover .month-label,
 	.day.selected .month-divider,
-	.day.expanded .month-divider {
+	.day:hover .month-divider {
 		opacity: 0;
 	}
 
@@ -146,12 +160,9 @@
 		transition: transform 50ms ease-out;
 	}
 
-	.day.expanded .day-date {
-		/* padding-top: 0; */
+	.day:not(.selected):hover .day-date {
 		transform: translateY(-32px);
 	}
-
-	/* TODO: Don't animate dots, just fade/swipe between expanded and normal views */
 
 	.day-marks {
 		display: grid;
@@ -182,6 +193,18 @@
 		transform: translateY(-10px);
 	}
 
+	.day.noJS .day-marks-large {
+		display: none;
+	}
+
+	.day.noJS:not(.selected):hover .day-marks-small {
+		display: none;
+	}
+
+	.day.noJS:not(.selected):hover .day-marks-large {
+		display: flex;
+	}
+
 	.day-marks-small.six-marks {
 		width: 48px;
 	}
@@ -200,9 +223,5 @@
 
 	.day-marks-large.four-marks {
 		width: 60px;
-	}
-
-	.day-marks-large.six-marks {
-		width: 90px;
 	}
 </style>

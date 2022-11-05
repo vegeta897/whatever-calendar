@@ -14,3 +14,4 @@
 
 - Create a dedicated bot (stop using D-Bot's token)
 - Media queries for mobile
+- Use JS only as progressive enhancement
