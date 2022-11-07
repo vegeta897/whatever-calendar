@@ -3,12 +3,11 @@ import { readable, writable } from 'svelte/store'
 import { DateTime } from 'luxon'
 import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
-const END_YEAR = 2022
-const END_MONTH = 12
+const FINAL_DAY = DateTime.fromObject({ year: 2022, month: 12 })
+	.endOf('month')
+	.startOf('day')
 
-// TODO: This only runs once when the server starts, instead of on each request
-// So "today" and "days" remains the same as time goes on
-// Need to refresh on each request! Put this in Calendar.svelte
+// These get overwritten in Calendar.svelte; is there a better way to do this?
 export const today = writable<DateTime>(
 	DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
 )
@@ -31,11 +30,6 @@ function getDays(): CalendarDay[] {
 	// This takes less than 1ms, better to run on client than transfer the data
 	const days: CalendarDay[] = []
 	const startDay = DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day')
-	const finalDay = startDay.set({
-		year: END_YEAR,
-		month: END_MONTH + 1,
-		day: 0,
-	})
 	let dayLooper = startDay.plus(0)
 	do {
 		const day: CalendarDay = {
@@ -48,7 +42,7 @@ function getDays(): CalendarDay[] {
 		}
 		days.push(day)
 		dayLooper = dayLooper.plus({ days: 1 })
-	} while (dayLooper <= finalDay)
+	} while (dayLooper <= FINAL_DAY)
 	return days
 }
 
