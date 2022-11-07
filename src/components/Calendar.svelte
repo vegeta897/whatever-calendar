@@ -7,6 +7,7 @@
 		days,
 		getPreDays,
 		today,
+		now,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { page } from '$app/stores'
@@ -17,6 +18,7 @@
 	import { onDestroy } from 'svelte'
 	import { browser } from '$app/environment'
 	import { DateTime } from 'luxon'
+	import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
 	$: marks = $page.data.marks!
 	$: notes = $page.data.notes!
@@ -37,17 +39,18 @@
 		goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 	}
 
-	const _today = DateTime.now()
-		.setZone('America/New_York')
-		.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-	today.set(_today)
-	const updateToday = () => {
-		const now = DateTime.now().setZone('America/New_York')
-		if (!now.hasSame($today, 'day')) {
-			today.set(now.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }))
-		}
+	today.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day'))
+	now.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('minute'))
+	if (browser) {
+		onInterval(() => {
+			const _now = DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
+			if (!_now.hasSame($now, 'minute')) now.set(_now.startOf('minute'))
+			if (!_now.hasSame($today, 'day')) today.set(_now.startOf('day'))
+		}, onDestroy)
+		today.subscribe((_today) => {
+			if (daySelected && daySelected.datetime < _today) dayOnClick(daySelected)
+		})
 	}
-	if (browser) onInterval(updateToday, onDestroy)
 </script>
 
 <svelte:head>
@@ -62,6 +65,12 @@
 			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
+	</div>
+	<div class="clock">
+		<time datetime={$now.toISO({ includeOffset: false })}>
+			{$now.toFormat('f')}
+		</time>
+		{$now.offsetNameLong}
 	</div>
 </div>
 <div class="calendar">
@@ -100,6 +109,18 @@
 
 	.header label {
 		margin-right: 0.2em;
+	}
+
+	.clock {
+		color: rgba(255, 255, 255, 0.5);
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.clock time {
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 1.1em;
 	}
 
 	.calendar {

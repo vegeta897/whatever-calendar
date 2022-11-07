@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { enhance } from '$app/forms'
+	import { DateTime, Duration } from 'luxon'
 	import type { CalendarDay } from '$lib/calendar'
 
 	export let day: CalendarDay
@@ -15,17 +16,9 @@
 	let noteAddForm: HTMLFormElement
 
 	function relativeTime(timestamp: number) {
-		const sec = Math.floor((Date.now() - timestamp) / 1000)
-		if (sec < 30) return 'just now'
-		const minutes = Math.round(sec / 60)
-		if (minutes === 1) return `${minutes} minute ago`
-		if (minutes < 60) return `${minutes} minutes ago`
-		const hours = Math.round(sec / 60 / 60)
-		if (hours === 1) return `${hours} hour ago`
-		if (hours < 24) return `${hours} hours ago`
-		const days = Math.round(sec / 60 / 60 / 24)
-		if (days === 1) return `${days} day ago`
-		return `${days} days ago`
+		const datetime = DateTime.fromMillis(timestamp)
+		if (datetime.diffNow('minutes').as('minutes') > -1) return 'just now'
+		return datetime.toRelative({ unit: ['days', 'hours', 'minutes'] })
 	}
 </script>
 

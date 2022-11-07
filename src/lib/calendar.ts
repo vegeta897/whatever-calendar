@@ -1,16 +1,20 @@
 import { browser } from '$app/environment'
 import { readable, writable } from 'svelte/store'
 import { DateTime } from 'luxon'
+import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
 const END_YEAR = 2022
 const END_MONTH = 12
 
-const _today = DateTime.now().setZone('America/New_York')
-
 // TODO: This only runs once when the server starts, instead of on each request
 // So "today" and "days" remains the same as time goes on
 // Need to refresh on each request! Put this in Calendar.svelte
-export const today = writable<DateTime>(_today)
+export const today = writable<DateTime>(
+	DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
+)
+export const now = writable<DateTime>(
+	DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
+)
 export const days = readable<CalendarDay[]>(getDays())
 export const weekStart = writable<7 | 1>(1)
 
@@ -20,19 +24,13 @@ export type CalendarDay = {
 	month: number
 	year: number
 	weekday: number
-	weekend: boolean
 	YYYYMMDD: string
 }
-
-// Experimenting with dates based on the "oldest" time zone
-// const dayTest = new Date('2022-11-05T00:00:00.000-12:00')
 
 function getDays(): CalendarDay[] {
 	// This takes less than 1ms, better to run on client than transfer the data
 	const days: CalendarDay[] = []
-	const startDay = DateTime.now()
-		.setZone('America/New_York')
-		.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+	const startDay = DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day')
 	const finalDay = startDay.set({
 		year: END_YEAR,
 		month: END_MONTH + 1,
@@ -46,10 +44,7 @@ function getDays(): CalendarDay[] {
 			month: dayLooper.month,
 			year: dayLooper.year,
 			weekday: dayLooper.weekday,
-			weekend: [0, 6].includes(dayLooper.day),
-			YYYYMMDD: `${zeroPad(dayLooper.year)}-${zeroPad(
-				dayLooper.month
-			)}-${zeroPad(dayLooper.day)}`,
+			YYYYMMDD: dayLooper.toFormat('yyyy-LL-dd'),
 		}
 		days.push(day)
 		dayLooper = dayLooper.plus({ days: 1 })

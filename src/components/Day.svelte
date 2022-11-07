@@ -33,7 +33,6 @@
 		on:mouseenter={() => (hover = day !== daySelected)}
 		on:mouseleave={() => (hover = false)}
 		class:selected={day === daySelected}
-		class:weekend={day.weekend}
 		class:first-column={day.weekday === $weekStart}
 		class:noJS
 	>
