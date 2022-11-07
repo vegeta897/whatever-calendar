@@ -17,7 +17,7 @@
 
 	function relativeTime(timestamp: number) {
 		const datetime = DateTime.fromMillis(timestamp)
-		if (datetime.diffNow('minutes').as('minutes') > -1) return 'just now'
+		if (datetime.diffNow().as('minutes') > -1) return 'just now'
 		return datetime.toRelative({ unit: ['days', 'hours', 'minutes'] })
 	}
 </script>
@@ -82,7 +82,7 @@
 				}
 			}}
 		/>
-		<button disabled={saving || !noteText}>Save Note</button>
+		<button disabled={saving || !noteText}>Post</button>
 	</form>
 </div>
 
@@ -161,6 +161,7 @@
 	.notes form.add-note {
 		display: flex;
 		flex-direction: column;
+		align-items: flex-start;
 	}
 
 	.notes textarea {
@@ -171,15 +172,33 @@
 		border: none;
 		padding: 8px 20px;
 		font-size: 1em;
-		min-height: 60px;
+		min-height: 76px;
 		resize: vertical;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.notes textarea:focus {
 		background: rgba(255, 255, 255, 0.02);
-		outline: 1px solid rgba(255, 255, 255, 0.1);
+		outline: 2px solid rgba(255, 255, 255, 0.1);
 	}
 
-	.notes button {
+	.notes form.add-note button {
+		cursor: pointer;
+		margin-top: 8px;
+		color: var(--color-text);
+		border-radius: 16px;
+		padding: 8px 20px;
+		background: rgba(0, 0, 0, 0.8);
+		border: none;
+	}
+
+	.notes form.add-note button:hover {
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.notes form.add-note button:disabled {
+		color: rgba(255, 255, 255, 0.35);
+		background: rgba(0, 0, 0, 0.3);
 	}
 </style>
