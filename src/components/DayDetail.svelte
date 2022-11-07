@@ -3,12 +3,7 @@
 	import { page } from '$app/stores'
 	import Dot from './Dot.svelte'
 	import Notes from './Notes.svelte'
-	import {
-		MONTH_NAMES,
-		WEEKDAY_NAMES,
-		weekStart,
-		type CalendarDay,
-	} from '$lib/calendar'
+	import { weekStart, type CalendarDay } from '$lib/calendar'
 	import { onMount } from 'svelte'
 	import { enhance } from '$app/forms'
 
@@ -22,7 +17,7 @@
 	$: users = $page.data.users!
 	$: otherMarkCount = marks.length - (myMark ? 1 : 0)
 
-	$: rightAlignDay = day.weekday === ($weekStart + 6) % 7
+	$: rightAlignDay = day.weekday === ($weekStart === 1 ? 7 : 6)
 	$: leftAlignDay = day.weekday === $weekStart
 
 	let saving = false
@@ -50,8 +45,8 @@
 >
 	<div class="column">
 		<h3 class="day-heading">
-			{WEEKDAY_NAMES[day.weekday]},
-			{MONTH_NAMES[day.month]}
+			{day.datetime.weekdayLong},
+			{day.datetime.monthLong}
 			{day.day}
 		</h3>
 		<h4>

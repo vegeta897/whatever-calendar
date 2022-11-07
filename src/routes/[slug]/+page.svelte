@@ -10,7 +10,7 @@
 	const discordMember = data.discordMember!
 	const username = discordMember.nick || discordMember.username
 
-	weekStart.set(data.weekStart || 0)
+	weekStart.set(data.weekStart || 7)
 
 	if (browser) {
 		console.log(data)

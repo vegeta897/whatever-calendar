@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CalendarDay } from '$lib/calendar'
-	import { weekStart, sameDay, today, MONTH_ABBREV } from '$lib/calendar'
+	import { weekStart, today } from '$lib/calendar'
 	import { crossfade } from 'svelte/transition'
 	import Dot from './Dot.svelte'
 	import { page } from '$app/stores'
@@ -37,13 +37,13 @@
 		class:first-column={day.weekday === $weekStart}
 		class:noJS
 	>
-		{#if sameDay(day.date, $today) || day.day === 1}
+		{#if $today.hasSame(day.datetime, 'day') || day.day === 1}
 			{#if day.day === 1 && day.weekday !== $weekStart}
 				<div class="month-divider" />
 			{/if}
-			<div class="month-label">{MONTH_ABBREV[day.month]}</div>
+			<div class="month-label">{day.datetime.monthShort}</div>
 		{/if}
-		<div class="day-date" class:day-today={sameDay(day.date, $today)}>
+		<div class="day-date" class:day-today={$today.hasSame(day.datetime, 'day')}>
 			{day.day}
 		</div>
 		<div class="day-marks">

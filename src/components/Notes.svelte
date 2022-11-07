@@ -2,7 +2,6 @@
 	import { page } from '$app/stores'
 	import { enhance } from '$app/forms'
 	import type { CalendarDay } from '$lib/calendar'
-	import { attr } from 'svelte/internal'
 
 	export let day: CalendarDay
 	export let notes: Note[]
@@ -14,10 +13,6 @@
 	let noteText: string
 	let noteTextArea: HTMLTextAreaElement
 	let noteAddForm: HTMLFormElement
-
-	$: if (noteTextArea) {
-		noteTextArea.focus()
-	}
 
 	function relativeTime(timestamp: number) {
 		const sec = Math.floor((Date.now() - timestamp) / 1000)
@@ -80,12 +75,12 @@
 			disabled={saving}
 			bind:value={noteText}
 			bind:this={noteTextArea}
-			placeholder="Add your note"
+			placeholder="Add a note"
 			on:focus={() => {
 				noteTextArea.setAttribute('placeholder', '')
 			}}
 			on:blur={() => {
-				noteTextArea.setAttribute('placeholder', 'Add your note')
+				noteTextArea.setAttribute('placeholder', 'Add a note')
 			}}
 			on:keydown={(e) => {
 				if (e.target && e.code === 'Enter' && !e.shiftKey) {
@@ -181,7 +176,7 @@
 		color: var(--color-text);
 		border-radius: 16px;
 		border: none;
-		padding: 8px 40px 8px 20px;
+		padding: 8px 20px;
 		font-size: 1em;
 		min-height: 60px;
 		resize: vertical;

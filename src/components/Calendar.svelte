@@ -13,6 +13,10 @@
 	import Day from './Day.svelte'
 	import { goto } from '$app/navigation'
 	import DayDetail from './DayDetail.svelte'
+	import { onInterval } from '$lib/interval'
+	import { onDestroy } from 'svelte'
+	import { browser } from '$app/environment'
+	import { DateTime } from 'luxon'
 
 	$: marks = $page.data.marks!
 	$: notes = $page.data.notes!
@@ -32,6 +36,18 @@
 		const newSlug = day === daySelected ? 'calendar' : day.YYYYMMDD
 		goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 	}
+
+	const _today = DateTime.now()
+		.setZone('America/New_York')
+		.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+	today.set(_today)
+	const updateToday = () => {
+		const now = DateTime.now().setZone('America/New_York')
+		if (!now.hasSame($today, 'day')) {
+			today.set(now.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }))
+		}
+	}
+	if (browser) onInterval(updateToday, onDestroy)
 </script>
 
 <svelte:head>
@@ -43,7 +59,7 @@
 		<label for="week-start">Start of week:</label>
 		<select id="week-start" bind:value={$weekStart}>
 			<!-- Use selected property to show correct option on intial render -->
-			<option selected={$weekStart === 0} value={0}>{sundayName}</option>
+			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
 	</div>
@@ -58,10 +74,10 @@
 			</li>{/each}
 		{#each $days as day, i (day.YYYYMMDD)}
 			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
-			{#if day.date >= $today}
+			{#if day.datetime >= $today}
 				<Day {day} bind:daySelected {dayMarks} onClick={dayOnClick} />
 			{/if}
-			{#if daySelected && day.weekday === ($weekStart + 7 - 1) % 7 && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
+			{#if daySelected && day.weekday === ($weekStart === 1 ? 7 : 6) && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
 				<DayDetail
 					day={daySelected}
 					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}

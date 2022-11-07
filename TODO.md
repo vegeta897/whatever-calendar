@@ -2,12 +2,11 @@
 
 ## Working on
 
-- ~~New data structure for marks/notes~~
+- Use US Eastern time-zone for everything
 
 ## High-priority
 
 - Replace Eris with discord.js
-- Handle time-zone differences, specifially America vs. NZ
 - Validate data coming from client
 
 ## Low-priority
