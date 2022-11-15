@@ -1,7 +1,7 @@
 import { dev } from '$app/environment'
 import { days, setCookie } from '$lib/server/cookies'
 import {
-	addSession,
+	addOrRefreshSession,
 	getData,
 	getSession,
 	getWheneverUserIDs,
@@ -34,11 +34,11 @@ const handleSession: Handle = async ({ event, resolve }) => {
 	if (!session) {
 		session = crypto.randomUUID()
 		console.log('no session, generated new:', session)
-		setCookie(event.cookies, 'wec-session', session, { expires: days(30) })
 	} else if (storedSession) {
 		// We have an unexpired discord ID, pass it on
 		event.locals.discordID = storedSession.discordID
 	}
+	setCookie(event.cookies, 'wec-session', session, { expires: days(30) })
 	event.locals.session = session
 	return await resolve(event)
 }
@@ -64,13 +64,10 @@ const handleDiscord: Handle = async ({ event, resolve }) => {
 				username: discordMember.username,
 				discriminator: discordMember.discriminator,
 			}
-			if (newSession) {
-				addSession({
-					sessionID: event.locals.session,
-					discordID: event.locals.discordID,
-					expires: days(14).getTime(),
-				})
-			}
+			addOrRefreshSession({
+				sessionID: event.locals.session,
+				discordID: event.locals.discordID,
+			})
 		}
 	}
 	return await resolve(event)

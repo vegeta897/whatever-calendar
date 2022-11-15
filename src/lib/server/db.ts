@@ -1,3 +1,4 @@
+import { days } from '$lib/server/cookies'
 import { Low, JSONFile } from 'lowdb'
 
 // https://stackoverflow.com/a/59700012/2612679
@@ -10,7 +11,6 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 type DBData = {
 	sessions: Session[]
 	marks: Mark[]
-	notes: Note[]
 }
 
 type Session = Readonly<{
@@ -23,7 +23,7 @@ type Session = Readonly<{
 const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 await db.read()
-db.data ||= { marks: [], notes: [], sessions: [] }
+db.data ||= { marks: [], sessions: [] }
 
 export function getData(): DeepReadonly<DBData> {
 	return db.data!
@@ -34,8 +34,13 @@ export function getSession(id?: string): Session | undefined {
 	return db.data!.sessions.find((s) => s.sessionID === id)
 }
 
-export function addSession(session: Session) {
-	modifyData({ sessions: [...db.data!.sessions, session] })
+export function addOrRefreshSession(session: Omit<Session, 'expires'>) {
+	modifyData({
+		sessions: [
+			...db.data!.sessions.filter((s) => s.sessionID !== session.sessionID),
+			{ ...session, expires: days(14).getTime() },
+		],
+	})
 }
 
 export function getWheneverUserIDs() {
