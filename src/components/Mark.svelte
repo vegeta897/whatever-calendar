@@ -39,6 +39,7 @@
 				action="?/mark"
 				use:enhance={() => {
 					saving = true
+					if (mark) myNoteText = ''
 					return async ({ update }) => {
 						saving = false
 						update()
