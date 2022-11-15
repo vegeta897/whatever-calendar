@@ -15,7 +15,7 @@
 
 <div
 	style:border-color={user.color}
-	style:background-color={user.color}
+	style:background-color={unmarked ? '' : user.color}
 	class:avatar
 	class:mini
 	class:unmarked
@@ -30,9 +30,9 @@
 			on:error={() => (imgError = true)}
 		/>
 		{#if markable && user.me}
-			<svg class="plus" viewBox="0 0 1 1"
-				><path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" /></svg
-			>
+			<svg class="plus" viewBox="0 0 1 1">
+				<path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" />
+			</svg>
 		{/if}
 	{/if}
 </div>
@@ -51,13 +51,19 @@
 	}
 
 	div.note::after {
-		font-size: 20px;
+		font-size: 24px;
 		content: '*';
 		color: #fff;
 		position: relative;
+		top: -11px;
+		right: -15px;
+		text-shadow: -2px 2px 3px rgba(0, 0, 0, 0.9);
+	}
+
+	div.note.mini::after {
+		font-size: 20px;
 		top: -9px;
 		right: -13px;
-		text-shadow: -2px 2px 3px rgba(0, 0, 0, 0.9);
 	}
 
 	div.note:not(.avatar)::after {
@@ -89,12 +95,6 @@
 		background: none;
 	}
 
-	/* div:not(.avatar):not(.plus) {
-		animation-name: bounce;
-		animation-timing-function: ease-out;
-		animation-duration: 250ms;
-	} */
-
 	img {
 		pointer-events: none;
 		display: block;
@@ -125,13 +125,10 @@
 		display: none;
 	}
 
-	svg {
+	svg.plus {
 		position: absolute;
 		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11),
 			opacity 100ms ease-out, background-color 100ms ease-out;
-	}
-
-	svg {
 		display: block;
 		width: 34px;
 		height: 34px;
@@ -141,16 +138,16 @@
 		fill: none;
 	}
 
-	:not(.unmarked) svg {
+	:not(.unmarked) svg.plus {
 		transform: rotate(0);
 		opacity: 0;
 	}
 
-	:global(*:hover) > .unmarked svg {
+	:global(*:hover) > .unmarked svg.plus {
 		transform: rotate(90deg);
 	}
 
-	:global(*:hover) > :not(.unmarked) svg {
+	:global(*:hover) > :not(.unmarked) svg.plus {
 		transform: rotate(-45deg);
 		background-color: rgba(0, 0, 0, 0.7);
 		opacity: 1;
