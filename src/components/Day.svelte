@@ -8,13 +8,13 @@
 
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
-	export let dayMarks: Mark[]
+	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
 
 	$: users = $page.data.users!
 
 	let hover = false
-	let noJS = !browser
+	const noJS = !browser
 
 	// Crossfading expanded day views
 	const [send, receive] = crossfade({ duration: 50 })
@@ -71,7 +71,7 @@
 					out:receive={{ key: day.YYYYMMDD }}
 				>
 					{#each dayMarks as mark (mark.userID)}
-						<Dot user={users[mark.userID]} />
+						<Dot user={users[mark.userID]} note={!!mark.note} />
 					{/each}
 				</div>
 			{/if}

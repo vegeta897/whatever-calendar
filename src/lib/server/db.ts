@@ -12,7 +12,7 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 
 type DBData = {
 	sessions: Session[]
-	marks: Mark[]
+	marks: MarkData[]
 }
 
 type Session = Readonly<{

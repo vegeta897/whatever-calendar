@@ -1,4 +1,4 @@
-import { getData, modifyData } from '$lib/server/db'
+import { getData, getMarks, modifyData } from '$lib/server/db'
 import { error } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 import { redirect } from '@sveltejs/kit'
@@ -62,19 +62,39 @@ export const actions: Actions = {
 		const userID = locals.discordMember.id
 		const noteText = formData.get('noteText') as string
 		const YYYYMMDD = formData.get('day') as string
-		const notes = [...getData().notes]
+		const marks = [...getData().marks]
+		const notedMark = marks.find(
+			(m) => m.userID === userID && m.YYYYMMDD === YYYYMMDD
+		)!
+		if (!notedMark) {
+			throw error(400, {
+				name: 'Oops...',
+				message: `Error trying to add a note to a mark that doesn't exist`,
+			})
+		}
 		modifyData({
-			notes: [
-				...notes,
+			marks: [
+				...marks.filter((m) => m !== notedMark),
 				{
-					YYYYMMDD,
-					userID,
-					text: noteText.trim(),
-					timestamp: Date.now(),
-					lastEditTimestamp: Date.now(),
+					...notedMark,
+					noteTimestamp: Date.now(),
+					note: noteText,
 				},
 			],
 		})
+		// const notes = [...getData().notes]
+		// modifyData({
+		// 	notes: [
+		// 		...notes,
+		// 		{
+		// 			YYYYMMDD,
+		// 			userID,
+		// 			text: noteText.trim(),
+		// 			timestamp: Date.now(),
+		// 			lastEditTimestamp: Date.now(),
+		// 		},
+		// 	],
+		// })
 	},
 	deleteNote: async ({ request, locals }) => {
 		console.log('deleteNote action received!')
@@ -88,23 +108,23 @@ export const actions: Actions = {
 		}
 		const userID = locals.discordMember.id
 		const noteID = formData.get('noteID') as string
-		const notes = [...getData().notes]
-		const deletedNote = notes.find(
-			(n) => `${n.YYYYMMDD}:${n.userID}:${n.timestamp}` === noteID
-		)
-		if (!deletedNote) {
-			throw error(400, {
-				name: 'Oops...',
-				message: 'It looks like that note was already deleted!',
-			})
-		}
-		if (deletedNote.userID !== userID) {
-			throw error(401, {
-				name: 'Oops...',
-				message: 'You are not authorized to delete that note!',
-			})
-		}
-		modifyData({ notes: notes.filter((n) => n !== deletedNote) })
+		// const notes = [...getData().notes]
+		// const deletedNote = notes.find(
+		// 	(n) => `${n.YYYYMMDD}:${n.userID}:${n.timestamp}` === noteID
+		// )
+		// if (!deletedNote) {
+		// 	throw error(400, {
+		// 		name: 'Oops...',
+		// 		message: 'It looks like that note was already deleted!',
+		// 	})
+		// }
+		// if (deletedNote.userID !== userID) {
+		// 	throw error(401, {
+		// 		name: 'Oops...',
+		// 		message: 'You are not authorized to delete that note!',
+		// 	})
+		// }
+		// modifyData({ notes: notes.filter((n) => n !== deletedNote) })
 	},
 }
 

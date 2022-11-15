@@ -13,7 +13,7 @@ declare namespace App {
 		discordUser?: DiscordUser
 		discordMember?: DiscordMember
 		weekStart?: 7 | 1
-		marks?: Mark[]
+		marks?: MarkData[]
 		notes?: Note[]
 		users?: Record<string, WheneverUser>
 	}

@@ -5,17 +5,22 @@
 	export let unmarked = false
 	export let markable = false
 	export let note = false
+	export let wumbo = false
 
 	let imgError = false
+
+	// TODO: Split this into Dot and Avatar. Too much conditional CSS!
+	// Maybe also make Markable that has Avatar inside it
 </script>
 
 <div
 	style:border-color={user.color}
-	style:background-color={unmarked ? '' : user.color}
+	style:background-color={user.color}
 	class:avatar
 	class:mini
 	class:unmarked
 	class:note
+	class:wumbo
 >
 	{#if avatar}
 		<img
@@ -42,19 +47,20 @@
 		height: 12px;
 		margin: 2px;
 		position: relative;
+		flex-shrink: 0;
 	}
 
-	/* TODO: Note indicator; this doesn't look half bad! */
-	div.note:not(.avatar)::before {
+	div.note:not(.avatar)::after {
 		content: '*';
 		color: #fff;
 		position: relative;
 		top: -9px;
 		right: -4px;
+		text-shadow: -1px 1px 2px rgba(0, 0, 0, 0.5);
 	}
 
 	div.avatar {
-		border-radius: 14px;
+		border-radius: 13px;
 		width: 26px;
 		height: 26px;
 	}
@@ -63,6 +69,12 @@
 		border-radius: 11px;
 		width: 22px;
 		height: 22px;
+	}
+
+	div.avatar.wumbo {
+		width: 40px;
+		height: 40px;
+		border-radius: 20px;
 	}
 
 	div.unmarked {
@@ -91,6 +103,12 @@
 		border-radius: 8px;
 	}
 
+	.wumbo img {
+		width: 34px;
+		height: 34px;
+		border-radius: 17px;
+	}
+
 	div.unmarked img {
 		transform: scale(0);
 	}
@@ -107,9 +125,9 @@
 
 	svg {
 		display: block;
-		width: 20px;
-		height: 20px;
-		border-radius: 10px;
+		width: 34px;
+		height: 34px;
+		border-radius: 17px;
 		stroke-width: 0.1;
 		stroke: #fff;
 		fill: none;
@@ -139,13 +157,6 @@
 		}
 		100% {
 			transform: scale(1);
-		}
-	}
-
-	@media (max-width: 640px) {
-		div {
-			border-width: 2.5px;
-			border-radius: 2.5px;
 		}
 	}
 </style>

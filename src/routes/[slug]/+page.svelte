@@ -49,6 +49,7 @@
 
 	.header img {
 		border-radius: 15px;
+		background: var(--color-user);
 		border: 3px solid var(--color-user);
 		margin-right: 0.2rem;
 	}

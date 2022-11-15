@@ -27,14 +27,11 @@ declare global {
 		me?: boolean
 	}
 
-	type Mark = {
+	type MarkData = {
 		YYYYMMDD: Readonly<string>
 		userID: Readonly<string>
 		timestamp: Readonly<number>
-	}
-
-	type Note = Mark & {
-		text: string
-		lastEditTimestamp: number
+		note?: string
+		noteTimestamp?: number
 	}
 }

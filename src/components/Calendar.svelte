@@ -21,7 +21,6 @@
 	import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
 	$: marks = $page.data.marks!
-	$: notes = $page.data.notes!
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
@@ -81,7 +80,7 @@
 		{#each preDays as day (day)}<li class="pre-day">
 				<div class="day-date">{day}</div>
 			</li>{/each}
-		{#each $days as day, i (day.YYYYMMDD)}
+		{#each $days as day (day.YYYYMMDD)}
 			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
 			{#if day.datetime >= $today}
 				<Day {day} bind:daySelected {dayMarks} onClick={dayOnClick} />
@@ -90,7 +89,6 @@
 				<DayDetail
 					day={daySelected}
 					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
-					notes={notes.filter((n) => n.YYYYMMDD === daySelected?.YYYYMMDD)}
 				/>
 			{/if}
 		{/each}

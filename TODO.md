@@ -2,15 +2,15 @@
 
 ## Working on
 
-- Use US Eastern time-zone for everything
+- Moving notes into marks
 
-## High-priority
+## High-priority (Required before public test)
 
 - Replace Eris with discord.js
 - Validate data coming from client
+- Media queries for mobile
 
 ## Low-priority
 
 - Create a dedicated bot (stop using D-Bot's token)
-- Media queries for mobile
 - Use JS only as progressive enhancement
