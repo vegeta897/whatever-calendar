@@ -6,7 +6,6 @@
 	import { browser } from '$app/environment'
 	import Dot from './Dot.svelte'
 	import type { CalendarDay } from '$lib/calendar'
-	import { onMount } from 'svelte'
 	import { afterNavigate } from '$app/navigation'
 
 	export let mark: MarkData | undefined
@@ -22,10 +21,6 @@
 
 	afterNavigate(() => {
 		myNoteText = mark?.note
-	})
-
-	onMount(() => {
-		if (mine) console.log('mounting', day.YYYYMMDD)
 	})
 
 	let saving = false
