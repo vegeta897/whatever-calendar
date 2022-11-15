@@ -1,5 +1,7 @@
+import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 import { days } from '$lib/server/cookies'
 import { Low, JSONFile } from 'lowdb'
+import { DateTime } from 'luxon'
 
 // https://stackoverflow.com/a/59700012/2612679
 type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-eslint/ban-types
@@ -46,6 +48,20 @@ export function addOrRefreshSession(session: Omit<Session, 'expires'>) {
 export function getWheneverUserIDs() {
 	// Build set of all member IDs
 	return [...new Set(db.data!.marks.map((m) => m.userID))]
+}
+
+export function getMarks(): DBData['marks'] {
+	// Get marks, filtering out ones from the past
+	const now = DateTime.now()
+		.setZone(PUBLIC_GLOBAL_TIMEZONE)
+		.startOf('day')
+		.toMillis()
+	return getData().marks.filter(
+		(m) =>
+			DateTime.fromFormat(m.YYYYMMDD, 'yyyy-LL-dd')
+				.setZone(PUBLIC_GLOBAL_TIMEZONE, { keepLocalTime: true })
+				.toMillis() >= now
+	)
 }
 
 export function modifyData(data: Partial<DBData>) {
