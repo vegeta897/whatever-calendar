@@ -57,6 +57,7 @@
 							avatar={true}
 							mini={dayMarks.length >= 7}
 							user={users[mark.userID]}
+							note={!!mark.note}
 						/>{/each}
 				</div>
 			{/if}
@@ -85,6 +86,7 @@
 		display: block;
 		width: calc(100%);
 		height: 116px;
+		text-decoration: none;
 	}
 
 	.day {

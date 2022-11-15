@@ -50,10 +50,18 @@
 		flex-shrink: 0;
 	}
 
-	div.note:not(.avatar)::after {
+	div.note::after {
+		font-size: 20px;
 		content: '*';
 		color: #fff;
 		position: relative;
+		top: -9px;
+		right: -13px;
+		text-shadow: -2px 2px 3px rgba(0, 0, 0, 0.9);
+	}
+
+	div.note:not(.avatar)::after {
+		font-size: 14px;
 		top: -9px;
 		right: -4px;
 		text-shadow: -1px 1px 2px rgba(0, 0, 0, 0.5);
