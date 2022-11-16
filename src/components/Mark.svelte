@@ -62,7 +62,7 @@
 			<form
 				class="add-note"
 				method="POST"
-				action="?/addNote"
+				action="?/note"
 				use:enhance={() => {
 					saving = true
 					return async ({ update }) => {

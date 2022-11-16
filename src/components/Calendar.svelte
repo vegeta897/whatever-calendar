@@ -12,7 +12,7 @@
 	import type { CalendarDay } from '$lib/calendar'
 	import { page } from '$app/stores'
 	import Day from './Day.svelte'
-	import { goto } from '$app/navigation'
+	import { goto, invalidateAll } from '$app/navigation'
 	import DayDetail from './DayDetail.svelte'
 	import { onInterval } from '$lib/interval'
 	import { onDestroy } from 'svelte'
@@ -65,6 +65,13 @@
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
 	</div>
+	<div class="refresh">
+		{#if browser}
+			<button on:click={() => invalidateAll()}>Refresh</button>
+		{:else}
+			<a href={$page.data.href}>Refresh</a>
+		{/if}
+	</div>
 	<div class="clock">
 		<time datetime={$now.toISO({ includeOffset: false })}>
 			{$now.toFormat('f')}
@@ -107,6 +114,29 @@
 
 	.header label {
 		margin-right: 0.2em;
+	}
+
+	.refresh button,
+	.refresh a {
+		color: var(--color-text);
+		display: flex;
+		align-items: center;
+		background: rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		padding: 7px 14px;
+		border: none;
+		cursor: pointer;
+		text-decoration: none;
+	}
+
+	.refresh button:hover,
+	.refresh a:hover {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.refresh button:active,
+	.refresh a:active {
+		background: rgba(255, 255, 255, 0.06);
 	}
 
 	.clock {

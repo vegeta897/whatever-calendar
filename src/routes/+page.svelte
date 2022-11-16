@@ -4,11 +4,7 @@
 
 	export let data: PageData
 
-	if (browser) {
-		console.log(data.discordMember || data.discordUser)
-		console.log(data.marks)
-		console.log(data.users)
-	}
+	if (browser) console.log(data)
 </script>
 
 <section>

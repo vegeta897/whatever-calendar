@@ -1,19 +1,45 @@
-import { getData, getMarks, modifyData } from '$lib/server/db'
-import { error } from '@sveltejs/kit'
+import {
+	getData,
+	getMarks,
+	getWheneverUserIDs,
+	modifyData,
+} from '$lib/server/db'
+import { error, redirect } from '@sveltejs/kit'
+import { get } from 'svelte/store'
+import { days } from '$lib/calendar'
 import type { Actions, PageServerLoad } from './$types'
-import { redirect } from '@sveltejs/kit'
+import { getMembers } from '$lib/server/discord/bot'
 
-export const load: PageServerLoad = ({ locals, params }) => {
-	/* TODO: Should this trigger on each day navigation,
-	   to grab the freshest info for the day? */
-	/* Note, using params.slug creates a dependency that 
-	   causes the server to be called on each navigation */
-	console.log('(server) load /[slug]' /*, params.slug*/)
+export const load: PageServerLoad = async ({
+	cookies,
+	locals,
+	params,
+	url,
+}) => {
+	console.log(`(server) load /${params.slug}`)
+
+	const dayFromSlug = get(days).find((day) => day.YYYYMMDD === params.slug)
 	if (!locals.discordMember) {
 		console.log('member not authed, redirecting to root')
 		throw redirect(302, '/')
 	}
-	// return { day: params.slug, server: true }
+	if (params.slug !== 'calendar' && !dayFromSlug) {
+		// Invalid day slug
+		throw redirect(302, '/calendar')
+	}
+	const pageData: App.PageData & { day: null | string; href: string } = {
+		day: dayFromSlug?.YYYYMMDD || null,
+		href: url.href,
+	}
+	pageData.discordMember = locals.discordMember
+	pageData.marks = getMarks()
+	pageData.users = await getMembers(getWheneverUserIDs())
+	pageData.users[locals.discordMember.id].me = true
+	const weekStart = cookies.get('wec-weekStart')
+	if (weekStart !== undefined) {
+		pageData.weekStart = +weekStart as 7 | 1
+	}
+	return pageData
 }
 
 // TODO: Validate incoming data
@@ -49,8 +75,8 @@ export const actions: Actions = {
 			})
 		}
 	},
-	addNote: async ({ request, locals }) => {
-		console.log('addNote action received!')
+	note: async ({ request, locals }) => {
+		console.log('note action received!')
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('noteText')) {
@@ -82,49 +108,6 @@ export const actions: Actions = {
 				},
 			],
 		})
-		// const notes = [...getData().notes]
-		// modifyData({
-		// 	notes: [
-		// 		...notes,
-		// 		{
-		// 			YYYYMMDD,
-		// 			userID,
-		// 			text: noteText.trim(),
-		// 			timestamp: Date.now(),
-		// 			lastEditTimestamp: Date.now(),
-		// 		},
-		// 	],
-		// })
-	},
-	deleteNote: async ({ request, locals }) => {
-		console.log('deleteNote action received!')
-		checkAuth(locals.discordMember)
-		const formData = await request.formData()
-		if (!formData.has('noteID')) {
-			throw error(400, {
-				name: 'Oops...',
-				message: 'Request invalid, missing "noteID" form data',
-			})
-		}
-		const userID = locals.discordMember.id
-		const noteID = formData.get('noteID') as string
-		// const notes = [...getData().notes]
-		// const deletedNote = notes.find(
-		// 	(n) => `${n.YYYYMMDD}:${n.userID}:${n.timestamp}` === noteID
-		// )
-		// if (!deletedNote) {
-		// 	throw error(400, {
-		// 		name: 'Oops...',
-		// 		message: 'It looks like that note was already deleted!',
-		// 	})
-		// }
-		// if (deletedNote.userID !== userID) {
-		// 	throw error(401, {
-		// 		name: 'Oops...',
-		// 		message: 'You are not authorized to delete that note!',
-		// 	})
-		// }
-		// modifyData({ notes: notes.filter((n) => n !== deletedNote) })
 	},
 }
 

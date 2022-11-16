@@ -2,7 +2,7 @@
 	import type { PageData } from './$types'
 	import Calendar from '../../components/Calendar.svelte'
 	import { browser } from '$app/environment'
-	import { weekStart } from '$lib/calendar'
+	import { weekStart, days } from '$lib/calendar'
 	import { serialize } from 'cookie'
 
 	export let data: PageData
@@ -31,7 +31,7 @@
 			data-sveltekit-prefetch="off">Log out</a
 		>
 	</div>
-	<Calendar daySelected={data.day} />
+	<Calendar daySelected={$days.find((d) => d.YYYYMMDD === data.day)} />
 </section>
 
 <style>
