@@ -21,6 +21,7 @@
 	class:unmarked
 	class:note
 	class:wumbo
+	class:me={user.me}
 >
 	{#if avatar}
 		<img
@@ -48,6 +49,10 @@
 		margin: 2px;
 		position: relative;
 		flex-shrink: 0;
+	}
+
+	div.me {
+		order: -1;
 	}
 
 	div.note::after {
@@ -89,6 +94,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 20px;
+		border-width: 4px;
 	}
 
 	div.unmarked {
@@ -112,9 +118,9 @@
 	}
 
 	.wumbo img {
-		width: 34px;
-		height: 34px;
-		border-radius: 17px;
+		width: 32px;
+		height: 32px;
+		border-radius: 16px;
 	}
 
 	div.unmarked img {

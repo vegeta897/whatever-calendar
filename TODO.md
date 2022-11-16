@@ -2,7 +2,7 @@
 
 ## Working on
 
-- Moving notes into marks
+- ~~Moving notes into marks~~
 
 ## High-priority (Required before public test)
 
@@ -14,3 +14,4 @@
 
 - Create a dedicated bot (stop using D-Bot's token)
 - Use JS only as progressive enhancement
+- Automated database cleanup (old marks, sessions, etc)
