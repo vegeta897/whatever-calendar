@@ -57,7 +57,7 @@
 		display: flex;
 		flex-direction: column;
 		background: rgba(0, 0, 0, 0.25);
-		padding: 14px 20px;
+		padding: 20px;
 		border-radius: 20px;
 		transition: border-radius 50ms ease-out;
 	}

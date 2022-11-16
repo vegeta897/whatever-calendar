@@ -98,9 +98,12 @@
 		box-sizing: border-box;
 		background: rgba(0, 0, 0, 0.4);
 		padding: 12px 16px;
-		margin-bottom: 8px;
 		border-radius: 16px;
 		transition: background-color 50ms ease-out;
+	}
+
+	:global(.user-mark + .user-mark) {
+		margin-top: 8px;
 	}
 
 	.user-info {
