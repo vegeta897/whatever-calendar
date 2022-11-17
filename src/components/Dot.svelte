@@ -108,6 +108,7 @@
 		height: 20px;
 		border-radius: 10px;
 		position: absolute;
+		background: rgba(0, 0, 63, 0.6);
 		transition: transform 90ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
 	}
 
@@ -136,9 +137,9 @@
 		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11),
 			opacity 100ms ease-out, background-color 100ms ease-out;
 		display: block;
-		width: 34px;
-		height: 34px;
-		border-radius: 17px;
+		width: 32px;
+		height: 32px;
+		border-radius: 16px;
 		stroke-width: 0.1;
 		stroke: #fff;
 		fill: none;

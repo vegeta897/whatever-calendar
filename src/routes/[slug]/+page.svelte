@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types'
 	import Calendar from '../../components/Calendar.svelte'
+	import Dot from '../../components/Dot.svelte'
 	import { browser } from '$app/environment'
 	import { weekStart, days } from '$lib/calendar'
 	import { serialize } from 'cookie'
@@ -8,6 +9,7 @@
 	export let data: PageData
 
 	const discordMember = data.discordMember!
+	const discordUser = data.users![discordMember.id]
 	const username = discordMember.nick || discordMember.username
 
 	weekStart.set(data.weekStart || 7)
@@ -25,7 +27,7 @@
 
 <section style="--color-user: {discordMember.color || 'var(--color-theme-1)'};">
 	<div class="header">
-		<img width="24px" alt="{username}'s avatar" src={discordMember.avatarURL} />
+		<Dot user={discordUser} avatar />
 		<span class="username">{username}</span><a
 			href="/api/logout"
 			data-sveltekit-prefetch="off">Log out</a
@@ -45,13 +47,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
-	}
-
-	.header img {
-		border-radius: 15px;
-		background: var(--color-user);
-		border: 3px solid var(--color-user);
-		margin-right: 0.2rem;
 	}
 
 	.username {
