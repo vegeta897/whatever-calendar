@@ -9,6 +9,7 @@ import { get } from 'svelte/store'
 import { days } from '$lib/calendar'
 import type { Actions, PageServerLoad } from './$types'
 import { getUsers } from '$lib/server/discord/bot'
+import { DateTime } from 'luxon'
 
 export const load: PageServerLoad = async ({
 	cookies,
@@ -49,19 +50,30 @@ export const actions: Actions = {
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('mark')) {
-			validationError('Request invalid, missing "mark" form data')
+			validationError('Request invalid, missing "mark" form data', {
+				user: locals.discordMember.username,
+			})
 		}
 		const userID = locals.discordMember.id
 		let doMark: boolean
 		try {
 			doMark = JSON.parse(formData.get('mark') as string)
 		} catch (e) {
-			validationError(`Request invalid, received non-boolean "mark" form data`)
+			validationError(
+				`Request invalid, received non-boolean "mark" form data`,
+				{
+					mark: formData.get('mark'),
+					user: locals.discordMember.username,
+				}
+			)
 			return
 		}
 		const YYYYMMDD = formData.get('day') as string
 		if (!YYYYMMDD || !get(days).find((d) => d.YYYYMMDD === YYYYMMDD)) {
-			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`)
+			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`, {
+				YYYYMMDD,
+				user: locals.discordMember.username,
+			})
 		}
 		const marks = [...getData().marks]
 		if (doMark) {
@@ -85,25 +97,33 @@ export const actions: Actions = {
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('noteText')) {
-			validationError('Request invalid, missing "noteText" form data')
+			validationError('Request invalid, missing "noteText" form data', {
+				user: locals.discordMember.username,
+			})
 		}
-		const userID = locals.discordMember.id
 		const noteText = formData.get('noteText') as string
 		if (typeof noteText !== 'string') {
 			validationError(
-				'Request invalid, received non-string "noteText" form data'
+				'Request invalid, received non-string "noteText" form data',
+				{ noteText, user: locals.discordMember.username }
 			)
 		}
 		const YYYYMMDD = formData.get('day') as string
 		if (!YYYYMMDD || !get(days).find((d) => d.YYYYMMDD === YYYYMMDD)) {
-			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`)
+			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`, {
+				YYYYMMDD,
+				user: locals.discordMember.username,
+			})
 		}
 		const marks = [...getData().marks]
 		const notedMark = marks.find(
-			(m) => m.userID === userID && m.YYYYMMDD === YYYYMMDD
+			(m) => m.userID === locals.discordMember!.id && m.YYYYMMDD === YYYYMMDD
 		)!
 		if (!notedMark) {
-			validationError(`Tried to modify the note for a mark that doesn't exist`)
+			validationError(
+				`Tried to modify the note for a mark that doesn't exist`,
+				{ YYYYMMDD, user: locals.discordMember.username }
+			)
 		}
 		modifyData({
 			marks: [
@@ -118,7 +138,10 @@ export const actions: Actions = {
 	},
 }
 
-function validationError(message: string) {
+function validationError(message: string, ...debugData: any[]) {
+	console.log(DateTime.now().toFormat('f'), 'Validation error!')
+	console.log('Message:', message)
+	if (debugData.length > 0) console.log(...debugData)
 	throw error(400, { name: 'Oops...', message })
 }
 
@@ -128,7 +151,7 @@ function checkAuth(
 	if (!discordMember) {
 		throw error(401, {
 			name: 'Oops...',
-			message: 'Your session was lost, please connect to Discord again',
+			message: 'Your session was lost, please log in again',
 		})
 	}
 }

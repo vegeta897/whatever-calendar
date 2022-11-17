@@ -1,5 +1,6 @@
 import { DISCORD_BOT_TOKEN, DISCORD_SERVER_ID } from '$env/static/private'
 import { Client, Guild, GatewayIntentBits, Events } from 'discord.js'
+import { DateTime } from 'luxon'
 
 let botConnected = false
 let discordServer: Guild
@@ -17,7 +18,10 @@ export async function connectBot() {
 			bot.once(Events.ClientReady, async () => {
 				botConnected = true
 				discordServer = await bot.guilds.fetch(DISCORD_SERVER_ID)
-				console.log(`Discord bot online, connected to "${discordServer.name}"`)
+				console.log(
+					DateTime.now().toFormat('f'),
+					`Discord bot online, connected to "${discordServer.name}"`
+				)
 				resolve()
 			})
 			bot.login(DISCORD_BOT_TOKEN)

@@ -18,7 +18,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 	console.log('begin handleSession', event.routeId)
 	let session = event.cookies.get('wec-session')
 	const storedSession = getSession(session)
-	if (storedSession) console.log('found stored session')
+	// if (storedSession) console.log('found stored session')
 	const now = Date.now()
 	// Delete session if expired
 	if (storedSession && storedSession.expires <= now) {
@@ -28,7 +28,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 	}
 	if (!session) {
 		session = crypto.randomUUID()
-		console.log('no session, generated new:', session)
+		// console.log('no session, generated new:', session)
 	} else if (storedSession) {
 		// We have an unexpired discord ID, pass it on
 		event.locals.discordID = storedSession.discordID
@@ -44,12 +44,12 @@ const handleDiscord: Handle = async ({ event, resolve }) => {
 	// This session isn't stored if there is no discord ID
 	const newSession = !event.locals.discordID
 	if (newSession) {
-		console.log('no discord ID, getting user info')
+		// console.log('no discord ID, getting user info')
 		event.locals.discordUser = await getUser(event.cookies, event.fetch)
 		event.locals.discordID = event.locals.discordUser?.id
 	}
 	if (event.locals.discordID) {
-		console.log('have user ID, getting member info')
+		// console.log('have user ID, getting member info')
 		const discordMember = await getMember(event.locals.discordID)
 		// If the user is a server member, attach member data and store their session
 		if (discordMember) {
