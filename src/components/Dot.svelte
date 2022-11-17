@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition'
+
 	export let user: WheneverUser
 	export let avatar = false
 	export let mini = false
@@ -31,7 +33,7 @@
 			on:error={() => (imgError = true)}
 		/>
 		{#if markable && user.me}
-			<svg class="plus" viewBox="0 0 1 1">
+			<svg transition:fade={{ duration: 100 }} class="plus" viewBox="0 0 1 1">
 				<path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" />
 			</svg>
 		{/if}

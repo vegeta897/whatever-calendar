@@ -9,7 +9,7 @@
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
 	export let dayMarks: MarkData[]
-	export let onClick: (day: CalendarDay) => Promise<void>
+	export let onClick: (day: CalendarDay) => void
 
 	$: users = $page.data.users!
 
@@ -94,7 +94,6 @@
 		height: 116px;
 		box-sizing: border-box;
 		border-radius: 20px;
-		border: 3px solid transparent;
 		transition: background-color 50ms ease-out, color 50ms ease-out,
 			height 50ms ease-out, margin-bottom 50ms ease-out,
 			border-radius 50ms ease-out;
@@ -115,7 +114,6 @@
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 		height: 124px;
-		margin-bottom: -8px;
 	}
 
 	.day:not(.selected):hover {
@@ -153,7 +151,7 @@
 	.day-date {
 		font-size: 2.2em;
 		position: absolute;
-		height: 110px; /* Height of .day less padding */
+		height: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -170,8 +168,8 @@
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 		justify-items: center;
-		margin-top: 50%;
-		height: 50%;
+		margin-top: 58px;
+		height: 58px;
 	}
 
 	.day-marks-small,

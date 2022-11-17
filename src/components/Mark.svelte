@@ -7,7 +7,7 @@
 	import Dot from './Dot.svelte'
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
-	import Calendar from './Calendar.svelte'
+	import { saving } from './Calendar.svelte'
 
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
@@ -22,23 +22,16 @@
 
 	beforeNavigate(() => (myNoteText = mark?.note))
 	afterNavigate(() => (myNoteText = mark?.note))
-
-	let saving = false
 </script>
 
-<div
-	class="user-mark"
-	class:my-mark={mine}
-	class:marked={mine && mark}
-	class:saving
->
+<div class="user-mark" class:my-mark={mine} class:marked={mine && mark}>
 	<div class="user-info">
 		{#if mine}
 			<form
 				method="POST"
 				action="?/mark"
 				use:enhance={() => {
-					saving = true
+					saving.set(true)
 					if (mark) {
 						myNoteText = ''
 						mark = undefined
@@ -50,15 +43,21 @@
 						}
 					}
 					return async ({ update }) => {
-						saving = false
+						saving.set(false)
 						update()
 					}
 				}}
 			>
 				<input name="day" hidden value={day.YYYYMMDD} />
 				<input name="mark" hidden value={!mark} />
-				<button disabled={saving}>
-					<Dot user={users[myUserID]} avatar wumbo markable unmarked={!mark} />
+				<button disabled={$saving}>
+					<Dot
+						user={users[myUserID]}
+						avatar
+						wumbo
+						markable={!$saving}
+						unmarked={!mark}
+					/>
 					{#if mark}<span>{users[myUserID].name}</span>
 					{:else}<span>Add me</span>{/if}
 				</button>
@@ -78,10 +77,10 @@
 				method="POST"
 				action="?/note"
 				use:enhance={() => {
-					saving = true
+					saving.set(true)
 					if (mark) mark.note = myNoteText
 					return async ({ update }) => {
-						saving = false
+						saving.set(false)
 						update()
 					}
 				}}
@@ -90,13 +89,13 @@
 				<input
 					type="text"
 					name="noteText"
-					disabled={saving}
+					disabled={$saving}
 					bind:value={myNoteText}
 					placeholder="Add a note"
 				/>
 				<button
 					disabled={!noJS &&
-						(saving || (myNoteText || '') === (mark.note || ''))}
+						($saving || (myNoteText || '') === (mark.note || ''))}
 				>
 					Save
 				</button>

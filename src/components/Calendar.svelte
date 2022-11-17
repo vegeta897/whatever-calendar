@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+	import { writable } from 'svelte/store'
+	// This is global in SSR, but that's okay since we only touch it in user actions
+	export const saving = writable(false)
+</script>
+
 <script lang="ts">
 	import {
 		getWeekdayNames,
@@ -36,9 +42,11 @@
 	async function dayOnClick(day: CalendarDay) {
 		const newSlug = day === daySelected ? 'calendar' : day.YYYYMMDD
 		daySelected = day === daySelected ? null : day
-		// Allow daySelected to propagate
+		saving.set(true)
+		// Deferred to allow daySelected to propagate
 		await new Promise((res) => setTimeout(res))
-		return goto(`/${newSlug}`, { noscroll: true, replaceState: true })
+		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
+		saving.set(false)
 	}
 
 	today.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day'))
@@ -60,6 +68,28 @@
 </svelte:head>
 <!-- TODO: Affix header to top of page when scrolled out of view -->
 <div class="header">
+	<div class="clock">
+		<time datetime={$now.toISO({ includeOffset: false })}>
+			{$now.toFormat('f')}
+		</time>
+		{$now.offsetNameLong}
+	</div>
+	<div class="refresh">
+		{#if browser}
+			<button
+				on:click={async () => {
+					saving.set(true)
+					await invalidateAll()
+					saving.set(false)
+				}}
+				disabled={$saving}
+			>
+				Refresh
+			</button>
+		{:else}
+			<a href={$page.data.href}>Refresh</a>
+		{/if}
+	</div>
 	<div>
 		<label for="week-start">Start of week:</label>
 		<select id="week-start" bind:value={$weekStart}>
@@ -67,19 +97,6 @@
 			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
-	</div>
-	<div class="refresh">
-		{#if browser}
-			<button on:click={() => invalidateAll()}>Refresh</button>
-		{:else}
-			<a href={$page.data.href}>Refresh</a>
-		{/if}
-	</div>
-	<div class="clock">
-		<time datetime={$now.toISO({ includeOffset: false })}>
-			{$now.toFormat('f')}
-		</time>
-		{$now.offsetNameLong}
 	</div>
 </div>
 <div class="calendar">
@@ -122,6 +139,18 @@
 		margin-right: 0.2em;
 	}
 
+	.clock {
+		color: rgba(255, 255, 255, 0.5);
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.clock time {
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 1.1em;
+	}
+
 	.refresh button,
 	.refresh a {
 		color: var(--color-text);
@@ -133,6 +162,7 @@
 		border: none;
 		cursor: pointer;
 		text-decoration: none;
+		transition: background-color 80ms ease-out, color 80ms ease-out;
 	}
 
 	.refresh button:hover,
@@ -145,16 +175,9 @@
 		background: rgba(255, 255, 255, 0.06);
 	}
 
-	.clock {
-		color: rgba(255, 255, 255, 0.5);
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-	}
-
-	.clock time {
-		color: rgba(255, 255, 255, 0.7);
-		font-size: 1.1em;
+	.refresh button:disabled {
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(255, 255, 255, 0.3);
 	}
 
 	.calendar {
