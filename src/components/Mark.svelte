@@ -7,6 +7,7 @@
 	import Dot from './Dot.svelte'
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
+	import Calendar from './Calendar.svelte'
 
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
@@ -38,7 +39,16 @@
 				action="?/mark"
 				use:enhance={() => {
 					saving = true
-					if (mark) myNoteText = ''
+					if (mark) {
+						myNoteText = ''
+						mark = undefined
+					} else {
+						mark = {
+							YYYYMMDD: day.YYYYMMDD,
+							userID: myUserID,
+							timestamp: Date.now(),
+						}
+					}
 					return async ({ update }) => {
 						saving = false
 						update()
@@ -69,6 +79,7 @@
 				action="?/note"
 				use:enhance={() => {
 					saving = true
+					if (mark) mark.note = myNoteText
 					return async ({ update }) => {
 						saving = false
 						update()
@@ -83,7 +94,10 @@
 					bind:value={myNoteText}
 					placeholder="Add a note"
 				/>
-				<button disabled={!noJS && (saving || myNoteText === mark.note)}>
+				<button
+					disabled={!noJS &&
+						(saving || (myNoteText || '') === (mark.note || ''))}
+				>
 					Save
 				</button>
 			</form>
@@ -166,7 +180,7 @@
 		border: 2px solid transparent;
 	}
 
-	.my-note input:hover {
+	.my-note input:enabled:hover {
 		background: rgba(255, 255, 255, 0.05);
 	}
 
@@ -185,7 +199,6 @@
 		color: var(--color-text);
 		cursor: pointer;
 		padding: 0 10px;
-		/* appearance: none; */
 	}
 
 	.my-note button:hover {
