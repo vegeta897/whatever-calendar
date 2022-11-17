@@ -6,7 +6,7 @@
 	import { browser } from '$app/environment'
 	import Dot from './Dot.svelte'
 	import type { CalendarDay } from '$lib/calendar'
-	import { afterNavigate } from '$app/navigation'
+	import { afterNavigate, beforeNavigate } from '$app/navigation'
 
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
@@ -19,14 +19,18 @@
 
 	let myNoteText = mark?.note
 
-	afterNavigate(() => {
-		myNoteText = mark?.note
-	})
+	beforeNavigate(() => (myNoteText = mark?.note))
+	afterNavigate(() => (myNoteText = mark?.note))
 
 	let saving = false
 </script>
 
-<div class="user-mark" class:my-mark={mine} class:marked={mine && mark}>
+<div
+	class="user-mark"
+	class:my-mark={mine}
+	class:marked={mine && mark}
+	class:saving
+>
 	<div class="user-info">
 		{#if mine}
 			<form

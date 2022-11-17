@@ -2,11 +2,10 @@
 
 ## Working on
 
-- Validate data coming from client
+- UI/UX for loading and waiting for server responses
 
 ## High-priority (Required before public test)
 
-- Validate data coming from client
 - Media queries for mobile (media queries can go inside selectors!)
 
 ## Low-priority
@@ -16,3 +15,4 @@
 - Automated database cleanup (old marks, sessions, etc)
 - Use rems instead of pixels for anything that should scale with font size
 - Use Chalk for nicer server logs
+- Add slash command(s)?

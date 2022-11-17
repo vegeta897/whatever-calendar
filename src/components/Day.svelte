@@ -9,7 +9,7 @@
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
 	export let dayMarks: MarkData[]
-	export let onClick: (day: CalendarDay) => void
+	export let onClick: (day: CalendarDay) => Promise<void>
 
 	$: users = $page.data.users!
 
@@ -24,8 +24,8 @@
 	href="/{day === daySelected ? 'calendar' : day.YYYYMMDD}"
 	data-sveltekit-prefetch="off"
 	on:click|preventDefault={() => {
-		onClick(day)
 		hover = false
+		onClick(day)
 	}}
 >
 	<li
@@ -143,9 +143,10 @@
 		pointer-events: none;
 		transition: opacity 50ms ease-out;
 	}
-	.day:hover .month-label,
+
+	.day:not(.selected):hover .month-label,
 	.day.selected .month-divider,
-	.day:hover .month-divider {
+	.day:not(.selected):hover .month-divider {
 		opacity: 0;
 	}
 

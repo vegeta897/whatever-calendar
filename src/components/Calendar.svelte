@@ -33,9 +33,12 @@
 
 	$: preDays = getPreDays($days, $today, $weekStart)
 
-	function dayOnClick(day: CalendarDay) {
+	async function dayOnClick(day: CalendarDay) {
 		const newSlug = day === daySelected ? 'calendar' : day.YYYYMMDD
-		goto(`/${newSlug}`, { noscroll: true, replaceState: true })
+		daySelected = day === daySelected ? null : day
+		// Allow daySelected to propagate
+		await new Promise((res) => setTimeout(res))
+		return goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 	}
 
 	today.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day'))
@@ -110,6 +113,9 @@
 		align-items: center;
 		justify-content: space-between;
 		margin: 0.8rem 0;
+		border-radius: 1rem;
+		padding: 0.8rem 1.2rem;
+		background: rgba(0, 0, 0, 0.5);
 	}
 
 	.header label {
