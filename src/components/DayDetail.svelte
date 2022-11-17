@@ -10,7 +10,7 @@
 	const myUserID = $page.data.discordMember!.id
 
 	$: myMark = marks.find((mark) => mark.userID === myUserID)
-	$: otherMarkCount = marks.length - (myMark ? 1 : 0)
+	$: otherMarks = marks.filter((m) => m !== myMark)
 
 	$: rightAlignDay = day.weekday === ($weekStart === 1 ? 7 : 6)
 	$: leftAlignDay = day.weekday === $weekStart
@@ -29,11 +29,11 @@
 		{day.day}
 	</h3>
 	<h4>
-		{#if otherMarkCount > 0}
+		{#if otherMarks.length > 0}
 			{#if myMark}
-				You and {otherMarkCount} other{otherMarkCount > 1 ? 's' : ''}
+				You and {otherMarks.length} other{otherMarks.length > 1 ? 's' : ''}
 			{:else}
-				{otherMarkCount} {otherMarkCount > 1 ? 'people' : 'person'}
+				{otherMarks.length} {otherMarks.length > 1 ? 'people' : 'person'}
 			{/if}
 		{:else if myMark}
 			It's just you
@@ -43,7 +43,7 @@
 	</h4>
 	<div class="marks">
 		<Mark mark={myMark} {day} mine />
-		{#each marks.filter((m) => m !== myMark) as mark (mark.userID)}
+		{#each otherMarks as mark (mark.userID)}
 			<Mark {mark} {day} />
 		{/each}
 	</div>
