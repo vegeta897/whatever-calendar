@@ -8,6 +8,7 @@
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
 	import { saving } from './Calendar.svelte'
+	import { onMount } from 'svelte'
 
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
@@ -19,9 +20,21 @@
 	$: users = $page.data.users!
 
 	let myNoteText = mark?.note
+	let myNoteTextArea: HTMLTextAreaElement
+	let myNoteForm: HTMLFormElement
+
+	function updateMyNoteTextAreaHeight() {
+		if (!myNoteTextArea) return
+		myNoteTextArea.style.height = '0'
+		myNoteTextArea.style.height = `${myNoteTextArea.scrollHeight}px`
+	}
 
 	beforeNavigate(() => (myNoteText = mark?.note))
 	afterNavigate(() => (myNoteText = mark?.note))
+
+	onMount(() => {
+		updateMyNoteTextAreaHeight()
+	})
 </script>
 
 <div class="user-mark" class:my-mark={mine} class:marked={mine && mark}>
@@ -76,8 +89,10 @@
 				class="add-note"
 				method="POST"
 				action="?/note"
+				bind:this={myNoteForm}
 				use:enhance={() => {
 					saving.set(true)
+					if (myNoteText) myNoteText = myNoteText.substring(0, 256).trim()
 					if (mark) mark.note = myNoteText
 					return async ({ update }) => {
 						saving.set(false)
@@ -86,16 +101,28 @@
 				}}
 			>
 				<input name="day" hidden value={day.YYYYMMDD} />
-				<input
-					type="text"
+				<textarea
 					name="noteText"
 					disabled={$saving}
 					bind:value={myNoteText}
+					bind:this={myNoteTextArea}
 					placeholder="Add a note"
+					maxlength="256"
+					on:change={updateMyNoteTextAreaHeight}
+					on:keydown={(e) => {
+						if (e.target && e.code === 'Enter' && !e.shiftKey) {
+							myNoteForm.dispatchEvent(
+								new Event('submit', { cancelable: true })
+							)
+							e.preventDefault()
+						}
+					}}
 				/>
 				<button
 					disabled={!noJS &&
-						($saving || (myNoteText || '') === (mark.note || ''))}
+						($saving ||
+							(myNoteText?.split('\r\n').join('\n') || '') ===
+								(mark.note?.split('\r\n').join('\n') || ''))}
 				>
 					Save
 				</button>
@@ -168,23 +195,29 @@
 	.my-note form {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 	}
 
-	.my-note input {
+	.my-note textarea {
+		resize: none;
+		overflow: hidden;
 		flex-grow: 1;
 		color: rgba(255, 255, 255, 0.6);
 		background: rgba(255, 255, 255, 0.03);
 		border-radius: 8px;
-		padding: 6px 10px;
+		padding: 6px 10px 10px;
+		box-sizing: border-box;
+		font-family: var(--font-body);
+		font-size: 1rem;
 		border: 2px solid transparent;
 	}
 
-	.my-note input:enabled:hover {
+	.my-note textarea:enabled:hover {
 		background: rgba(255, 255, 255, 0.05);
 	}
 
-	.my-note input:focus,
-	.my-note input:focus-visible {
+	.my-note textarea:focus,
+	.my-note textarea:focus-visible {
 		color: #fff;
 		outline: none !important;
 		border: 2px solid rgba(255, 255, 255, 0.3);
@@ -198,6 +231,7 @@
 		color: var(--color-text);
 		cursor: pointer;
 		padding: 0 10px;
+		height: 38px;
 	}
 
 	.my-note button:hover {
