@@ -42,7 +42,6 @@ export const load: PageServerLoad = async ({
 	return pageData
 }
 
-// TODO: Validate incoming data
 // TODO: Insert await sleep to test slow server UX
 export const actions: Actions = {
 	mark: async ({ request, locals }) => {
@@ -50,14 +49,20 @@ export const actions: Actions = {
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('mark')) {
-			throw error(400, {
-				name: 'Oops...',
-				message: 'Request invalid, missing "mark" form data',
-			})
+			validationError('Request invalid, missing "mark" form data')
 		}
 		const userID = locals.discordMember.id
-		const doMark = JSON.parse(formData.get('mark') as string)
+		let doMark: boolean
+		try {
+			doMark = JSON.parse(formData.get('mark') as string)
+		} catch (e) {
+			validationError(`Request invalid, received non-boolean "mark" form data`)
+			return
+		}
 		const YYYYMMDD = formData.get('day') as string
+		if (!YYYYMMDD || !get(days).find((d) => d.YYYYMMDD === YYYYMMDD)) {
+			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`)
+		}
 		const marks = [...getData().marks]
 		if (doMark) {
 			const existingMark = marks.find(
@@ -80,23 +85,25 @@ export const actions: Actions = {
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('noteText')) {
-			throw error(400, {
-				name: 'Oops...',
-				message: 'Request invalid, missing "noteText" form data',
-			})
+			validationError('Request invalid, missing "noteText" form data')
 		}
 		const userID = locals.discordMember.id
 		const noteText = formData.get('noteText') as string
+		if (typeof noteText !== 'string') {
+			validationError(
+				'Request invalid, received non-string "noteText" form data'
+			)
+		}
 		const YYYYMMDD = formData.get('day') as string
+		if (!YYYYMMDD || !get(days).find((d) => d.YYYYMMDD === YYYYMMDD)) {
+			validationError(`Request invalid, "${YYYYMMDD}" is an invalid day`)
+		}
 		const marks = [...getData().marks]
 		const notedMark = marks.find(
 			(m) => m.userID === userID && m.YYYYMMDD === YYYYMMDD
 		)!
 		if (!notedMark) {
-			throw error(400, {
-				name: 'Oops...',
-				message: `Error trying to add a note to a mark that doesn't exist`,
-			})
+			validationError(`Tried to modify the note for a mark that doesn't exist`)
 		}
 		modifyData({
 			marks: [
@@ -109,6 +116,10 @@ export const actions: Actions = {
 			],
 		})
 	},
+}
+
+function validationError(message: string) {
+	throw error(400, { name: 'Oops...', message })
 }
 
 function checkAuth(

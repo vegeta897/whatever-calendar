@@ -2,7 +2,7 @@
 
 ## Working on
 
-- The high priority stuff
+- Validate data coming from client
 
 ## High-priority (Required before public test)
 
