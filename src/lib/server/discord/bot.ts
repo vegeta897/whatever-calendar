@@ -31,7 +31,11 @@ export async function connectBot() {
 }
 
 export async function fetchMembers(userIDs: string | string[]) {
-	await discordServer.members.fetch({ user: userIDs })
+	if (!Array.isArray(userIDs)) userIDs = [userIDs]
+	// Fetching an array of users always skips cache, so we fetch individually
+	await Promise.all(
+		userIDs.map((user) => discordServer.members.fetch({ user }))
+	)
 }
 
 export async function getMember(
