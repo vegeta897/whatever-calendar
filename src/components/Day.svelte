@@ -50,11 +50,13 @@
 				<div
 					class="day-marks-large"
 					class:four-marks={dayMarks.length === 4}
+					class:ten-marks={dayMarks.length >= 9}
+					class:twelve-marks={dayMarks.length >= 11}
 					in:send={{ key: day.YYYYMMDD }}
 					out:receive={{ key: day.YYYYMMDD }}
 				>
 					{#each dayMarks as mark, i (mark.userID)}<Dot
-							avatar={true}
+							avatar={dayMarks.length <= 8}
 							mini={dayMarks.length >= 7}
 							user={users[mark.userID]}
 							note={!!mark.note}
@@ -135,7 +137,7 @@
 		height: 55px;
 		width: 3px;
 		border-radius: 1.5px;
-		top: 26px;
+		top: 28px;
 		left: -4px;
 		background: rgba(255, 255, 255, 0.25);
 		pointer-events: none;
@@ -212,11 +214,13 @@
 		width: 64px;
 	}
 
-	.day-marks-small.ten-marks {
+	.day-marks-small.ten-marks,
+	.day-marks-large.ten-marks {
 		width: 80px;
 	}
 
-	.day-marks-small.twelve-marks {
+	.day-marks-small.twelve-marks,
+	.day-marks-large.twelve-marks {
 		width: 96px;
 	}
 
