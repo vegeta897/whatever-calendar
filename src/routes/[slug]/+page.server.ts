@@ -8,7 +8,7 @@ import { error, redirect } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 import { days } from '$lib/calendar'
 import type { Actions, PageServerLoad } from './$types'
-import { getMembers } from '$lib/server/discord/bot'
+import { getUsers } from '$lib/server/discord/bot'
 
 export const load: PageServerLoad = async ({
 	cookies,
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({
 	}
 	pageData.discordMember = locals.discordMember
 	pageData.marks = getMarks()
-	pageData.users = await getMembers(getWheneverUserIDs())
+	pageData.users = await getUsers(getWheneverUserIDs())
 	pageData.users[locals.discordMember.id].me = true
 	const weekStart = cookies.get('wec-weekStart')
 	if (weekStart !== undefined) {

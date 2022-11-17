@@ -1,4 +1,3 @@
-import { dev } from '$app/environment'
 import { days, setCookie } from '$lib/server/cookies'
 import {
 	addOrRefreshSession,
@@ -7,17 +6,13 @@ import {
 	getWheneverUserIDs,
 	modifyData,
 } from '$lib/server/db'
-import { connectBot, getMember, getMembers } from '$lib/server/discord/bot'
+import { connectBot, getMember, fetchMembers } from '$lib/server/discord/bot'
 import { getUser } from '$lib/server/discord/oauth'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
 await connectBot()
-await getMembers(getWheneverUserIDs(), true)
-if (!dev) {
-	// HMR in dev mode will cause setInterval to run over and over
-	setInterval(() => getMembers(getWheneverUserIDs(), true), 15 * 60 * 1000) // 15 minutes
-}
+await fetchMembers(getWheneverUserIDs())
 
 const handleSession: Handle = async ({ event, resolve }) => {
 	console.log('begin handleSession', event.routeId)
