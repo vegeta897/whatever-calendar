@@ -66,7 +66,6 @@
 <svelte:head>
 	<title>Whenever{daySelected ? ` ${daySelected.YYYYMMDD}` : ''}</title>
 </svelte:head>
-<!-- TODO: Affix header to top of page when scrolled out of view -->
 <div class="header">
 	<div class="clock">
 		<time datetime={$now.toISO({ includeOffset: false })}>
@@ -132,7 +131,10 @@
 		margin: 0.8rem 0;
 		border-radius: 1rem;
 		padding: 0.8rem 1.2rem;
-		background: rgba(0, 0, 0, 0.5);
+		background: #090a0b;
+		position: sticky;
+		top: 0;
+		z-index: 9999;
 	}
 
 	.header label {

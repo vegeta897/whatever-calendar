@@ -161,16 +161,4 @@
 		background-color: rgba(0, 0, 0, 0.7);
 		opacity: 1;
 	}
-
-	@keyframes bounce {
-		0% {
-			transform: scale(0);
-		}
-		30% {
-			transform: scale(1.2);
-		}
-		100% {
-			transform: scale(1);
-		}
-	}
 </style>

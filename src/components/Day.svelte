@@ -151,7 +151,7 @@
 	.day-date {
 		font-size: 2.2em;
 		position: absolute;
-		height: 100%;
+		height: 116px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
