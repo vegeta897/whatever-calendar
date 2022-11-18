@@ -89,7 +89,9 @@
 			<a href={$page.data.href}>Refresh</a>
 		{/if}
 	</div>
-	<div>
+</div>
+<div class="calendar">
+	<div class="week-start-container">
 		<label for="week-start">Start of week:</label>
 		<select id="week-start" bind:value={$weekStart}>
 			<!-- Use selected property to show correct option on intial render -->
@@ -97,8 +99,6 @@
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
 	</div>
-</div>
-<div class="calendar">
 	<ol class="month">
 		{#each weekdayNames as weekdayName}
 			<li class="weekday">{weekdayName}</li>
@@ -131,13 +131,18 @@
 		margin: 0.8rem 0;
 		border-radius: 1rem;
 		padding: 0.8rem 1.2rem;
+		box-sizing: border-box;
 		background: #090a0b;
 		position: sticky;
 		top: 0;
 		z-index: 9999;
 	}
 
-	.header label {
+	.week-start-container {
+		width: 100%;
+	}
+
+	.week-start-container label {
 		margin-right: 0.2em;
 	}
 
@@ -186,13 +191,15 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		width: 100%;
 	}
 
 	.month {
 		display: grid;
-		grid-template-columns: repeat(7, 116px);
-		row-gap: 8px;
-		column-gap: 8px;
+		width: 100%;
+		grid-template-columns: repeat(7, calc(94% / 7));
+		row-gap: 0.5rem;
+		column-gap: 1%;
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -200,7 +207,7 @@
 	}
 
 	.weekday {
-		font-size: 1.2em;
+		font-size: 1.2rem;
 		margin: 0.5rem 0;
 		color: rgba(255, 255, 255, 0.4);
 	}
@@ -209,19 +216,37 @@
 		color: rgba(255, 255, 255, 0.2);
 		cursor: default;
 		user-select: none;
-		font-size: 2.2em;
-		height: 114px;
-		transform: translateY(-3px);
+		height: 116px;
 		display: flex;
 		align-items: center;
 	}
 
-	@media (max-width: 640px) {
-		/* TODO: This all needs to be redone */
-		ol {
-			grid-template-columns: repeat(7, 45px);
-			row-gap: 4px;
-			column-gap: 4px;
+	.pre-day .day-date {
+		height: 100%;
+		font-size: 2.2rem;
+		display: flex;
+		align-items: center;
+		transform: translateY(-4px);
+	}
+
+	@media (max-width: 40rem) {
+		.pre-day {
+			height: 5.5rem;
+		}
+		.pre-day .day-date {
+			font-size: 1.8rem;
+		}
+	}
+
+	@media (max-width: 30rem) {
+		.pre-day {
+			height: 4rem;
+		}
+		.weekday {
+			font-size: 1rem;
+		}
+		.pre-day .day-date {
+			font-size: 1.5rem;
 		}
 	}
 </style>

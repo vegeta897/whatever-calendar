@@ -24,17 +24,18 @@
 	href="/{day === daySelected ? 'calendar' : day.YYYYMMDD}"
 	data-sveltekit-prefetch="off"
 	on:click|preventDefault={() => {
-		hover = false
+		// hover = false
 		onClick(day)
 	}}
 >
 	<li
 		class="day"
-		on:mouseenter={() => (hover = day !== daySelected)}
+		on:mouseenter={() => (hover = true)}
 		on:mouseleave={() => (hover = false)}
 		class:selected={day === daySelected}
 		class:first-column={day.weekday === $weekStart}
 		class:noJS
+		class:no-marks={dayMarks.length === 0}
 	>
 		{#if $today.hasSame(day.datetime, 'day') || day.day === 1}
 			{#if day.day === 1 && day.weekday !== $weekStart}
@@ -46,7 +47,7 @@
 			{day.day}
 		</div>
 		<div class="day-marks">
-			{#if hover || noJS}
+			{#if (hover && day !== daySelected) || noJS}
 				<div
 					class="day-marks-large"
 					class:four-marks={dayMarks.length === 4}
@@ -55,7 +56,7 @@
 					in:send={{ key: day.YYYYMMDD }}
 					out:receive={{ key: day.YYYYMMDD }}
 				>
-					{#each dayMarks as mark, i (mark.userID)}<Dot
+					{#each dayMarks as mark (mark.userID)}<Dot
 							avatar={dayMarks.length <= 8}
 							mini={dayMarks.length >= 7}
 							user={users[mark.userID]}
@@ -63,7 +64,7 @@
 						/>{/each}
 				</div>
 			{/if}
-			{#if !hover || noJS}
+			{#if !hover || day === daySelected || noJS}
 				<div
 					class="day-marks-small"
 					class:six-marks={dayMarks.length >= 5}
@@ -86,16 +87,15 @@
 	a {
 		color: var(--color-text);
 		display: block;
-		width: calc(100%);
-		height: 116px;
+		width: 100%;
+		height: 7.25rem;
 		text-decoration: none;
 	}
 
 	.day {
-		width: calc(100%);
-		height: 116px;
-		box-sizing: border-box;
-		border-radius: 20px;
+		width: 100%;
+		height: 100%;
+		border-radius: 1.5rem;
 		transition: background-color 50ms ease-out, color 50ms ease-out,
 			height 50ms ease-out, margin-bottom 50ms ease-out,
 			border-radius 50ms ease-out;
@@ -107,15 +107,11 @@
 		user-select: none;
 	}
 
-	.day-date.day-today {
-		text-decoration: underline;
-	}
-
 	.day.selected {
 		background: rgba(0, 0, 0, 0.25);
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
-		height: 124px;
+		height: 7.75rem;
 	}
 
 	.day:not(.selected):hover {
@@ -125,44 +121,48 @@
 	}
 
 	.month-label {
-		font-size: 1.5em;
+		font-size: 1.5rem;
 		color: rgba(255, 255, 255, 0.5);
 		position: absolute;
-		top: -3px;
+		top: -0.25rem;
 		transition: opacity 50ms ease-out;
 	}
 
-	.day:not(.selected) .month-divider {
+	.month-divider {
 		position: absolute;
-		height: 55px;
+		height: 50%;
 		width: 3px;
 		border-radius: 1.5px;
-		top: 28px;
+		top: 25%;
 		left: -4px;
 		background: rgba(255, 255, 255, 0.25);
 		pointer-events: none;
 		transition: opacity 50ms ease-out;
 	}
 
-	.day:not(.selected):hover .month-label,
+	.day:not(.selected):not(.no-marks):hover .month-label,
 	.day.selected .month-divider,
 	.day:not(.selected):hover .month-divider {
 		opacity: 0;
 	}
 
 	.day-date {
-		font-size: 2.2em;
+		font-size: 2.2rem;
 		position: absolute;
-		height: 116px;
+		height: 7.25rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		transform: translateY(-4px);
+		transform: translateY(-0.25rem);
 		transition: transform 50ms ease-out;
 	}
 
-	.day:not(.selected):hover .day-date {
-		transform: translateY(-32px);
+	.day-date.day-today {
+		text-decoration: underline;
+	}
+
+	.day:not(.selected):not(.no-marks):hover .day-date {
+		transform: translateY(-2rem);
 	}
 
 	.day-marks {
@@ -170,9 +170,12 @@
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 		justify-items: center;
-		margin-top: 58px;
-		height: 58px;
+		position: relative;
+		top: 3.625rem;
+		height: 3.625rem;
 	}
+
+	/* TODO: Redesign how dot sizing works */
 
 	.day-marks-small,
 	.day-marks-large {
@@ -187,11 +190,11 @@
 	}
 
 	.day-marks-small {
-		transform: translateY(6px);
+		transform: translateY(0.375rem);
 	}
 
 	.day-marks-large {
-		transform: translateY(-10px);
+		transform: translateY(-0.75rem);
 	}
 
 	.day.noJS .day-marks-large {
@@ -226,5 +229,44 @@
 
 	.day-marks-large.four-marks {
 		width: 60px;
+	}
+
+	@media (max-width: 40rem) {
+		a,
+		.day-date {
+			height: 5.5rem;
+		}
+		.day {
+			border-radius: 1.2rem;
+		}
+		.month-label {
+			font-size: 1.2rem;
+			top: -0.5625rem;
+		}
+		.day-date {
+			font-size: 1.8rem;
+		}
+	}
+
+	@media (max-width: 30rem) {
+		a,
+		.day-date {
+			height: 4rem;
+		}
+		.day {
+			border-radius: 1rem;
+		}
+		.month-label {
+			font-size: 1rem;
+			top: -0.6875rem;
+		}
+		.month-divider {
+			width: 2px;
+			border-radius: 1px;
+			left: -2px;
+		}
+		.day-date {
+			font-size: 1.5rem;
+		}
 	}
 </style>

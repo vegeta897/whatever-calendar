@@ -43,7 +43,7 @@
 	</h4>
 	<div class="marks">
 		<Mark mark={myMark} {day} mine />
-		{#each otherMarks as mark (mark.userID)}
+		{#each otherMarks as mark (mark.YYYYMMDD + mark.userID)}
 			<Mark {mark} {day} />
 		{/each}
 	</div>

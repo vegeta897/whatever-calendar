@@ -2,7 +2,7 @@
 
 ## Working on
 
-- UI/UX for loading and waiting for server responses
+- Responsive layout
 
 ## High-priority (Required before public test)
 

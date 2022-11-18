@@ -3,7 +3,7 @@
 </script>
 
 <header>
-	<h1><small><span>📅 w</span>/<span>e</span></small>Whenever</h1>
+	<h1><small><span><i>📅</i> w</span>/<span>e</span></small>Whenever</h1>
 	<div class="corner">
 		<a href="https://github.com/vegeta897/whatever-calendar">
 			<img class="circle" src={github} alt="GitHub" />
@@ -68,6 +68,11 @@
 		bottom: 4px;
 		left: 1px;
 		transform: scaleY(0.95);
+	}
+
+	h1 small span i {
+		font-style: normal;
+		text-shadow: 0 0.5px 2px #000;
 	}
 
 	h1 small span:last-child {

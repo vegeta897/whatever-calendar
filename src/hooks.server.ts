@@ -10,6 +10,7 @@ import { connectBot, getMember, fetchMembers } from '$lib/server/discord/bot'
 import { getUser } from '$lib/server/discord/oauth'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { dev } from '$app/environment'
 
 await connectBot()
 await fetchMembers(getWheneverUserIDs())
@@ -41,6 +42,7 @@ const handleSession: Handle = async ({ event, resolve }) => {
 const handleDiscord: Handle = async ({ event, resolve }) => {
 	// Auth API routes only need the session
 	if (event.routeId?.startsWith('api/')) return await resolve(event)
+	if (dev) event.locals.discordID = '86913608335773696'
 	// This session isn't stored if there is no discord ID
 	const newSession = !event.locals.discordID
 	if (newSession) {
