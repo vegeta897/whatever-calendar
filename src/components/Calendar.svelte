@@ -93,6 +93,7 @@
 <div class="calendar">
 	<div class="week-start-container">
 		<label for="week-start">Start of week:</label>
+		<!-- TODO: Change to Sun/Mon links that look like buttons -->
 		<select id="week-start" bind:value={$weekStart}>
 			<!-- Use selected property to show correct option on intial render -->
 			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
@@ -196,9 +197,12 @@
 
 	.month {
 		display: grid;
+		--day-height: 7.25rem;
 		width: 100%;
 		grid-template-columns: repeat(7, calc(94% / 7));
-		row-gap: 0.5rem;
+		--day-row-gap: 0.5rem;
+		--day-date-font-size: 2.2rem;
+		row-gap: var(--day-row-gap);
 		column-gap: 1%;
 		list-style: none;
 		margin: 0;
@@ -216,37 +220,92 @@
 		color: rgba(255, 255, 255, 0.2);
 		cursor: default;
 		user-select: none;
-		height: 116px;
+		height: var(--day-height);
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 	}
 
 	.pre-day .day-date {
-		height: 100%;
-		font-size: 2.2rem;
+		font-size: var(--day-date-font-size);
+		line-height: var(--day-date-font-size);
+		height: calc(var(--day-height) * 0.55);
 		display: flex;
-		align-items: center;
-		transform: translateY(-4px);
+		flex-direction: column;
+		justify-content: flex-end;
+	}
+
+	@media (max-width: 55rem) {
+		/* 880px */
+		.month {
+			--day-height: 6.75rem;
+			--day-row-gap: 0.45rem;
+			--day-date-font-size: 2.1rem;
+		}
+	}
+
+	@media (max-width: 50rem) {
+		/* 800px */
+		.month {
+			--day-height: 6.25rem;
+			--day-row-gap: 0.45rem;
+			--day-date-font-size: 2rem;
+		}
+	}
+
+	@media (max-width: 45rem) {
+		/* 720px */
+		.month {
+			--day-height: 5.75rem;
+			--day-row-gap: 0.4rem;
+			--day-date-font-size: 1.9rem;
+		}
 	}
 
 	@media (max-width: 40rem) {
-		.pre-day {
-			height: 5.5rem;
+		/* 640px */
+		.month {
+			--day-height: 5rem;
+			--day-row-gap: 0.35rem;
+			--day-date-font-size: 1.8rem;
 		}
-		.pre-day .day-date {
-			font-size: 1.8rem;
+	}
+
+	@media (max-width: 35rem) {
+		/* 560px */
+		.month {
+			--day-height: 4.5rem;
+			--day-row-gap: 0.3rem;
+			--day-date-font-size: 1.6rem;
 		}
 	}
 
 	@media (max-width: 30rem) {
-		.pre-day {
-			height: 4rem;
+		/* 480px */
+		.month {
+			--day-height: 3.75rem;
+			--day-row-gap: 0.25rem;
+			--day-date-font-size: 1.4rem;
 		}
 		.weekday {
 			font-size: 1rem;
 		}
-		.pre-day .day-date {
-			font-size: 1.5rem;
+	}
+
+	@media (max-width: 25rem) {
+		/* 400px */
+		.month {
+			--day-height: 3.25rem;
+			--day-row-gap: 0.2rem;
+		}
+	}
+
+	@media (max-width: 20rem) {
+		/* 320px */
+		.month {
+			--day-height: 2.75rem;
+			--day-row-gap: 0.15rem;
+			--day-date-font-size: 1.1rem;
 		}
 	}
 </style>

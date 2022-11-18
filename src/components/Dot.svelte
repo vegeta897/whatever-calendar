@@ -3,7 +3,6 @@
 
 	export let user: WheneverUser
 	export let avatar = false
-	export let mini = false
 	export let unmarked = false
 	export let markable = false
 	export let note = false
@@ -19,9 +18,7 @@
 	style:border-color={user.color}
 	style:background-color={unmarked ? '' : user.color}
 	class:avatar
-	class:mini
 	class:unmarked
-	class:note
 	class:wumbo
 	class:me={user.me}
 >
@@ -38,17 +35,20 @@
 			</svg>
 		{/if}
 	{/if}
+	{#if note}
+		<span class="note">*</span>
+	{/if}
 </div>
 
 <style>
 	div {
 		background: var(--color-theme-1);
 		box-sizing: border-box;
-		border: 3px solid var(--color-theme-1);
-		border-radius: 6px;
-		width: 12px;
-		height: 12px;
-		margin: 2px;
+		border: calc(var(--dot-size) / 7) solid var(--color-theme-1);
+		border-radius: 50%;
+		width: var(--dot-size);
+		height: var(--dot-size);
+		margin: calc(0.125rem * var(--dot-scale));
 		position: relative;
 		flex-shrink: 0;
 	}
@@ -57,46 +57,14 @@
 		order: -1;
 	}
 
-	div.note::after {
-		font-size: 24px;
-		content: '*';
+	div .note {
+		font-size: var(--dot-size);
 		color: #fff;
-		position: relative;
-		top: -11px;
-		right: -15px;
-		text-shadow: -2px 2px 3px rgba(0, 0, 0, 0.9);
-	}
-
-	div.note.mini::after {
-		font-size: 20px;
-		top: -9px;
-		right: -13px;
-	}
-
-	div.note:not(.avatar)::after {
-		font-size: 14px;
-		top: -9px;
-		right: -4px;
-		text-shadow: -1px 1px 2px rgba(0, 0, 0, 0.5);
-	}
-
-	div.avatar {
-		border-radius: 13px;
-		width: 26px;
-		height: 26px;
-	}
-
-	div.avatar.mini {
-		border-radius: 11px;
-		width: 22px;
-		height: 22px;
-	}
-
-	div.avatar.wumbo {
-		width: 40px;
-		height: 40px;
-		border-radius: 20px;
-		border-width: 4px;
+		position: absolute;
+		top: -75%;
+		right: -50%;
+		text-shadow: calc(var(--dot-size) / -8) calc(var(--dot-size) / 8)
+			calc(var(--dot-size) / 6) #0008;
 	}
 
 	div.unmarked {
@@ -106,32 +74,30 @@
 	img {
 		pointer-events: none;
 		display: block;
-		width: 20px;
-		height: 20px;
-		border-radius: 10px;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
 		position: absolute;
 		background: rgba(0, 0, 63, 0.6);
 		transition: transform 90ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
 	}
 
-	.mini img {
-		width: 16px;
-		height: 16px;
-		border-radius: 8px;
+	img.hidden {
+		display: none;
 	}
 
-	.wumbo img {
-		width: 32px;
-		height: 32px;
-		border-radius: 16px;
+	@media (max-width: 30rem) {
+		:not(.wumbo) img {
+			display: none;
+		}
+
+		.note {
+			display: none;
+		}
 	}
 
 	div.unmarked img {
 		transform: scale(0);
-	}
-
-	img.hidden {
-		display: none;
 	}
 
 	svg.plus {

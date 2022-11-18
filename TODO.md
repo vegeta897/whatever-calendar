@@ -16,3 +16,4 @@
 - Use rems instead of pixels for anything that should scale with font size
 - Use Chalk for nicer server logs
 - Add slash command(s)?
+- Create single-column day calendar as an alternative view (better for mobile?)
