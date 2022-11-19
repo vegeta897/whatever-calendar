@@ -6,6 +6,7 @@
 	export let daySelected: CalendarDay | null
 	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
+	export let firstRow = false
 </script>
 
 <a
@@ -23,8 +24,8 @@
 		class:first-of-month={day.day === 1}
 	>
 		<div class="month-label">
-			{#if $today.hasSame(day.datetime, 'day') || day.day === 1}{day.datetime
-					.monthShort}{/if}
+			{#if day === daySelected || day.day === 1 || (firstRow && day.weekday === $weekStart)}{day
+					.datetime.monthShort}{/if}
 		</div>
 		<div class="day-date" class:day-today={$today.hasSame(day.datetime, 'day')}>
 			{day.day}
@@ -77,7 +78,7 @@
 	}
 
 	.month-label {
-		font-size: calc(var(--day-height) * 0.2);
+		font-size: calc(var(--day-height) * 0.23);
 		height: calc(100% / 3);
 		color: rgba(255, 255, 255, 0.5);
 	}

@@ -104,14 +104,22 @@
 		{#each weekdayNames as weekdayName}
 			<li class="weekday">{weekdayName}</li>
 		{/each}
-		{#each preDays as day (day)}<li class="pre-day">
-				<div class="month-label" />
-				<div class="day-date">{day}</div>
+		{#each preDays as day, pd (day)}<li class="pre-day">
+				<div class="month-label">
+					{#if day.day === 1 || pd === 0}{day.month}{/if}
+				</div>
+				<div class="day-date">{day.day}</div>
 			</li>{/each}
-		{#each $days as day (day.YYYYMMDD)}
+		{#each $days as day, d (day.YYYYMMDD)}
 			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
 			{#if day.datetime >= $today}
-				<Day {day} bind:daySelected {dayMarks} onClick={dayOnClick} />
+				<Day
+					{day}
+					bind:daySelected
+					{dayMarks}
+					onClick={dayOnClick}
+					firstRow={preDays.length + d < 7}
+				/>
 			{/if}
 			{#if daySelected && day.weekday === ($weekStart === 1 ? 7 : 6) && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
 				<DayDetail
@@ -228,8 +236,9 @@
 	}
 
 	.pre-day .month-label {
-		font-size: calc(var(--day-height) * 0.2);
+		font-size: calc(var(--day-height) * 0.23);
 		height: calc(100% / 3);
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.pre-day .day-date {

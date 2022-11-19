@@ -51,13 +51,13 @@ export function getPreDays(
 	before: DateTime,
 	weekStart: 7 | 1
 ) {
-	const preDays: number[] = []
+	const preDays: { day: number; month: string }[] = []
 	let preDayLooper = days
 		.find((d) => d.datetime.hasSame(before, 'day'))!
 		.datetime.plus(0)
 	while (preDayLooper.weekday !== weekStart) {
 		preDayLooper = preDayLooper.minus({ days: 1 })
-		preDays.push(preDayLooper.day)
+		preDays.push({ day: preDayLooper.day, month: preDayLooper.monthShort })
 	}
 	return preDays.reverse()
 }
