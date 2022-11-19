@@ -1,12 +1,19 @@
 <script lang="ts">
 	import type { CalendarDay } from '$lib/calendar'
 	import { weekStart, today } from '$lib/calendar'
+	import People from './People.svelte'
+	import { page } from '$app/stores'
 
 	export let day: CalendarDay
 	export let daySelected: CalendarDay | null
 	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
 	export let firstRow = false
+
+	const myUserID = $page.data.discordMember!.id
+
+	$: myMark = dayMarks.find((m) => m.userID === myUserID)
+	$: otherMarks = dayMarks.filter((m) => m.userID !== myUserID)
 </script>
 
 <a
@@ -31,7 +38,11 @@
 			{day.day}
 		</div>
 		<div class="day-marks">
-			{dayMarks.length || ''}
+			<!-- <People YYYYMMDD={day.YYYYMMDD} count={dayMarks.length + 2} /> -->
+			{#if myMark}You{/if}
+			{#if otherMarks.length > 0}{#if myMark}
+					+
+				{/if}{otherMarks.length}{/if}
 		</div>
 	</li>
 </a>
@@ -98,11 +109,12 @@
 
 	.day-marks {
 		display: flex;
-		align-items: center;
+		color: rgba(255, 255, 255, 0.5);
+		align-items: flex-start;
 		justify-content: center;
 		width: 100%;
 		height: calc(100% / 3);
 		flex-grow: 1;
-		font-size: calc(var(--day-height) * 0.2);
+		font-size: calc(var(--day-height) * 0.16);
 	}
 </style>

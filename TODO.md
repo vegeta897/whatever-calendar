@@ -2,14 +2,12 @@
 
 ## Working on
 
-- Responsive layout
+- Redesigning stuff, responsive stuff
 
 ## High-priority (Required before public test)
 
 - Responsive layout
 - Create user list that you can click to filter days with their marks
-- Replace color dots with simpler people icons, so I don't have to worry about how many dots show in a row and other layout crap
-- Make month labels clearer, especially the first/current month
 - Color scheme inspired by randoma11y.com, maybe use an outlined style?
 - Auto-refresh, better indication of when app is refreshing or outdated
 

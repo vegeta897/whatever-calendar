@@ -75,8 +75,29 @@
 			<details bind:this={myNoteDetailsElement} open={!mark.note}>
 				<summary>
 					{#if mark.note}
-						<div class="edit-note-button">✎</div>
-						<div class="cancel-note-button">🗙</div>
+						<div class="edit-note-button">
+							<svg
+								viewBox="0 0 14 14"
+								version="1.1"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path d="M6 3 l8 8 v3 h-3 l-8 -8 Z" fill="#fffa" />
+								<path d="M3 0 l2 2 l-3 3 l-2 -2 Z" fill="#fffa" />
+							</svg>
+						</div>
+						<div class="cancel-note-button">
+							<svg
+								viewBox="0 0 10 10"
+								version="1.1"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M1.5 1.5 L8.5 8.5 M8.5 1.5 L1.5 8.5"
+									stroke="#fffa"
+									stroke-width="2"
+								/>
+							</svg>
+						</div>
 						<q class="user-note">{mark.note}</q>
 					{/if}
 				</summary>
@@ -182,16 +203,6 @@
 		color: #fff;
 	}
 
-	.cancel-note-button,
-	details[open] .user-note,
-	details[open] .edit-note-button {
-		display: none;
-	}
-
-	details[open] .cancel-note-button {
-		display: block;
-	}
-
 	details[open] summary {
 		position: absolute;
 		height: 100%;
@@ -203,6 +214,9 @@
 		list-style: none;
 		counter-increment: none;
 	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
 
 	.edit-note-button,
 	.cancel-note-button {
@@ -210,16 +224,27 @@
 		left: calc(var(--note-input-height) * -1 - 0.5rem);
 		cursor: pointer;
 		background: rgba(255, 255, 255, 0.05);
-		padding: 0.5rem 0.75rem;
+		padding: 0.5625rem;
 		border-radius: 0.5rem;
 		height: var(--note-input-height);
 		width: var(--note-input-height);
 		box-sizing: border-box;
+		display: flex;
 	}
 
 	.edit-note-button:hover,
 	.cancel-note-button:hover {
 		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.cancel-note-button,
+	details[open] .user-note,
+	details[open] .edit-note-button {
+		display: none;
+	}
+
+	details[open] .cancel-note-button {
+		display: flex;
 	}
 
 	.my-note {

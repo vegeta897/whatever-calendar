@@ -28,7 +28,13 @@
 			on:error={() => (imgError = true)}
 		/>
 		{#if markable && user.me}
-			<svg transition:fade={{ duration: 100 }} class="plus" viewBox="0 0 1 1">
+			<svg
+				version="1.1"
+				xmlns="http://www.w3.org/2000/svg"
+				transition:fade={{ duration: 100 }}
+				class="plus"
+				viewBox="0 0 1 1"
+			>
 				<path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" />
 			</svg>
 		{/if}
