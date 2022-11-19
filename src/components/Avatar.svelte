@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition'
 
+	export let size = '3rem'
 	export let user: WheneverUser
 	export let avatar = false
 	export let unmarked = false
 	export let markable = false
-	export let note = false
-	export let wumbo = false
 
 	let imgError = false
 
@@ -17,10 +16,9 @@
 <div
 	style:border-color={user.color}
 	style:background-color={unmarked ? '' : user.color}
+	style="--size: {size}"
 	class:avatar
 	class:unmarked
-	class:wumbo
-	class:me={user.me}
 >
 	{#if avatar}
 		<img
@@ -35,36 +33,18 @@
 			</svg>
 		{/if}
 	{/if}
-	{#if note}
-		<span class="note">*</span>
-	{/if}
 </div>
 
 <style>
 	div {
 		background: var(--color-theme-1);
 		box-sizing: border-box;
-		border: calc(var(--dot-size) / 7) solid var(--color-theme-1);
+		border: calc(var(--size) / 12) solid var(--color-theme-1);
 		border-radius: 50%;
-		width: var(--dot-size);
-		height: var(--dot-size);
-		margin: calc(0.125rem * var(--dot-scale));
+		width: var(--size);
+		height: var(--size);
 		position: relative;
 		flex-shrink: 0;
-	}
-
-	div.me {
-		order: -1;
-	}
-
-	div .note {
-		font-size: var(--dot-size);
-		color: #fff;
-		position: absolute;
-		top: -75%;
-		right: -50%;
-		text-shadow: calc(var(--dot-size) / -8) calc(var(--dot-size) / 8)
-			calc(var(--dot-size) / 6) #0008;
 	}
 
 	div.unmarked {
@@ -82,18 +62,8 @@
 		transition: transform 90ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
 	}
 
-	img.hidden {
+	.hidden {
 		display: none;
-	}
-
-	@media (max-width: 30rem) {
-		:not(.wumbo) img {
-			display: none;
-		}
-
-		.note {
-			display: none;
-		}
 	}
 
 	div.unmarked img {
@@ -105,9 +75,9 @@
 		transition: transform 200ms cubic-bezier(0.39, 1.73, 0.84, 1.11),
 			opacity 100ms ease-out, background-color 100ms ease-out;
 		display: block;
-		width: 32px;
-		height: 32px;
-		border-radius: 16px;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
 		stroke-width: 0.1;
 		stroke: #fff;
 		fill: none;

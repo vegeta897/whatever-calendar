@@ -105,6 +105,7 @@
 			<li class="weekday">{weekdayName}</li>
 		{/each}
 		{#each preDays as day (day)}<li class="pre-day">
+				<div class="month-label" />
 				<div class="day-date">{day}</div>
 			</li>{/each}
 		{#each $days as day (day.YYYYMMDD)}
@@ -211,8 +212,8 @@
 	}
 
 	.weekday {
-		font-size: 1.2rem;
-		margin: 0.5rem 0;
+		font-size: calc(var(--day-height) * 0.2);
+		margin: 0.5rem 0 0;
 		color: rgba(255, 255, 255, 0.4);
 	}
 
@@ -226,10 +227,14 @@
 		align-items: center;
 	}
 
+	.pre-day .month-label {
+		font-size: calc(var(--day-height) * 0.2);
+		height: calc(100% / 3);
+	}
+
 	.pre-day .day-date {
-		font-size: var(--day-date-font-size);
-		line-height: var(--day-date-font-size);
-		height: calc(var(--day-height) * 0.55);
+		height: calc(100% / 3);
+		font-size: calc(var(--day-height) * 0.3);
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
@@ -240,7 +245,6 @@
 		.month {
 			--day-height: 6.75rem;
 			--day-row-gap: 0.45rem;
-			--day-date-font-size: 2.1rem;
 		}
 	}
 
@@ -249,7 +253,6 @@
 		.month {
 			--day-height: 6.25rem;
 			--day-row-gap: 0.45rem;
-			--day-date-font-size: 2rem;
 		}
 	}
 
@@ -258,7 +261,6 @@
 		.month {
 			--day-height: 5.75rem;
 			--day-row-gap: 0.4rem;
-			--day-date-font-size: 1.9rem;
 		}
 	}
 
@@ -267,7 +269,6 @@
 		.month {
 			--day-height: 5rem;
 			--day-row-gap: 0.35rem;
-			--day-date-font-size: 1.8rem;
 		}
 	}
 
@@ -276,7 +277,6 @@
 		.month {
 			--day-height: 4.5rem;
 			--day-row-gap: 0.3rem;
-			--day-date-font-size: 1.6rem;
 		}
 	}
 
@@ -285,10 +285,6 @@
 		.month {
 			--day-height: 3.75rem;
 			--day-row-gap: 0.25rem;
-			--day-date-font-size: 1.4rem;
-		}
-		.weekday {
-			font-size: 1rem;
 		}
 	}
 
@@ -303,9 +299,8 @@
 	@media (max-width: 20rem) {
 		/* 320px */
 		.month {
-			--day-height: 2.75rem;
+			--day-height: 2.625rem;
 			--day-row-gap: 0.15rem;
-			--day-date-font-size: 1.1rem;
 		}
 	}
 </style>

@@ -4,7 +4,7 @@
 	import { page } from '$app/stores'
 	import { enhance } from '$app/forms'
 	import { browser } from '$app/environment'
-	import Dot from './Dot.svelte'
+	import Avatar from './Avatar.svelte'
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
 	import { saving } from './Calendar.svelte'
@@ -64,10 +64,9 @@
 				<input name="day" hidden value={day.YYYYMMDD} />
 				<input name="mark" hidden value={!mark} />
 				<button disabled={$saving}>
-					<Dot
+					<Avatar
 						user={users[myUserID]}
 						avatar
-						wumbo
 						markable={!$saving}
 						unmarked={!mark}
 					/>
@@ -76,7 +75,7 @@
 				</button>
 			</form>
 		{:else if mark}
-			<Dot user={users[mark.userID]} avatar wumbo />
+			<Avatar user={users[mark.userID]} avatar />
 			<span>{users[mark.userID].name}</span>
 		{/if}
 	</div>
