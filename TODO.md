@@ -12,7 +12,6 @@
 - Make month labels clearer, especially the first/current month
 - Color scheme inspired by randoma11y.com, maybe use an outlined style?
 - Auto-refresh, better indication of when app is refreshing or outdated
-- Plain div for user's own note, click to change to textbox input
 
 ## Low-priority
 

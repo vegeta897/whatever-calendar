@@ -182,10 +182,6 @@
 		color: #fff;
 	}
 
-	.my-note {
-		flex-grow: 1;
-	}
-
 	.cancel-note-button,
 	details[open] .user-note,
 	details[open] .edit-note-button {
@@ -224,6 +220,10 @@
 	.edit-note-button:hover,
 	.cancel-note-button:hover {
 		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.my-note {
+		flex-grow: 1;
 	}
 
 	.my-note form {
@@ -297,6 +297,7 @@
 		position: relative;
 		color: rgba(255, 255, 255, 0.6);
 		flex-grow: 1;
+		line-height: 1.25rem;
 	}
 
 	.user-note::before,
