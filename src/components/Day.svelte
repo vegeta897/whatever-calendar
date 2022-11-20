@@ -63,7 +63,7 @@
 		width: 100%;
 		height: 100%;
 		border-radius: calc(var(--day-height) / 4);
-		transition: padding-bottom 50ms ease-out, border-radius 100ms ease-out,
+		transition: padding-bottom 150ms ease-out, border-radius 150ms ease-out,
 			box-shadow 50ms ease-out;
 		position: relative;
 		touch-action: manipulation;
@@ -86,7 +86,7 @@
 
 	.day:not(.selected):hover {
 		box-shadow: 0 0 0 1px var(--color-fg);
-		transition: none;
+		transition: padding-bottom 150ms ease-out, border-radius 150ms ease-out;
 	}
 
 	.month-label {
@@ -96,8 +96,8 @@
 
 	.day-date {
 		height: calc(100% / 3);
-		padding: 0 0.5rem;
-		border-radius: 0.75rem;
+		padding: 0 calc(var(--day-height) * 0.1);
+		border-radius: calc(var(--day-height) * 0.12);
 		font-size: calc(var(--day-height) * 0.3);
 		line-height: calc(var(--day-height) * 0.3);
 		display: flex;
@@ -135,12 +135,12 @@
 	}
 
 	.day-detail-join-cover {
-		transition: width 100ms ease-out;
+		transition: width 150ms ease-out;
 		background: var(--color-bg);
 		position: absolute;
-		bottom: -1.5px;
+		bottom: -2px;
 		width: 0;
-		height: 2px;
+		height: 3px;
 	}
 
 	.day.selected .day-detail-join-cover {
