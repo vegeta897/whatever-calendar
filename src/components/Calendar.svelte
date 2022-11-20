@@ -254,9 +254,10 @@
 	.pre-day .day-date {
 		height: calc(100% / 3);
 		font-size: calc(var(--day-height) * 0.3);
+		line-height: calc(var(--day-height) * 0.3);
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-end;
+		justify-content: center;
 	}
 
 	@media (max-width: 55rem) {

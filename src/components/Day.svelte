@@ -63,8 +63,7 @@
 		width: 100%;
 		height: 100%;
 		border-radius: calc(var(--day-height) / 4);
-		transition: background-color 50ms ease-out, color 50ms ease-out,
-			height 50ms ease-out, border-radius 100ms ease-out,
+		transition: padding-bottom 50ms ease-out, border-radius 100ms ease-out,
 			box-shadow 50ms ease-out;
 		position: relative;
 		touch-action: manipulation;
@@ -97,15 +96,23 @@
 
 	.day-date {
 		height: calc(100% / 3);
+		padding: 0 0.5rem;
+		border-radius: 0.75rem;
 		font-size: calc(var(--day-height) * 0.3);
+		line-height: calc(var(--day-height) * 0.3);
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-end;
-		transition: transform 50ms ease-out;
+		justify-content: center;
+		transition: background-color 100ms ease-out, color 100ms ease-out;
 	}
 
 	.day-date.day-today {
 		text-decoration: underline;
+	}
+
+	.day.selected .day-date {
+		background: var(--color-fg);
+		color: var(--color-bg);
 	}
 
 	.day-marks {
@@ -128,15 +135,15 @@
 	}
 
 	.day-detail-join-cover {
-		display: none;
+		transition: width 100ms ease-out;
 		background: var(--color-bg);
 		position: absolute;
-		bottom: -1px;
-		width: 100%;
-		height: 1px;
+		bottom: -1.5px;
+		width: 0;
+		height: 2px;
 	}
 
 	.day.selected .day-detail-join-cover {
-		display: block;
+		width: 100%;
 	}
 </style>
