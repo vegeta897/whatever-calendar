@@ -3,7 +3,6 @@
 
 	export let size = '3rem'
 	export let user: WheneverUser
-	export let avatar = false
 	export let unmarked = false
 	export let markable = false
 
@@ -13,55 +12,44 @@
 	// Maybe also make Markable that has Avatar inside it
 </script>
 
-<div
-	style:border-color={unmarked ? 'var(--color-fg)' : user.color}
-	style:background-color={unmarked ? '' : user.color}
-	style="--size: {size}"
-	class:avatar
-	class:unmarked
->
-	{#if avatar}
-		<img
-			src={user.avatarURL}
-			alt="{user.name}'s avatar"
-			class:hidden={imgError}
-			on:error={() => (imgError = true)}
-		/>
-		{#if markable && user.me}
-			<svg
-				version="1.1"
-				xmlns="http://www.w3.org/2000/svg"
-				transition:fade={{ duration: 100 }}
-				class="plus"
-				viewBox="0 0 1 1"
-			>
-				<path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" />
-			</svg>
-		{/if}
+<div style="--size: {size}" class:unmarked>
+	<img
+		src={user.avatarURL}
+		alt="{user.name}'s avatar"
+		class:hidden={imgError}
+		on:error={() => (imgError = true)}
+	/>
+	{#if markable && user.me}
+		<svg
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			transition:fade={{ duration: 100 }}
+			class="plus"
+			viewBox="0 0 1 1"
+		>
+			<path d="M0.2,0.5 h0.6 M0.5,0.2 v0.6" />
+		</svg>
 	{/if}
 </div>
 
 <style>
 	div {
-		background: var(--color-fg);
-		box-sizing: border-box;
-		border: calc(var(--size) / 12) solid var(--color-fg);
+		background: var(--color-bg);
+		border: 1px solid var(--color-fg);
 		border-radius: 50%;
 		width: var(--size);
 		height: var(--size);
 		position: relative;
-		flex-shrink: 0;
-	}
-
-	div.unmarked {
-		background: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	img {
 		pointer-events: none;
 		display: block;
-		width: 100%;
-		height: 100%;
+		width: 75%;
+		height: 75%;
 		border-radius: 50%;
 		position: absolute;
 		background: var(--color-bg);
