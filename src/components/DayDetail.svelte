@@ -43,8 +43,14 @@
 	</h4>
 	<div class="marks">
 		<Mark mark={myMark} {day} mine />
-		{#each otherMarks as mark (mark.YYYYMMDD + mark.userID)}
+		{#if otherMarks.length > 0}
+			<hr />
+		{/if}
+		{#each otherMarks as mark, m (mark.YYYYMMDD + mark.userID)}
 			<Mark {mark} {day} />
+			{#if m < otherMarks.length - 1}
+				<hr />
+			{/if}
 		{/each}
 	</div>
 </div>
@@ -80,5 +86,12 @@
 	.marks {
 		display: flex;
 		flex-direction: column;
+		padding: 0 1rem;
+	}
+
+	hr {
+		width: 100%;
+		border-color: var(--color-fg);
+		margin: 0.25rem 0;
 	}
 </style>

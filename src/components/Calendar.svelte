@@ -226,7 +226,6 @@
 	}
 
 	.pre-day {
-		opacity: 0.4;
 		cursor: default;
 		user-select: none;
 		height: var(--day-height);
@@ -246,6 +245,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
+		text-decoration: line-through;
 	}
 
 	@media (max-width: 55rem) {

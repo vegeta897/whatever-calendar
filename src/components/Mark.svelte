@@ -147,7 +147,6 @@
 		text-align: left;
 		width: 100%;
 		box-sizing: border-box;
-		box-shadow: 0 0 0 1px var(--color-fg);
 		padding: 0.75rem 1rem;
 		border-radius: 1rem;
 		transition: background-color 50ms ease-out;
@@ -161,7 +160,7 @@
 	.user-info {
 		display: flex;
 		align-items: center;
-		width: 16rem;
+		width: 18rem;
 		flex-shrink: 0;
 		overflow: hidden;
 		margin-right: 0.75rem;
@@ -173,8 +172,8 @@
 	}
 
 	.my-mark .user-info {
-		padding-right: calc(var(--note-input-height) + 0.5rem);
-		width: calc(16rem + 0.875rem);
+		padding-right: calc(var(--note-input-height) + 1rem);
+		width: calc(18rem + 0.875rem);
 		box-sizing: border-box;
 	}
 
@@ -215,7 +214,7 @@
 	.edit-note-button,
 	.cancel-note-button {
 		position: absolute;
-		left: calc(var(--note-input-height) * -1 - 0.5rem);
+		left: calc(var(--note-input-height) * -1 - 1rem);
 		cursor: pointer;
 		background: var(--color-bg);
 		box-shadow: 0 0 0 1px var(--color-fg);
@@ -274,7 +273,7 @@
 		background: var(--color-bg);
 		box-shadow: 0 0 0 1px var(--color-fg);
 		border-radius: 8px;
-		padding: 6px 10px 8px;
+		padding: 0.5rem;
 		box-sizing: border-box;
 		font-family: var(--font-body);
 		font-size: 1rem;
