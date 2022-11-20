@@ -142,7 +142,8 @@
 		border-radius: 1rem;
 		padding: 0.8rem 1.2rem;
 		box-sizing: border-box;
-		background: #090a0b;
+		background: var(--color-bg);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		position: sticky;
 		top: 0;
 		z-index: 9999;
@@ -157,44 +158,44 @@
 	}
 
 	.clock {
-		color: rgba(255, 255, 255, 0.5);
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
 	}
 
 	.clock time {
-		color: rgba(255, 255, 255, 0.7);
 		font-size: 1.1em;
 	}
 
 	.refresh button,
 	.refresh a {
-		color: var(--color-text);
 		display: flex;
 		align-items: center;
-		background: rgba(255, 255, 255, 0.08);
+		color: var(--color-fg);
+		background: var(--color-bg);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		border-radius: 8px;
 		padding: 7px 14px;
 		border: none;
 		cursor: pointer;
 		text-decoration: none;
-		transition: background-color 80ms ease-out, color 80ms ease-out;
+		transition: background-color 80ms ease-out, color 80ms ease-out,
+			opacity 80ms ease-out;
 	}
 
 	.refresh button:hover,
 	.refresh a:hover {
-		background: rgba(255, 255, 255, 0.15);
+		color: var(--color-bg);
+		background: var(--color-fg);
 	}
 
 	.refresh button:active,
 	.refresh a:active {
-		background: rgba(255, 255, 255, 0.06);
+		opacity: 0.5;
 	}
 
 	.refresh button:disabled {
-		background: rgba(255, 255, 255, 0.04);
-		color: rgba(255, 255, 255, 0.3);
+		opacity: 0.5;
 	}
 
 	.calendar {
@@ -222,11 +223,10 @@
 	.weekday {
 		font-size: calc(var(--day-height) * 0.2);
 		margin: 0.5rem 0 0;
-		color: rgba(255, 255, 255, 0.4);
 	}
 
 	.pre-day {
-		color: rgba(255, 255, 255, 0.2);
+		opacity: 0.4;
 		cursor: default;
 		user-select: none;
 		height: var(--day-height);
@@ -238,7 +238,6 @@
 	.pre-day .month-label {
 		font-size: calc(var(--day-height) * 0.23);
 		height: calc(100% / 3);
-		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.pre-day .day-date {

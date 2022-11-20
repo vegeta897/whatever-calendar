@@ -56,7 +56,7 @@
 		grid-column: 1 / 8;
 		display: flex;
 		flex-direction: column;
-		background: rgba(0, 0, 0, 0.25);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		padding: 20px;
 		border-radius: 20px;
 		transition: border-radius 50ms ease-out;
@@ -71,7 +71,6 @@
 	.day-heading {
 		font-size: 2em;
 		margin: 0 0 6px 14px;
-		color: rgba(255, 255, 255, 0.5);
 	}
 
 	h4 {

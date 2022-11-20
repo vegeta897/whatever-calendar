@@ -53,8 +53,8 @@
 		margin-right: 0.5em;
 		position: relative;
 		bottom: 1px;
-		background-color: var(--color-theme-1);
-		color: var(--color-bg-0);
+		background-color: var(--color-fg);
+		color: var(--color-bg);
 		padding: 0 3px 0 2px;
 		border-radius: 16px;
 		border-top-left-radius: 4px;

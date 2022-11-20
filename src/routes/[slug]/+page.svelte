@@ -25,12 +25,11 @@
 	}
 </script>
 
-<section style="--color-user: {discordMember.color || 'var(--color-theme-1)'};">
+<section>
 	<div class="header">
 		<Avatar user={discordUser} avatar size="1.5rem" />
-		<span class="username">{username}</span><a
-			href="/api/logout"
-			data-sveltekit-prefetch="off">Sign out</a
+		<span>{username}</span><a href="/api/logout" data-sveltekit-prefetch="off"
+			>Sign out</a
 		>
 	</div>
 	<Calendar daySelected={$days.find((d) => d.YYYYMMDD === data.day)} />
@@ -47,10 +46,5 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4em;
-	}
-
-	.username {
-		color: var(--color-user);
-		font-weight: bold;
 	}
 </style>

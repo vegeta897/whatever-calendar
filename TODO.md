@@ -2,7 +2,7 @@
 
 ## Working on
 
-- Redesigning stuff, responsive stuff
+- COLORS
 
 ## High-priority (Required before public test)
 

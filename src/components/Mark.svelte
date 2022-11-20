@@ -81,8 +81,8 @@
 								version="1.1"
 								xmlns="http://www.w3.org/2000/svg"
 							>
-								<path d="M6 3 l8 8 v3 h-3 l-8 -8 Z" fill="#fffa" />
-								<path d="M3 0 l2 2 l-3 3 l-2 -2 Z" fill="#fffa" />
+								<path d="M6 3 l8 8 v3 h-3 l-8 -8 Z" />
+								<path d="M3 0 l2 2 l-3 3 l-2 -2 Z" />
 							</svg>
 						</div>
 						<div class="cancel-note-button">
@@ -93,7 +93,6 @@
 							>
 								<path
 									d="M1.5 1.5 L8.5 8.5 M8.5 1.5 L1.5 8.5"
-									stroke="#fffa"
 									stroke-width="2"
 								/>
 							</svg>
@@ -148,7 +147,7 @@
 		text-align: left;
 		width: 100%;
 		box-sizing: border-box;
-		background: rgba(0, 0, 0, 0.4);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		padding: 0.75rem 1rem;
 		border-radius: 1rem;
 		transition: background-color 50ms ease-out;
@@ -180,10 +179,10 @@
 	}
 
 	.my-mark .user-info button {
-		color: var(--color-text);
+		color: var(--color-fg);
 		display: flex;
 		align-items: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--color-bg);
 		border-radius: 0.75rem;
 		padding: 0.75rem;
 		border: 0.125rem solid transparent;
@@ -191,16 +190,11 @@
 	}
 
 	.my-mark.marked .user-info button {
-		border-color: var(--color-user);
-		background: rgba(0, 0, 0, 0.4);
+		border-color: var(--color-fg);
 	}
 
 	.my-mark .user-info button:hover {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.my-mark:not(.marked) .user-info button:hover span {
-		color: #fff;
+		border-color: var(--color-fg);
 	}
 
 	details[open] summary {
@@ -223,7 +217,8 @@
 		position: absolute;
 		left: calc(var(--note-input-height) * -1 - 0.5rem);
 		cursor: pointer;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--color-bg);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		padding: 0.5625rem;
 		border-radius: 0.5rem;
 		height: var(--note-input-height);
@@ -232,9 +227,22 @@
 		display: flex;
 	}
 
-	.edit-note-button:hover,
+	.edit-note-button {
+		fill: var(--color-fg);
+	}
+
+	.cancel-note-button {
+		stroke: var(--color-fg);
+	}
+
+	.edit-note-button:hover {
+		background: var(--color-fg);
+		fill: var(--color-bg);
+	}
+
 	.cancel-note-button:hover {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--color-fg);
+		stroke: var(--color-bg);
 	}
 
 	.cancel-note-button,
@@ -262,55 +270,51 @@
 		resize: none;
 		overflow: hidden;
 		flex-grow: 1;
-		color: rgba(255, 255, 255, 0.6);
-		background: rgba(255, 255, 255, 0.05);
+		color: var(--color-fg);
+		background: var(--color-bg);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		border-radius: 8px;
 		padding: 6px 10px 8px;
 		box-sizing: border-box;
 		font-family: var(--font-body);
 		font-size: 1rem;
 		height: var(--note-input-height);
-		border: 2px solid rgba(255, 255, 255, 0.1);
+		border: none;
+	}
+
+	.my-note input[type='text']::placeholder {
+		color: var(--color-fg);
+		opacity: 0.5;
 	}
 
 	.my-note input[type='text']:enabled:hover {
-		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.my-note input[type='text']:focus,
 	.my-note input[type='text']:focus-visible {
-		color: #fff;
 		outline: none !important;
-		border: 2px solid rgba(255, 255, 255, 0.3);
 	}
 
 	.my-note button {
 		margin-left: 0.5rem;
 		border: none;
 		border-radius: 0.5rem;
-		background: rgba(255, 255, 255, 0.05);
-		color: var(--color-text);
+		background: var(--color-bg);
+		color: var(--color-fg);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		cursor: pointer;
 		padding: 0 0.625rem;
 		height: 100%;
 	}
 
-	.my-note button:hover {
-		background: rgba(255, 255, 255, 0.08);
+	.my-note button:not(:disabled):hover {
+		background: var(--color-fg);
+		color: var(--color-bg);
 	}
 
 	.my-note button:disabled {
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(255, 255, 255, 0.2);
+		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	.my-mark {
-		background: rgba(0, 0, 0, 0.2);
-	}
-
-	.my-mark.marked {
-		background: rgba(0, 0, 0, 0.4);
 	}
 
 	.user-mark:not(.my-mark) {
@@ -320,14 +324,12 @@
 	.user-note {
 		quotes: '\201C''\201D''\2018''\2019';
 		position: relative;
-		color: rgba(255, 255, 255, 0.6);
 		flex-grow: 1;
 		line-height: 1.25rem;
 	}
 
 	.user-note::before,
 	.user-note::after {
-		color: rgba(255, 255, 255, 0.3);
 		font-size: 1.2rem;
 		position: relative;
 	}

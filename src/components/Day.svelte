@@ -44,12 +44,12 @@
 					+
 				{/if}{otherMarks.length}{/if}
 		</div>
+		<div class="day-detail-join-cover" />
 	</li>
 </a>
 
 <style>
 	a {
-		color: var(--color-text);
 		display: block;
 		width: 100%;
 		height: var(--day-height);
@@ -61,37 +61,35 @@
 		height: 100%;
 		border-radius: calc(var(--day-height) / 4);
 		transition: background-color 50ms ease-out, color 50ms ease-out,
-			height 50ms ease-out, border-radius 50ms ease-out;
+			height 50ms ease-out, border-radius 100ms ease-out,
+			box-shadow 50ms ease-out;
 		position: relative;
 		touch-action: manipulation;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		user-select: none;
-		/* background: rgba(0, 0, 0, 0.15); */
 	}
 
 	.day.first-of-month {
-		background-color: rgba(0, 0, 0, 0.14);
+		box-shadow: 0 0 0 1px var(--color-fg);
 	}
 
 	.day.selected {
-		background: rgba(0, 0, 0, 0.25);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
-		padding-bottom: var(--day-row-gap);
+		padding-bottom: calc(var(--day-row-gap) - 1px);
 	}
 
 	.day:not(.selected):hover {
-		background-color: rgba(0, 0, 0, 0.25);
-		color: rgba(255, 255, 255, 0.9);
+		box-shadow: 0 0 0 1px var(--color-fg);
 		transition: none;
 	}
 
 	.month-label {
 		font-size: calc(var(--day-height) * 0.23);
 		height: calc(100% / 3);
-		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.day-date {
@@ -109,12 +107,24 @@
 
 	.day-marks {
 		display: flex;
-		color: rgba(255, 255, 255, 0.5);
 		align-items: flex-start;
 		justify-content: center;
 		width: 100%;
 		height: calc(100% / 3);
 		flex-grow: 1;
 		font-size: calc(var(--day-height) * 0.16);
+	}
+
+	.day-detail-join-cover {
+		display: none;
+		background: var(--color-bg);
+		position: absolute;
+		bottom: -1px;
+		width: 100%;
+		height: 1px;
+	}
+
+	.day.selected .day-detail-join-cover {
+		display: block;
 	}
 </style>

@@ -14,7 +14,7 @@
 </script>
 
 <div
-	style:border-color={user.color}
+	style:border-color={unmarked ? 'var(--color-fg)' : user.color}
 	style:background-color={unmarked ? '' : user.color}
 	style="--size: {size}"
 	class:avatar
@@ -43,9 +43,9 @@
 
 <style>
 	div {
-		background: var(--color-theme-1);
+		background: var(--color-fg);
 		box-sizing: border-box;
-		border: calc(var(--size) / 12) solid var(--color-theme-1);
+		border: calc(var(--size) / 12) solid var(--color-fg);
 		border-radius: 50%;
 		width: var(--size);
 		height: var(--size);
@@ -64,7 +64,7 @@
 		height: 100%;
 		border-radius: 50%;
 		position: absolute;
-		background: rgba(0, 0, 63, 0.6);
+		background: var(--color-bg);
 		transition: transform 90ms cubic-bezier(0.39, 1.73, 0.84, 1.11);
 	}
 
@@ -85,7 +85,7 @@
 		height: 100%;
 		border-radius: 50%;
 		stroke-width: 0.1;
-		stroke: #fff;
+		stroke: var(--color-fg);
 		fill: none;
 	}
 
@@ -100,7 +100,7 @@
 
 	:global(*:hover) > :not(.unmarked) svg.plus {
 		transform: rotate(-45deg);
-		background-color: rgba(0, 0, 0, 0.7);
+		background-color: var(--color-bg);
 		opacity: 1;
 	}
 </style>

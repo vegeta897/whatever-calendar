@@ -6,9 +6,6 @@
 <h2>{@html $page.error?.message || 'Unknown error occurred!'}</h2>
 
 <style>
-	h1 {
-		color: var(--color-text-strong);
-	}
 	h2 {
 		text-align: center;
 	}
