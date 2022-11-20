@@ -40,12 +40,14 @@
 	$: preDays = getPreDays($days, $today, $weekStart)
 
 	async function dayOnClick(day: CalendarDay) {
-		const newSlug = day === daySelected ? 'calendar' : day.YYYYMMDD
-		daySelected = day === daySelected ? null : day
+		const closeDetail = day === daySelected
+		const newSlug = closeDetail ? 'calendar' : day.YYYYMMDD
+		daySelected = closeDetail ? null : day
 		saving.set(true)
 		// Deferred to allow daySelected to propagate
 		await new Promise((res) => setTimeout(res))
 		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
+		daySelected = closeDetail ? null : day
 		saving.set(false)
 	}
 
@@ -123,13 +125,15 @@
 					firstRow={preDays.length + d < 7}
 				/>
 			{/if}
-			{#if daySelected && day.weekday === ($weekStart === 1 ? 7 : 6) && $days.indexOf(day) >= $days.indexOf(daySelected) && $days.indexOf(day) < $days.indexOf(daySelected) + 7}
-				<DayDetail
-					day={daySelected}
-					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
-				/>
-			{/if}
 		{/each}
+		{#if daySelected}
+			{daySelected.YYYYMMDD}
+			<DayDetail
+				day={daySelected}
+				marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
+				{preDays}
+			/>
+		{/if}
 	</ol>
 </div>
 

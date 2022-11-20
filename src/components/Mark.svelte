@@ -146,7 +146,7 @@
 		text-align: left;
 		width: 100%;
 		box-sizing: border-box;
-		padding: 0.75rem 1rem;
+		padding: 0.75rem 0;
 		border-radius: 1rem;
 		transition: background-color 50ms ease-out;
 		--note-input-height: 2.5rem;
@@ -351,7 +351,7 @@
 		/* 800px */
 		.user-mark {
 			flex-wrap: wrap;
-			padding: 0.75rem 1rem 0;
+			padding: 0.75rem 0 0;
 		}
 
 		.my-mark .user-info {
@@ -373,13 +373,6 @@
 
 		.my-note.no-note {
 			margin-left: 0;
-		}
-	}
-
-	@media (max-width: 35rem) {
-		/* 560px */
-		.user-mark {
-			padding: 0.75rem 0 0;
 		}
 	}
 

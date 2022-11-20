@@ -2,10 +2,11 @@
 	import { fly } from 'svelte/transition'
 	import { page } from '$app/stores'
 	import Mark from './Mark.svelte'
-	import { weekStart, type CalendarDay } from '$lib/calendar'
+	import { weekStart, days, getPreDays, type CalendarDay } from '$lib/calendar'
 
 	export let day: CalendarDay
 	export let marks: MarkData[]
+	export let preDays: ReturnType<typeof getPreDays>
 
 	const myUserID = $page.data.discordMember!.id
 
@@ -20,9 +21,17 @@
 		: leftAlignDay
 		? 'border-top-left-radius: 0;'
 		: ''
+
+	$: gridRowStyle = ` grid-row: ${
+		3 + Math.floor((preDays.length + $days.indexOf(day)) / 7)
+	};`
 </script>
 
-<div class="day-detail" style={cornerStyle} in:fly={{ duration: 100, y: -80 }}>
+<div
+	class="day-detail"
+	style={cornerStyle + gridRowStyle}
+	in:fly={{ duration: 100, y: -80 }}
+>
 	<h3 class="day-heading">
 		{day.datetime.weekdayLong},
 		{day.datetime.monthLong}
