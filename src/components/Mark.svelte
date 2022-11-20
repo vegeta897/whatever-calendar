@@ -66,6 +66,7 @@
 	{#if mine && mark}
 		<div
 			class="user-note my-note"
+			class:no-note={!mark.note}
 			transition:fade={{ duration: 100, easing: quadOut }}
 		>
 			<details bind:this={myNoteDetailsElement} open={!mark.note}>
@@ -112,14 +113,16 @@
 					}}
 				>
 					<input name="day" hidden value={day.YYYYMMDD} />
-					<input
-						type="text"
-						name="noteText"
-						disabled={$saving}
-						bind:value={myNoteText}
-						placeholder="Add a note"
-						maxlength="256"
-					/>
+					<div class="note-input-wrapper">
+						<input
+							type="text"
+							name="noteText"
+							disabled={$saving}
+							bind:value={myNoteText}
+							placeholder="Add a note"
+							maxlength="256"
+						/>
+					</div>
 					<button
 						disabled={!noJS &&
 							($saving ||
@@ -194,7 +197,7 @@
 
 	details[open] summary {
 		position: absolute;
-		height: 100%;
+		height: var(--note-input-height);
 	}
 
 	summary {
@@ -261,20 +264,24 @@
 		height: var(--note-input-height);
 	}
 
-	.my-note input[type='text'] {
-		resize: none;
-		overflow: hidden;
+	.my-note .note-input-wrapper {
+		border: 1px solid var(--color-fg);
+		border-radius: 0.5rem;
 		flex-grow: 1;
+	}
+
+	.my-note input[type='text'] {
+		overflow: hidden;
 		color: var(--color-fg);
-		background: var(--color-bg);
-		box-shadow: 0 0 0 1px var(--color-fg);
-		border-radius: 8px;
+		background: none;
 		padding: 0.5rem;
 		box-sizing: border-box;
 		font-family: var(--font-body);
 		font-size: 1rem;
 		height: var(--note-input-height);
 		border: none;
+		max-width: 100%;
+		min-width: 10rem;
 	}
 
 	.my-note input[type='text']::placeholder {
@@ -284,9 +291,6 @@
 	.my-note input[type='text']:focus::placeholder,
 	.my-note input[type='text']:focus-visible::placeholder {
 		opacity: 0;
-	}
-
-	.my-note input[type='text']:enabled:hover {
 	}
 
 	.my-note input[type='text']:focus,
@@ -304,6 +308,7 @@
 		cursor: pointer;
 		padding: 0 0.625rem;
 		height: 100%;
+		flex-shrink: 0;
 	}
 
 	.my-note button:not(:disabled):hover {
@@ -316,8 +321,8 @@
 		cursor: not-allowed;
 	}
 
-	.user-mark:not(.my-mark) {
-		padding-left: 1.875rem;
+	.user-mark:not(.my-mark) .user-info {
+		margin-left: 0.8125rem;
 	}
 
 	.user-note {
@@ -325,7 +330,7 @@
 		position: relative;
 		flex-grow: 1;
 		line-height: 1.25rem;
-		word-break: break-all;
+		word-break: break-word;
 	}
 
 	.user-note::before,
@@ -340,5 +345,73 @@
 
 	.user-note::after {
 		right: -0.125rem;
+	}
+
+	@media (max-width: 50rem) {
+		/* 800px */
+		.user-mark {
+			flex-wrap: wrap;
+			padding: 0.75rem 1rem 0;
+		}
+
+		.my-mark .user-info {
+			padding-right: 0;
+		}
+
+		.user-info:last-child {
+			margin-bottom: 0.75rem;
+		}
+
+		.user-note {
+			width: calc(100% - calc(var(--note-input-height) + 1rem));
+			margin: 0.75rem 0;
+		}
+
+		.my-note {
+			margin-left: calc(var(--note-input-height) + 1rem);
+		}
+
+		.my-note.no-note {
+			margin-left: 0;
+		}
+	}
+
+	@media (max-width: 35rem) {
+		/* 560px */
+		.user-mark {
+			padding: 0.75rem 0 0;
+		}
+	}
+
+	@media (max-width: 30rem) {
+		/* 480px */
+		.user-note {
+			font-size: 0.875rem;
+		}
+
+		details[open] summary {
+			top: 1px;
+		}
+
+		.my-note form {
+			flex-wrap: wrap;
+			flex-direction: row-reverse;
+			height: calc(var(--note-input-height) * 2 + 0.5rem);
+		}
+
+		.my-note .note-input-wrapper {
+			width: 100%;
+		}
+
+		.my-note button {
+			margin-top: 0.5rem;
+			font-size: 1rem;
+			height: var(--note-input-height);
+		}
+
+		.user-note::before,
+		.user-note::after {
+			font-size: 1rem;
+		}
 	}
 </style>

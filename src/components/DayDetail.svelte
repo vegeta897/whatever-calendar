@@ -75,7 +75,7 @@
 	}
 
 	.day-heading {
-		font-size: 2em;
+		font-size: 2rem;
 		margin: 0 0 0.5rem 1rem;
 	}
 
@@ -94,5 +94,20 @@
 		border: none;
 		border-top: 1px solid var(--color-fg);
 		margin: 0.25rem 0;
+	}
+
+	@media (max-width: 50rem) {
+		/* 800px */
+	}
+
+	@media (max-width: 35rem) {
+		/* 560px */
+		.day-heading {
+			font-size: 1.5rem;
+		}
+
+		h4 {
+			font-size: 0.875rem;
+		}
 	}
 </style>
