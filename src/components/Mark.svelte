@@ -53,18 +53,13 @@
 				<input name="day" hidden value={day.YYYYMMDD} />
 				<input name="mark" hidden value={!mark} />
 				<button disabled={$saving}>
-					<Avatar
-						user={users[myUserID]}
-						avatar
-						markable={!$saving}
-						unmarked={!mark}
-					/>
+					<Avatar user={users[myUserID]} markable={!$saving} unmarked={!mark} />
 					{#if mark}<span>{users[myUserID].name}</span>
 					{:else}<span>Add me</span>{/if}
 				</button>
 			</form>
 		{:else if mark}
-			<Avatar user={users[mark.userID]} avatar />
+			<Avatar user={users[mark.userID]} />
 			<span>{users[mark.userID].name}</span>
 		{/if}
 	</div>

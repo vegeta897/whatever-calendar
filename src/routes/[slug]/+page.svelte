@@ -27,7 +27,7 @@
 
 <section>
 	<div class="header">
-		<Avatar user={discordUser} avatar size="1.5rem" />
+		<Avatar user={discordUser} size="1.5rem" />
 		<span>{username}</span><a href="/api/logout" data-sveltekit-prefetch="off"
 			>Sign out</a
 		>
