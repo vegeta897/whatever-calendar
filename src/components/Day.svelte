@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CalendarDay } from '$lib/calendar'
 	import { weekStart, today } from '$lib/calendar'
-	import People from './People.svelte'
+	// import People from './People.svelte'
 	import { page } from '$app/stores'
 
 	export let day: CalendarDay
@@ -39,10 +39,13 @@
 		</div>
 		<div class="day-marks">
 			<!-- <People YYYYMMDD={day.YYYYMMDD} count={dayMarks.length + 2} /> -->
-			{#if myMark}You{/if}
+			{#if myMark}<span class="you">You</span>{/if}
 			{#if otherMarks.length > 0}{#if myMark}
-					+
-				{/if}{otherMarks.length}{/if}
+					<span class="plus">+</span>
+				{/if}<span class="others">{otherMarks.length}</span>{/if}
+			<!-- {#if dayMarks.some((m) => m.note)}
+				<span class="quote-mark">&#10078;</span>
+			{/if} -->
 		</div>
 		<div class="day-detail-join-cover" />
 	</li>
@@ -113,6 +116,15 @@
 		height: calc(100% / 3);
 		flex-grow: 1;
 		font-size: calc(var(--day-height) * 0.16);
+	}
+
+	.you {
+		font-weight: 700;
+		font-variation-settings: 'wght' 700;
+	}
+
+	.plus {
+		margin: 0 0.25rem;
 	}
 
 	.day-detail-join-cover {

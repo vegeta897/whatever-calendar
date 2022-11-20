@@ -63,8 +63,8 @@
 		display: flex;
 		flex-direction: column;
 		box-shadow: 0 0 0 1px var(--color-fg);
-		padding: 20px;
-		border-radius: 20px;
+		padding: 1.25rem;
+		border-radius: 1.25rem;
 		transition: border-radius 50ms ease-out;
 	}
 
@@ -76,11 +76,11 @@
 
 	.day-heading {
 		font-size: 2em;
-		margin: 0 0 6px 14px;
+		margin: 0 0 0.5rem 1rem;
 	}
 
 	h4 {
-		margin: 0 0 10px 18px;
+		margin: 0 0 0.5rem 1rem;
 	}
 
 	.marks {
@@ -91,7 +91,8 @@
 
 	hr {
 		width: 100%;
-		border-color: var(--color-fg);
+		border: none;
+		border-top: 1px solid var(--color-fg);
 		margin: 0.25rem 0;
 	}
 </style>

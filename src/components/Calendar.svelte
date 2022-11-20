@@ -101,9 +101,11 @@
 		</select>
 	</div>
 	<ol class="month">
-		{#each weekdayNames as weekdayName}
-			<li class="weekday">{weekdayName}</li>
-		{/each}
+		<div class="weekdays">
+			{#each weekdayNames as weekdayName}
+				<li class="weekday">{weekdayName}</li>
+			{/each}
+		</div>
 		{#each preDays as day, pd (day)}<li class="pre-day">
 				<div class="month-label">
 					{#if day.day === 1 || pd === 0}{day.month}{/if}
@@ -220,9 +222,19 @@
 		justify-items: center;
 	}
 
+	.weekdays {
+		grid-column: 1 / 8;
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(7, calc(100% / 7));
+		border-bottom: 1px solid var(--color-fg);
+	}
+
 	.weekday {
 		font-size: calc(var(--day-height) * 0.2);
-		margin: 0.5rem 0 0;
+		margin: 0.5rem 0 0.5rem;
+		text-align: center;
+		width: 100%;
 	}
 
 	.pre-day {
@@ -245,7 +257,6 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
-		text-decoration: line-through;
 	}
 
 	@media (max-width: 55rem) {

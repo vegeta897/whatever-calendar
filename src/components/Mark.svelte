@@ -8,6 +8,7 @@
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
 	import { saving } from './Calendar.svelte'
+	import Pencil from './Pencil.svelte'
 
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
@@ -184,16 +185,16 @@
 		background: var(--color-bg);
 		border-radius: 0.75rem;
 		padding: 0.75rem;
-		border: 0.125rem solid transparent;
 		cursor: pointer;
+		border: 1px solid transparent;
 	}
 
 	.my-mark.marked .user-info button {
-		border-color: var(--color-fg);
+		border: 1px solid var(--color-fg);
 	}
 
 	.my-mark .user-info button:hover {
-		border-color: var(--color-fg);
+		border: 1px solid var(--color-fg);
 	}
 
 	details[open] summary {
@@ -283,7 +284,11 @@
 
 	.my-note input[type='text']::placeholder {
 		color: var(--color-fg);
-		opacity: 0.5;
+	}
+
+	.my-note input[type='text']:focus::placeholder,
+	.my-note input[type='text']:focus-visible::placeholder {
+		opacity: 0;
 	}
 
 	.my-note input[type='text']:enabled:hover {
@@ -325,6 +330,7 @@
 		position: relative;
 		flex-grow: 1;
 		line-height: 1.25rem;
+		word-break: break-all;
 	}
 
 	.user-note::before,

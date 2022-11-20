@@ -1,12 +1,13 @@
 @import '@fontsource/fira-mono';
 @import '@fontsource/noto-sans';
+@import '@fontsource/noto-sans/700.css';
 
 :root {
 	--font-body: 'Noto Sans', 'Open Sans', Arial, -apple-system,
 		BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
 		'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
-	--color-bg: #222b4c;
+	--color-bg: #4c2241;
 	--color-fg: #ffdb3b;
 	--color-user: var(--color-fg); /* Overridden in app */
 	font-family: var(--font-body);
