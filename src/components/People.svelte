@@ -53,6 +53,21 @@
 		/> -->
 	{/each}
 </svg>
+<!-- Single person icon -->
+<svg
+	viewBox="0 0 35 45"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	width="1.25rem"
+>
+	<circle fill="#fff" cx={20} cy={8} r={8} />
+	<path
+		stroke-width={18}
+		stroke="#fff"
+		stroke-linejoin="round"
+		d="M{26} {32} h{-12} q{6} {-10} {12} 0 Z"
+	/>
+</svg>
 
 <style>
 	svg {

@@ -72,7 +72,7 @@
 	}
 
 	.day.first-of-month {
-		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(0, 0, 0, 0.14);
 	}
 
 	.day.selected {
