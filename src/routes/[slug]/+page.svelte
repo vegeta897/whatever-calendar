@@ -27,10 +27,11 @@
 
 <section>
 	<div class="header">
-		<Avatar user={discordUser} size="1.5rem" />
-		<span>{username}</span><a href="/api/logout" data-sveltekit-prefetch="off"
-			>Sign out</a
-		>
+		<div class="user-info">
+			<Avatar user={discordUser} size="1.5rem" />
+			<span>{username}</span>
+		</div>
+		<a href="/api/logout" data-sveltekit-prefetch="off">Sign out</a>
 	</div>
 	<Calendar daySelected={$days.find((d) => d.YYYYMMDD === data.day)} />
 </section>
@@ -44,7 +45,15 @@
 
 	.header {
 		display: flex;
-		align-items: center;
-		gap: 0.4em;
+		margin-top: 0.5rem;
+		gap: 1.5rem;
+	}
+
+	.user-info {
+		display: flex;
+	}
+
+	.user-info span {
+		margin-left: 0.25rem;
 	}
 </style>

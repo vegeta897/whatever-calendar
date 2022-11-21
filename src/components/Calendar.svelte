@@ -316,6 +316,9 @@
 			--day-height: 3.75rem;
 			--day-row-gap: 0.25rem;
 		}
+		.header {
+			font-size: 0.75rem;
+		}
 	}
 
 	@media (max-width: 25rem) {
