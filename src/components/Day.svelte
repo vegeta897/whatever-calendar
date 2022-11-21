@@ -73,8 +73,9 @@
 		user-select: none;
 	}
 
-	.day.first-of-month {
-		box-shadow: 0 0 0 1px var(--color-fg);
+	.day.first-of-month .day-date {
+		background: var(--color-fg);
+		color: var(--color-bg);
 	}
 
 	.day.selected {
@@ -108,11 +109,6 @@
 
 	.day-date.day-today {
 		text-decoration: underline;
-	}
-
-	.day.selected .day-date {
-		background: var(--color-fg);
-		color: var(--color-bg);
 	}
 
 	.day-marks {
