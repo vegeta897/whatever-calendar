@@ -14,7 +14,7 @@ export const today = writable<DateTime>(
 export const now = writable<DateTime>(
 	DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
 )
-export const days = readable<CalendarDay[]>(getDays())
+export const days = writable<CalendarDay[]>([])
 export const weekStart = writable<7 | 1>(1)
 
 export type CalendarDay = {
@@ -26,7 +26,7 @@ export type CalendarDay = {
 	YYYYMMDD: string
 }
 
-function getDays(): CalendarDay[] {
+export function getDays(): CalendarDay[] {
 	// This takes less than 1ms, better to run on client than transfer the data
 	const days: CalendarDay[] = []
 	const startDay = DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day')

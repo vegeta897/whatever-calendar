@@ -14,6 +14,7 @@
 		getPreDays,
 		today,
 		now,
+		getDays,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { page } from '$app/stores'
@@ -53,11 +54,16 @@
 
 	today.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day'))
 	now.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('minute'))
+	days.set(getDays())
+
 	if (browser) {
 		onInterval(() => {
 			const _now = DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE)
 			if (!_now.hasSame($now, 'minute')) now.set(_now.startOf('minute'))
-			if (!_now.hasSame($today, 'day')) today.set(_now.startOf('day'))
+			if (!_now.hasSame($today, 'day')) {
+				today.set(_now.startOf('day'))
+				days.set($days.filter((day) => day.datetime >= $today))
+			}
 		}, onDestroy)
 		today.subscribe((_today) => {
 			if (daySelected && daySelected.datetime < _today) dayOnClick(daySelected)
