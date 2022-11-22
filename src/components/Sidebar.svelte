@@ -9,7 +9,7 @@
 	const myUser = $page.data.users![myUserID]
 
 	$: users = [
-		myUser,
+		{ ...myUser, name: 'You' },
 		...Object.values($page.data.users!)
 			.filter((u) => u.id !== myUserID)
 			.sort((a, b) =>
@@ -23,6 +23,7 @@
 		<Avatar user={myUser} size="1.5rem" />
 		<span>{myUser.name}</span>
 	</div>
+	<h3>Filter marks</h3>
 	<ol class="user-list">
 		{#each users as user (user.id)}
 			<li>
@@ -34,7 +35,7 @@
 					<div class="user-circle" class:selected={user === selectedUser}>
 						<div class="inner-dot" />
 					</div>
-					{user.name}
+					<span>{user.name}</span>
 				</a>
 			</li>
 		{/each}
@@ -73,6 +74,12 @@
 		margin-left: 0.5rem;
 	}
 
+	h3 {
+		font-weight: 400;
+		margin: 0 0 0.125rem;
+		font-size: 1rem;
+	}
+
 	.user-list {
 		list-style: none;
 		margin: 0;
@@ -81,7 +88,7 @@
 	}
 
 	.user-list > li {
-		padding: 0.5rem 0;
+		padding: 0.375rem 0;
 	}
 
 	.user-list > li > a {
@@ -89,6 +96,14 @@
 		align-items: center;
 		cursor: pointer;
 		text-decoration: none;
+		padding: 1px 0 1px 1px;
+	}
+
+	.user-list > li > a span {
+		display: inline-block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.user-circle {
@@ -97,6 +112,7 @@
 		margin-right: 0.75rem;
 		border-radius: 50%;
 		box-shadow: 0 0 0 1px var(--color-fg);
+		flex-shrink: 0;
 	}
 
 	.inner-dot {
