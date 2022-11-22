@@ -103,12 +103,15 @@
 					<li class="weekday">{weekdayName}</li>
 				{/each}
 			</div>
-			{#each preDays as day, pd (day)}<li class="pre-day">
+			{#each preDays as day, pd (day)}
+				<!-- Use Day component for these? -->
+				<li class="pre-day" class:faded={selectedUser}>
 					<div class="month-label">
 						{#if day.day === 1 || pd === 0}{day.month}{/if}
 					</div>
 					<div class="day-date">{day.day}</div>
-				</li>{/each}
+				</li>
+			{/each}
 			{#each $days as day, d (day.YYYYMMDD)}
 				{@const dayMarks = marks.filter(
 					(mark) => mark.YYYYMMDD === day.YYYYMMDD
@@ -243,6 +246,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		transition: opacity 100ms ease-out;
+	}
+
+	.faded {
+		opacity: 0.3;
 	}
 
 	.pre-day .month-label {
