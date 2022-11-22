@@ -72,14 +72,13 @@
 		display: flex;
 		flex-direction: column;
 		box-shadow: 0 0 0 1px var(--color-fg);
-		padding: 1.25rem;
-		border-radius: 1.25rem;
+		padding: calc(var(--day-height) / 5);
+		border-radius: calc(var(--day-height) / 4);
 		transition: border-radius 50ms ease-out;
 	}
 
 	h3,
 	h4 {
-		width: 100%;
 		font-weight: 400;
 	}
 

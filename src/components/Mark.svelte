@@ -162,7 +162,8 @@
 		width: 18rem;
 		flex-shrink: 0;
 		overflow: hidden;
-		margin-right: 0.75rem;
+		padding-right: 0.75rem;
+		box-sizing: border-box;
 	}
 
 	.user-info span {
@@ -173,7 +174,6 @@
 	.my-mark .user-info {
 		padding-right: calc(var(--note-input-height) + 1rem);
 		width: calc(18rem + 0.875rem);
-		box-sizing: border-box;
 	}
 
 	.my-mark .user-info button {
@@ -322,7 +322,7 @@
 	}
 
 	.user-mark:not(.my-mark) .user-info {
-		margin-left: 0.8125rem;
+		padding-left: 0.8125rem;
 	}
 
 	.user-note {
@@ -354,8 +354,14 @@
 			padding: 0.75rem 0 0;
 		}
 
+		.user-info {
+			width: 100%;
+		}
+
 		.my-mark .user-info {
 			padding-right: 0;
+			margin-right: 0;
+			width: 100%;
 		}
 
 		.user-info:last-child {

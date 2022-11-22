@@ -77,10 +77,10 @@
 		user-select: none;
 	}
 
-	.day.first-of-month .day-date {
+	/* .day.first-of-month .day-date {
 		background: var(--color-fg);
 		color: var(--color-bg);
-	}
+	} */
 
 	.day.selected {
 		box-shadow: 0 0 0 1px var(--color-fg);
@@ -92,6 +92,8 @@
 	.day:not(.selected):hover {
 		box-shadow: 0 0 0 1px var(--color-fg);
 	}
+
+	/* TODO: Invert colors for "You + 3", stay inverted when contains selected user */
 
 	.day:not(.selected).faded {
 		opacity: 0.3;
@@ -122,13 +124,12 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
-		width: 100%;
-		height: calc(100% / 3);
-		flex-grow: 1;
 		font-size: calc(var(--day-height) * 0.16);
-	}
-
-	.you {
+		background: var(--color-fg);
+		color: var(--color-bg);
+		border-radius: calc(var(--day-height) * 0.08);
+		padding: 0 calc(var(--day-height) * 0.08);
+		box-sizing: border-box;
 		font-weight: 700;
 		font-variation-settings: 'wght' 700;
 	}

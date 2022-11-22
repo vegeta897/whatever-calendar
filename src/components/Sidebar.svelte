@@ -135,4 +135,10 @@
 	.week-start-container select {
 		max-width: 6rem;
 	}
+
+	@media (max-width: 1126px) {
+		.sidebar {
+			display: none;
+		}
+	}
 </style>

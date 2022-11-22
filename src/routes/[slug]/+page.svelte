@@ -25,6 +25,7 @@
 
 <section>
 	<Sidebar bind:selectedUser />
+	<!-- TODO: Doesn't work in SSR because $days is empty on first render? -->
 	<Calendar
 		daySelected={$days.find((d) => d.YYYYMMDD === data.day)}
 		{selectedUser}
