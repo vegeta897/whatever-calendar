@@ -55,7 +55,7 @@
 				<button disabled={$saving}>
 					<Avatar user={users[myUserID]} markable={!$saving} unmarked={!mark} />
 					{#if mark}<span>{users[myUserID].name}</span>
-					{:else}<span>Add me</span>{/if}
+					{:else}<span>Add yourself</span>{/if}
 				</button>
 			</form>
 		{:else if mark}
@@ -169,11 +169,11 @@
 	.user-info span {
 		margin-left: 0.75rem;
 		font-size: 1.3rem;
+		text-align: left;
 	}
 
 	.my-mark .user-info {
-		padding-right: calc(var(--note-input-height) + 1rem);
-		width: calc(18rem + 0.875rem);
+		padding-right: calc(var(--note-input-height) + 2rem);
 	}
 
 	.my-mark .user-info button {
@@ -280,6 +280,7 @@
 		font-size: 1rem;
 		height: var(--note-input-height);
 		border: none;
+		width: 100%;
 		max-width: 100%;
 		min-width: 10rem;
 	}
