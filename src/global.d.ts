@@ -17,6 +17,7 @@ declare global {
 	}
 
 	type WheneverUser = {
+		id: string
 		/** Hex color in #FFFFFF format */
 		color?: string
 		/** Guild nickname, or fallback to username */

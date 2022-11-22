@@ -2,13 +2,12 @@
 
 ## Working on
 
-- COLORS
+- Sidebar!
 
 ## High-priority (Required before public test)
 
 - Responsive layout
 - Create user list that you can click to filter days with their marks
-- Color scheme inspired by randoma11y.com, maybe use an outlined style?
 - Auto-refresh, better indication of when app is refreshing or outdated
 
 ## Low-priority

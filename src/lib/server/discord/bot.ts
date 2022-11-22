@@ -64,6 +64,7 @@ export async function getUsers(
 		// Don't include members not requested
 		if (!userIDs.includes(member.id)) return
 		users[member.id] = {
+			id: member.id,
 			name: member.displayName,
 			avatarURL: member.displayAvatarURL({ size: 64 }),
 		}

@@ -7,8 +7,6 @@
 <script lang="ts">
 	import {
 		getWeekdayNames,
-		mondayName,
-		sundayName,
 		weekStart,
 		days,
 		getPreDays,
@@ -27,17 +25,16 @@
 	import { DateTime } from 'luxon'
 	import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
-	$: marks = $page.data.marks!
+	export let daySelected: CalendarDay | null = null
+	export let selectedUser: WheneverUser | null
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
 	// any update made to it in that component will re-run the reactive statement
 	// regardless of the dependencies of the reactive statement
 
+	$: marks = $page.data.marks!
 	$: weekdayNames = getWeekdayNames($weekStart)
-
-	export let daySelected: CalendarDay | null = null
-
 	$: preDays = getPreDays($days, $today, $weekStart)
 
 	async function dayOnClick(day: CalendarDay) {
@@ -74,99 +71,91 @@
 <svelte:head>
 	<title>Whenever{daySelected ? ` ${daySelected.YYYYMMDD}` : ''}</title>
 </svelte:head>
-<div class="header">
-	<div class="clock">
-		<time datetime={$now.toISO({ includeOffset: false })}>
-			{$now.toFormat('f')}
-		</time>
-		{$now.offsetNameLong}
-	</div>
-	<div class="refresh">
-		{#if browser}
-			<button
-				on:click={async () => {
-					saving.set(true)
-					await invalidateAll()
-					saving.set(false)
-				}}
-				disabled={$saving}
-			>
-				Refresh
-			</button>
-		{:else}
-			<a href={$page.data.href}>Refresh</a>
-		{/if}
-	</div>
-</div>
-<div class="calendar">
-	<div class="week-start-container">
-		<label for="week-start">Start of week:</label>
-		<!-- TODO: Change to Sun/Mon links that look like buttons -->
-		<select id="week-start" bind:value={$weekStart}>
-			<!-- Use selected property to show correct option on intial render -->
-			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
-			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
-		</select>
-	</div>
-	<ol class="month">
-		<div class="weekdays">
-			{#each weekdayNames as weekdayName}
-				<li class="weekday">{weekdayName}</li>
-			{/each}
+<div class="container">
+	<div class="header">
+		<div class="clock">
+			<time datetime={$now.toISO({ includeOffset: false })}>
+				{$now.toFormat('f')}
+			</time>
+			{$now.offsetNameLong}
 		</div>
-		{#each preDays as day, pd (day)}<li class="pre-day">
-				<div class="month-label">
-					{#if day.day === 1 || pd === 0}{day.month}{/if}
-				</div>
-				<div class="day-date">{day.day}</div>
-			</li>{/each}
-		{#each $days as day, d (day.YYYYMMDD)}
-			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
-			{#if day.datetime >= $today}
-				<Day
-					{day}
-					bind:daySelected
-					{dayMarks}
-					onClick={dayOnClick}
-					firstRow={preDays.length + d < 7}
+		<div class="refresh">
+			{#if browser}
+				<button
+					on:click={async () => {
+						saving.set(true)
+						await invalidateAll()
+						saving.set(false)
+					}}
+					disabled={$saving}
+				>
+					Refresh
+				</button>
+			{:else}
+				<a href={$page.data.href}>Refresh</a>
+			{/if}
+		</div>
+	</div>
+	<div class="calendar">
+		<ol class="month">
+			<div class="weekdays">
+				{#each weekdayNames as weekdayName}
+					<li class="weekday">{weekdayName}</li>
+				{/each}
+			</div>
+			{#each preDays as day, pd (day)}<li class="pre-day">
+					<div class="month-label">
+						{#if day.day === 1 || pd === 0}{day.month}{/if}
+					</div>
+					<div class="day-date">{day.day}</div>
+				</li>{/each}
+			{#each $days as day, d (day.YYYYMMDD)}
+				{@const dayMarks = marks.filter(
+					(mark) => mark.YYYYMMDD === day.YYYYMMDD
+				)}
+				{#if day.datetime >= $today}
+					<Day
+						{day}
+						bind:daySelected
+						{dayMarks}
+						onClick={dayOnClick}
+						firstRow={preDays.length + d < 7}
+						{selectedUser}
+					/>
+				{/if}
+			{/each}
+			{#if daySelected}
+				{daySelected.YYYYMMDD}
+				<DayDetail
+					day={daySelected}
+					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
+					{preDays}
 				/>
 			{/if}
-		{/each}
-		{#if daySelected}
-			{daySelected.YYYYMMDD}
-			<DayDetail
-				day={daySelected}
-				marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
-				{preDays}
-			/>
-		{/if}
-	</ol>
+		</ol>
+	</div>
 </div>
 
 <style>
+	.container {
+		flex-grow: 1;
+	}
+
 	.header {
 		width: 100%;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		margin: 0.8rem 0;
+		margin: 0 0 0.8rem;
 		border-radius: 1rem;
 		padding: 0.8rem 1.2rem;
 		box-sizing: border-box;
 		background: var(--color-bg);
 		box-shadow: 0 0 0 1px var(--color-fg);
 		position: sticky;
-		top: 0;
+		top: 1px;
 		z-index: 9999;
-	}
-
-	.week-start-container {
-		width: 100%;
-	}
-
-	.week-start-container label {
-		margin-right: 0.2em;
 	}
 
 	.clock {

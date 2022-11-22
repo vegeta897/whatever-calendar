@@ -9,11 +9,14 @@
 	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
 	export let firstRow = false
+	export let selectedUser: WheneverUser | null
 
 	const myUserID = $page.data.discordMember!.id
 
 	$: myMark = dayMarks.find((m) => m.userID === myUserID)
 	$: otherMarks = dayMarks.filter((m) => m.userID !== myUserID)
+	$: hasSelectedUser =
+		selectedUser && dayMarks.some((m) => m.userID === selectedUser!.id)
 </script>
 
 <a
@@ -29,6 +32,7 @@
 		class:first-column={day.weekday === $weekStart}
 		class:no-marks={dayMarks.length === 0}
 		class:first-of-month={day.day === 1}
+		class:faded={selectedUser && !hasSelectedUser}
 	>
 		<div class="month-label">
 			{#if day === daySelected || day.day === 1 || (firstRow && day.weekday === $weekStart)}{day
@@ -64,7 +68,7 @@
 		height: 100%;
 		border-radius: calc(var(--day-height) / 4);
 		transition: padding-bottom 150ms ease-out, border-radius 150ms ease-out,
-			box-shadow 50ms ease-out;
+			opacity 100ms ease-out;
 		position: relative;
 		touch-action: manipulation;
 		display: flex;
@@ -87,7 +91,10 @@
 
 	.day:not(.selected):hover {
 		box-shadow: 0 0 0 1px var(--color-fg);
-		transition: padding-bottom 150ms ease-out, border-radius 150ms ease-out;
+	}
+
+	.day:not(.selected).faded {
+		opacity: 0.3;
 	}
 
 	.month-label {
