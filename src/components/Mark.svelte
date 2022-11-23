@@ -388,6 +388,18 @@
 
 	@media (max-width: 30rem) {
 		/* 480px */
+		.user-mark {
+			padding-top: 0.5rem;
+		}
+
+		.user-info:last-child {
+			margin-bottom: 0.5rem;
+		}
+
+		.user-info span {
+			font-size: 1rem;
+		}
+
 		.user-note {
 			font-size: 0.875rem;
 		}

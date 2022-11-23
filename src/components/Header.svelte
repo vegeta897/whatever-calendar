@@ -48,4 +48,10 @@
 	h1 small span:last-child {
 		left: -1px;
 	}
+
+	@media (max-width: 1126px) {
+		header {
+			padding-left: 1rem;
+		}
+	}
 </style>

@@ -89,4 +89,11 @@
 		background-color: var(--color-bg);
 		opacity: 1;
 	}
+
+	@media (max-width: 30rem) {
+		/* 480px */
+		div {
+			--size: 2rem !important;
+		}
+	}
 </style>
