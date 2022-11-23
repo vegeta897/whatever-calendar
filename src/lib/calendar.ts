@@ -1,5 +1,5 @@
 import { browser } from '$app/environment'
-import { readable, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 import { DateTime } from 'luxon'
 import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 

@@ -10,6 +10,8 @@
 	import { saving } from './Calendar.svelte'
 	import Pencil from './Pencil.svelte'
 
+	// This component is pretty big, can it be split?
+
 	export let mark: MarkData | undefined
 	export let day: CalendarDay
 	export let mine = false
@@ -67,7 +69,7 @@
 		<div
 			class="user-note my-note"
 			class:no-note={!mark.note}
-			transition:fade={{ duration: 100, easing: quadOut }}
+			transition:fade|local={{ duration: 100, easing: quadOut }}
 		>
 			<details bind:this={myNoteDetailsElement} open={!mark.note}>
 				<summary>
@@ -184,6 +186,7 @@
 		border-radius: 0.75rem;
 		padding: 0.75rem;
 		cursor: pointer;
+		box-shadow: none;
 		border: 1px solid transparent;
 	}
 

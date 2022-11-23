@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { writable } from 'svelte/store'
+	import { writable, type Writable } from 'svelte/store'
 	// This is global in SSR, but that's okay since we only touch it in user actions
-	export const saving = writable(false)
+	export const saving: Writable<boolean> = writable(false)
 </script>
 
 <script lang="ts">
@@ -12,7 +12,6 @@
 		getPreDays,
 		today,
 		now,
-		getDays,
 	} from '$lib/calendar'
 	import type { CalendarDay } from '$lib/calendar'
 	import { page } from '$app/stores'
@@ -25,33 +24,35 @@
 	import { DateTime } from 'luxon'
 	import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
-	export let daySelected: CalendarDay | null = null
-	export let selectedUser: WheneverUser | null
+	let daySelected: CalendarDay | null
+	export let selectedUserID: string | null
 
 	// WHAT I'VE LEARNED ABOUT REACTIVITY AND BINDING
 	// If you have a reactive variable, and bind it to a component,
 	// any update made to it in that component will re-run the reactive statement
 	// regardless of the dependencies of the reactive statement
 
+	// ALSO HOLY COW!
+	// Use the |local directive on transtitions whenever possible,
+	// because they can cause weird issues with stuck components!
+
 	$: marks = $page.data.marks!
 	$: weekdayNames = getWeekdayNames($weekStart)
 	$: preDays = getPreDays($days, $today, $weekStart)
+	$: daySelected =
+		$page.data.day && $days.find((d) => d.YYYYMMDD === $page.data.day)
 
-	async function dayOnClick(day: CalendarDay) {
-		const closeDetail = day === daySelected
+	const dayOnClick = async (day: CalendarDay) => {
+		const closeDetail = daySelected && day.YYYYMMDD === daySelected.YYYYMMDD
 		const newSlug = closeDetail ? 'calendar' : day.YYYYMMDD
-		daySelected = closeDetail ? null : day
 		saving.set(true)
-		// Deferred to allow daySelected to propagate
-		await new Promise((res) => setTimeout(res))
-		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 		daySelected = closeDetail ? null : day
+		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 		saving.set(false)
 	}
 
 	today.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('day'))
 	now.set(DateTime.now().setZone(PUBLIC_GLOBAL_TIMEZONE).startOf('minute'))
-	days.set(getDays())
 
 	if (browser) {
 		onInterval(() => {
@@ -92,50 +93,47 @@
 					Refresh
 				</button>
 			{:else}
-				<a href={$page.data.href}>Refresh</a>
+				<a href={$page.url.href}>Refresh</a>
 			{/if}
 		</div>
 	</div>
 	<div class="calendar">
-		<ol class="month">
+		<div class="month">
 			<div class="weekdays">
 				{#each weekdayNames as weekdayName}
-					<li class="weekday">{weekdayName}</li>
+					<div class="weekday">{weekdayName}</div>
 				{/each}
 			</div>
 			{#each preDays as day, pd (day)}
 				<!-- Use Day component for these? -->
-				<li class="pre-day" class:faded={selectedUser}>
+				<div class="pre-day" class:faded={selectedUserID}>
 					<div class="month-label">
 						{#if day.day === 1 || pd === 0}{day.month}{/if}
 					</div>
 					<div class="day-date">{day.day}</div>
-				</li>
+				</div>
 			{/each}
 			{#each $days as day, d (day.YYYYMMDD)}
 				{@const dayMarks = marks.filter(
 					(mark) => mark.YYYYMMDD === day.YYYYMMDD
 				)}
-				{#if day.datetime >= $today}
-					<Day
-						{day}
-						bind:daySelected
-						{dayMarks}
-						onClick={dayOnClick}
-						firstRow={preDays.length + d < 7}
-						{selectedUser}
-					/>
-				{/if}
+				<Day
+					{day}
+					selected={day === daySelected}
+					{dayMarks}
+					onClick={dayOnClick}
+					firstRow={preDays.length + d < 7}
+					{selectedUserID}
+				/>
 			{/each}
 			{#if daySelected}
-				{daySelected.YYYYMMDD}
 				<DayDetail
 					day={daySelected}
 					marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
 					{preDays}
 				/>
 			{/if}
-		</ol>
+		</div>
 	</div>
 </div>
 
@@ -178,8 +176,8 @@
 		color: var(--color-fg);
 		background: var(--color-bg);
 		box-shadow: 0 0 0 1px var(--color-fg);
-		border-radius: 8px;
-		padding: 7px 14px;
+		border-radius: 0.5rem;
+		padding: 0.4375rem 0.875rem;
 		border: none;
 		cursor: pointer;
 		text-decoration: none;
@@ -191,6 +189,7 @@
 	.refresh a:hover {
 		color: var(--color-bg);
 		background: var(--color-fg);
+		transition: none;
 	}
 
 	.refresh button:active,
@@ -218,9 +217,6 @@
 		--day-date-font-size: 2.2rem;
 		row-gap: var(--day-row-gap);
 		column-gap: 1%;
-		list-style: none;
-		margin: 0;
-		padding: 0;
 		justify-items: center;
 	}
 
@@ -228,6 +224,7 @@
 		grid-column: 1 / 8;
 		width: 100%;
 		display: grid;
+
 		grid-template-columns: repeat(7, calc(100% / 7));
 		border-bottom: 1px solid var(--color-fg);
 	}
@@ -250,7 +247,7 @@
 	}
 
 	.faded {
-		opacity: 0.3;
+		/* opacity: 0.3; */
 	}
 
 	.pre-day .month-label {

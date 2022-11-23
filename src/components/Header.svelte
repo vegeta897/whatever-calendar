@@ -6,10 +6,14 @@
 	header {
 		display: flex;
 		justify-content: space-between;
+		padding: 0 1rem 0 calc(1rem + 260px);
+		width: 100%;
+		max-width: 1160px;
+		margin: 0 auto;
+		box-sizing: border-box;
 	}
 
 	h1 {
-		width: 100%;
 		font-size: 2em;
 		margin: 0;
 	}

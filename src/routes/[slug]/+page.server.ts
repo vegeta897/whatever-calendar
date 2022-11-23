@@ -11,6 +11,8 @@ import type { Actions, PageServerLoad } from './$types'
 import { getUsers } from '$lib/server/discord/bot'
 import { DateTime } from 'luxon'
 
+const sleep = (ms = 0) => new Promise((res) => setTimeout(res, ms))
+
 export const load: PageServerLoad = async ({
 	cookies,
 	locals,
@@ -18,7 +20,7 @@ export const load: PageServerLoad = async ({
 	url,
 }) => {
 	console.log(`(server) load /${params.slug}`)
-
+	// await sleep(250)
 	const dayFromSlug = get(days).find((day) => day.YYYYMMDD === params.slug)
 	if (!locals.discordMember) {
 		console.log('member not authed, redirecting to root')
@@ -28,9 +30,12 @@ export const load: PageServerLoad = async ({
 		// Invalid day slug
 		throw redirect(302, '/calendar')
 	}
-	const pageData: App.PageData & { day: null | string; href: string } = {
+	const pageData: App.PageData & {
+		day: null | string
+		selectedUserID: null | string
+	} = {
 		day: dayFromSlug?.YYYYMMDD || null,
-		href: url.href,
+		selectedUserID: url.searchParams.get('filter') || null,
 	}
 	pageData.discordMember = locals.discordMember
 	pageData.marks = getMarks()
@@ -43,10 +48,10 @@ export const load: PageServerLoad = async ({
 	return pageData
 }
 
-// TODO: Insert await sleep to test slow server UX
 export const actions: Actions = {
 	mark: async ({ request, locals }) => {
 		console.log('mark action received!')
+		// await sleep(250)
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('mark')) {
@@ -94,6 +99,7 @@ export const actions: Actions = {
 	},
 	note: async ({ request, locals }) => {
 		console.log('note action received!')
+		// await sleep(250)
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('noteText')) {
@@ -131,7 +137,7 @@ export const actions: Actions = {
 				{
 					...notedMark,
 					noteTimestamp: Date.now(),
-					note: noteText,
+					note: noteText.substring(0, 256).trim(),
 				},
 			],
 		})

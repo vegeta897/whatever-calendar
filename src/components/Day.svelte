@@ -5,22 +5,22 @@
 	import { page } from '$app/stores'
 
 	export let day: CalendarDay
-	export let daySelected: CalendarDay | null
+	export let selected = false
 	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
 	export let firstRow = false
-	export let selectedUser: WheneverUser | null
+	export let selectedUserID: string | null
 
 	const myUserID = $page.data.discordMember!.id
 
 	$: myMark = dayMarks.find((m) => m.userID === myUserID)
 	$: otherMarks = dayMarks.filter((m) => m.userID !== myUserID)
 	$: hasSelectedUser =
-		selectedUser && dayMarks.some((m) => m.userID === selectedUser!.id)
+		selectedUserID && dayMarks.some((m) => m.userID === selectedUserID)
 </script>
 
 <a
-	href="/{day === daySelected ? 'calendar' : day.YYYYMMDD}"
+	href="/{selected ? 'calendar' : day.YYYYMMDD}"
 	data-sveltekit-prefetch="off"
 	on:click|preventDefault={() => {
 		onClick(day)
@@ -28,14 +28,14 @@
 >
 	<li
 		class="day"
-		class:selected={day === daySelected}
+		class:selected
 		class:first-column={day.weekday === $weekStart}
 		class:no-marks={dayMarks.length === 0}
 		class:first-of-month={day.day === 1}
-		class:faded={selectedUser && !hasSelectedUser}
+		class:faded={selectedUserID && !hasSelectedUser}
 	>
 		<div class="month-label">
-			{#if day === daySelected || day.day === 1 || (firstRow && day.weekday === $weekStart)}{day
+			{#if selected || day.day === 1 || (firstRow && day.weekday === $weekStart)}{day
 					.datetime.monthShort}{/if}
 		</div>
 		<div class="day-date" class:day-today={$today.hasSame(day.datetime, 'day')}>
@@ -95,7 +95,9 @@
 
 	/* TODO: Invert colors for "You + 3", stay inverted when contains selected user */
 
-	.day:not(.selected).faded {
+	.day:not(.selected).faded .day-marks {
+		background: var(--color-bg);
+		color: var(--color-fg);
 		opacity: 0.3;
 	}
 

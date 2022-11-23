@@ -3,7 +3,7 @@
 	import { weekStart, sundayName, mondayName } from '$lib/calendar'
 	import Avatar from './Avatar.svelte'
 
-	export let selectedUser: WheneverUser | null
+	export let selectedUserID: string | null
 
 	const myUserID = $page.data.discordMember!.id
 	const myUser = $page.data.users![myUserID]
@@ -23,16 +23,20 @@
 		<Avatar user={myUser} size="1.5rem" />
 		<span>{myUser.name}</span>
 	</div>
+	<hr />
 	<h3>Filter marks</h3>
 	<ol class="user-list">
 		{#each users as user (user.id)}
 			<li>
 				<a
-					href="#"
+					href={user.id === selectedUserID
+						? new URL($page.url.href).pathname
+						: `?filter=${user.id}`}
+					data-sveltekit-prefetch="off"
 					on:click|preventDefault={() =>
-						(selectedUser = selectedUser === user ? null : user)}
+						(selectedUserID = selectedUserID === user.id ? null : user.id)}
 				>
-					<div class="user-circle" class:selected={user === selectedUser}>
+					<div class="user-circle" class:selected={user.id === selectedUserID}>
 						<div class="inner-dot" />
 					</div>
 					<span>{user.name}</span>
@@ -50,7 +54,8 @@
 			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
 		</select>
 	</div>
-	<a href="/api/logout" data-sveltekit-prefetch="off">Sign out</a>
+	<hr />
+	<form method="POST" action="/api/logout"><button>Sign out</button></form>
 </div>
 
 <style>
@@ -65,9 +70,12 @@
 		flex-direction: column;
 	}
 
+	.sidebar > * + * {
+		margin-top: 1rem;
+	}
+
 	.user-info {
 		display: flex;
-		margin-bottom: 0.75rem;
 	}
 
 	.user-info span {
@@ -76,19 +84,18 @@
 
 	h3 {
 		font-weight: 400;
-		margin: 0 0 0.125rem;
+		margin-bottom: 0.25rem;
 		font-size: 1rem;
 	}
 
 	.user-list {
 		list-style: none;
 		margin: 0;
-		margin-bottom: 1rem;
 		padding: 0;
 	}
 
 	.user-list > li {
-		padding: 0.375rem 0;
+		padding: 0.375rem 0 0.375rem 0.5rem;
 	}
 
 	.user-list > li > a {
@@ -141,7 +148,6 @@
 	.week-start-container {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 1rem;
 	}
 
 	.week-start-container label {
@@ -150,6 +156,14 @@
 
 	.week-start-container select {
 		max-width: 6rem;
+	}
+
+	hr {
+		width: 90%;
+		margin-left: 0;
+		margin-bottom: 0;
+		border: none;
+		border-top: 1px solid var(--color-fg);
 	}
 
 	@media (max-width: 1126px) {

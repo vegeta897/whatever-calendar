@@ -3,14 +3,16 @@
 	import Calendar from '../../components/Calendar.svelte'
 	import Sidebar from '../../components/Sidebar.svelte'
 	import { browser } from '$app/environment'
-	import { weekStart, days } from '$lib/calendar'
+	import { weekStart, days, getDays } from '$lib/calendar'
 	import { serialize } from 'cookie'
 
 	export let data: PageData
 
 	weekStart.set(data.weekStart || 7)
 
-	let selectedUser: WheneverUser | null = null
+	let selectedUserID: string | null = data.selectedUserID
+
+	days.set(getDays())
 
 	if (browser) {
 		console.log(data)
@@ -24,12 +26,8 @@
 </script>
 
 <section>
-	<Sidebar bind:selectedUser />
-	<!-- TODO: Doesn't work in SSR because $days is empty on first render? -->
-	<Calendar
-		daySelected={$days.find((d) => d.YYYYMMDD === data.day)}
-		{selectedUser}
-	/>
+	<Sidebar bind:selectedUserID />
+	<Calendar {selectedUserID} />
 </section>
 
 <style>
