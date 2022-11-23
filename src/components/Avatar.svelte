@@ -7,9 +7,6 @@
 	export let markable = false
 
 	let imgError = false
-
-	// TODO: Split this into Dot and Avatar. Too much conditional CSS!
-	// Maybe also make Markable that has Avatar inside it
 </script>
 
 <div style="--size: {size}" class:unmarked>

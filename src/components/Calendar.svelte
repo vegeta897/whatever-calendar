@@ -19,7 +19,7 @@
 	import { goto, invalidateAll } from '$app/navigation'
 	import DayDetail from './DayDetail.svelte'
 	import { onInterval } from '$lib/interval'
-	import { onDestroy } from 'svelte'
+	import { onDestroy, tick } from 'svelte'
 	import { browser } from '$app/environment'
 	import { DateTime } from 'luxon'
 	import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
@@ -47,6 +47,7 @@
 		const newSlug = closeDetail ? 'calendar' : day.YYYYMMDD
 		saving.set(true)
 		daySelected = closeDetail ? null : day
+		await tick()
 		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
 		saving.set(false)
 	}
