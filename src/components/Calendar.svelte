@@ -247,7 +247,7 @@
 	}
 
 	.faded {
-		/* opacity: 0.3; */
+		opacity: 0.3;
 	}
 
 	.pre-day .month-label {

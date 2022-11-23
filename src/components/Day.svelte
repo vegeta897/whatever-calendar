@@ -31,7 +31,6 @@
 		class:selected
 		class:first-column={day.weekday === $weekStart}
 		class:no-marks={dayMarks.length === 0}
-		class:first-of-month={day.day === 1}
 		class:faded={selectedUserID && !hasSelectedUser}
 	>
 		<div class="month-label">
@@ -77,11 +76,6 @@
 		user-select: none;
 	}
 
-	/* .day.first-of-month .day-date {
-		background: var(--color-fg);
-		color: var(--color-bg);
-	} */
-
 	.day.selected {
 		box-shadow: 0 0 0 1px var(--color-fg);
 		border-bottom-left-radius: 0;
@@ -93,9 +87,7 @@
 		box-shadow: 0 0 0 1px var(--color-fg);
 	}
 
-	/* TODO: Invert colors for "You + 3", stay inverted when contains selected user */
-
-	.day:not(.selected).faded .day-marks {
+	.day:not(.selected):not(:hover).faded {
 		background: var(--color-bg);
 		color: var(--color-fg);
 		opacity: 0.3;
