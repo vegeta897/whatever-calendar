@@ -7,7 +7,6 @@
 ## High-priority (Required before public test)
 
 - Responsive layout
-- Create user list that you can click to filter days with their marks
 - Auto-refresh, better indication of when app is refreshing or outdated
 
 ## Low-priority

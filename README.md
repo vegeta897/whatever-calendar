@@ -1,3 +1,3 @@
-# Whatever Calendar
+# Whenever
 
 Prototyping a group planning solution

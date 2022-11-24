@@ -375,10 +375,12 @@
 		.user-note {
 			width: calc(100% - calc(var(--note-input-height) + 1rem));
 			margin: 0.75rem 0;
+			padding-left: 1rem;
 		}
 
 		.my-note {
 			margin-left: calc(var(--note-input-height) + 1rem);
+			padding-left: 0;
 		}
 
 		.my-note.no-note {

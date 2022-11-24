@@ -116,13 +116,12 @@
 
 	.day-marks {
 		display: flex;
-		align-items: flex-start;
-		justify-content: center;
 		font-size: calc(var(--day-height) * 0.16);
 		background: var(--color-fg);
 		color: var(--color-bg);
 		border-radius: calc(var(--day-height) * 0.08);
 		padding: 0 calc(var(--day-height) * 0.08);
+		margin-top: calc(var(--day-height) * 0.03);
 		box-sizing: border-box;
 		font-weight: 700;
 		font-variation-settings: 'wght' 700;

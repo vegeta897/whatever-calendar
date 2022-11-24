@@ -16,6 +16,9 @@
 				a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1
 			),
 	]
+
+	// TODO: Move sidebar to right side
+	// Use hamburger menu, button placed in top right, sticky
 </script>
 
 <div class="sidebar">
