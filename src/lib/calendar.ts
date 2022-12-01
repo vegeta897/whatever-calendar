@@ -74,6 +74,8 @@ const monday = new Date(sunday)
 monday.setDate(monday.getDate() + 1)
 export const sundayName = sunday.toLocaleDateString(locale, { weekday: 'long' })
 export const mondayName = monday.toLocaleDateString(locale, { weekday: 'long' })
+export const sunName = sunday.toLocaleDateString(locale, { weekday: 'short' })
+export const monName = monday.toLocaleDateString(locale, { weekday: 'short' })
 
 const WEEKDAY_NAMES_SHORT: string[] = []
 const WEEKDAY_NAMES_START_MON: string[] = []

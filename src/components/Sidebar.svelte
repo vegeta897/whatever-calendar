@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { enhance } from '$app/forms'
 	import { page } from '$app/stores'
-	import { weekStart, sundayName, mondayName } from '$lib/calendar'
+	import { weekStart, sunName, monName } from '$lib/calendar'
+	import { serialize } from 'cookie'
 	import { selectedUserID } from './Calendar.svelte'
 	import UserInfo from './UserInfo.svelte'
 
@@ -18,8 +20,20 @@
 			),
 	]
 
-	// TODO: Move sidebar to right side
-	// Use hamburger menu, button placed in top right, sticky
+	function setWeekStart(start: 1 | 7) {
+		console.log('setWeekStart', start)
+		weekStart.set(start)
+		console.log(
+			serialize(`wec-weekStart`, `${start}`, {
+				maxAge: 90 * 24 * 60 * 60,
+				path: '/',
+			})
+		)
+		document.cookie = serialize(`wec-weekStart`, `${start}`, {
+			maxAge: 90 * 24 * 60 * 60,
+			path: '/',
+		})
+	}
 </script>
 
 <div class="sidebar" class:full-width={fullWidth}>
@@ -27,35 +41,48 @@
 		<div class="user-info"><UserInfo /></div>
 		<hr />
 	{/if}
-	<h3>Filter marks</h3>
-	<div class="user-list">
-		{#each users as user (user.id)}
-			<div>
-				<a
-					href={user.id === $selectedUserID
-						? new URL($page.url.href).pathname
-						: `?filter=${user.id}`}
-					data-sveltekit-prefetch="off"
-					on:click|preventDefault={() =>
-						selectedUserID.set($selectedUserID === user.id ? null : user.id)}
-				>
-					<div class="user-circle" class:selected={user.id === $selectedUserID}>
-						<div class="inner-dot" />
-					</div>
-					<span>{user.name}</span>
-				</a>
-			</div>
-		{/each}
+	<div>
+		<h3>Filter marks</h3>
+		<div class="user-grid">
+			{#each users as user (user.id)}
+				<div>
+					<a
+						href={user.id === $selectedUserID
+							? new URL($page.url.href).pathname
+							: `?filter=${user.id}`}
+						data-sveltekit-prefetch="off"
+						on:click|preventDefault={() =>
+							selectedUserID.set($selectedUserID === user.id ? null : user.id)}
+					>
+						<div
+							class="user-circle"
+							class:selected={user.id === $selectedUserID}
+						>
+							<div class="inner-dot" />
+						</div>
+						<span>{user.name}</span>
+					</a>
+				</div>
+			{/each}
+		</div>
 	</div>
 
 	<div class="week-start-container">
-		<label for="week-start">Start of week</label>
-		<!-- TODO: Change to Sun/Mon links that look like buttons -->
-		<select id="week-start" bind:value={$weekStart}>
-			<!-- Use selected property to show correct option on intial render -->
-			<option selected={$weekStart === 7} value={7}>{sundayName}</option>
-			<option selected={$weekStart === 1} value={1}>{mondayName}</option>
-		</select>
+		<h3>Start of week</h3>
+		<form method="POST" action="?/weekStart" use:enhance>
+			<button
+				disabled={$weekStart === 7}
+				name="start"
+				value={7}
+				on:click|preventDefault={() => setWeekStart(7)}>{sunName}</button
+			>
+			<button
+				disabled={$weekStart === 1}
+				name="start"
+				value={1}
+				on:click|preventDefault={() => setWeekStart(1)}>{monName}</button
+			>
+		</form>
 	</div>
 	<hr />
 	<form method="POST" action="/api/logout"><button>Sign out</button></form>
@@ -95,35 +122,36 @@
 	}
 
 	h3 {
-		font-weight: 400;
-		margin-bottom: 0.25rem;
 		font-size: 1rem;
+		font-weight: 400;
+		margin: 0;
+		margin-bottom: 0.5rem;
 	}
 
 	.sidebar:not(.full-width) h3 {
 		margin-top: 0;
 	}
 
-	.user-list {
+	.user-grid {
 		display: grid;
 		grid-template-columns: 100%;
 	}
 
-	.sidebar:not(.sidebar.full-width) .user-list {
+	.sidebar:not(.sidebar.full-width) .user-grid {
 		row-gap: 1rem;
 		column-gap: 0.5rem;
 		grid-template-columns: repeat(auto-fill, min(10rem, calc(50% - 0.25rem)));
 	}
 
-	.user-list > div {
+	.user-grid > div {
 		padding: 0.375rem 0 0.375rem 0.5rem;
 	}
 
-	.sidebar:not(.full-width) .user-list > div {
+	.sidebar:not(.full-width) .user-grid > div {
 		padding: 0;
 	}
 
-	.user-list > div > a {
+	.user-grid > div > a {
 		display: flex;
 		align-items: center;
 		cursor: pointer;
@@ -131,7 +159,7 @@
 		padding: 1px 0 1px 1px;
 	}
 
-	.user-list > li > a span {
+	.user-grid > li > a span {
 		display: inline-block;
 		white-space: nowrap;
 		overflow: hidden;
@@ -170,17 +198,25 @@
 		transform: scale(3.1);
 	}
 
-	.week-start-container {
-		display: flex;
-		flex-direction: column;
+	.week-start-container button {
+		margin: 0;
 	}
 
-	.week-start-container label {
-		margin-bottom: 0.125rem;
+	.week-start-container button:disabled {
+		background: var(--color-fg);
+		color: var(--color-bg);
+		cursor: default;
 	}
 
-	.week-start-container select {
-		max-width: 6rem;
+	.week-start-container button:nth-child(1) {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	.week-start-container button:nth-child(2) {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+		margin-left: -3px;
 	}
 
 	hr {

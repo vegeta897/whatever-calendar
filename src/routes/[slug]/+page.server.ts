@@ -10,6 +10,7 @@ import { days } from '$lib/calendar'
 import type { Actions, PageServerLoad } from './$types'
 import { getUsers } from '$lib/server/discord/bot'
 import { DateTime } from 'luxon'
+import { days as cookieDays, setCookie } from '$lib/server/cookies'
 
 const sleep = (ms = 0) => new Promise((res) => setTimeout(res, ms))
 
@@ -42,7 +43,7 @@ export const load: PageServerLoad = async ({
 	pageData.users = await getUsers(getWheneverUserIDs())
 	pageData.users[locals.discordMember.id].me = true
 	const weekStart = cookies.get('wec-weekStart')
-	if (weekStart !== undefined) {
+	if (weekStart && (+weekStart === 1 || +weekStart === 7)) {
 		pageData.weekStart = +weekStart as 7 | 1
 	}
 	return pageData
@@ -141,6 +142,30 @@ export const actions: Actions = {
 				},
 			],
 		})
+	},
+	weekStart: async ({ request, locals, cookies }) => {
+		console.log('weekStart action received!')
+		checkAuth(locals.discordMember)
+		const formData = await request.formData()
+		if (!formData.has('start')) {
+			validationError('Request invalid, missing "start" form data', {
+				user: locals.discordMember.username,
+			})
+		}
+		const start = formData.get('start') as string
+		if (typeof start !== 'string') {
+			validationError(
+				'Request invalid, received non-string "start" form data',
+				{ start, user: locals.discordMember.username }
+			)
+		}
+		if (+start !== 1 && +start !== 7) {
+			validationError(
+				'Request invalid, received invalid "start" form data (must be 1 or 7)',
+				{ start, user: locals.discordMember.username }
+			)
+		}
+		setCookie(cookies, 'wec-weekStart', start, { expires: cookieDays(90) })
 	},
 }
 

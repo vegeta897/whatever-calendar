@@ -5,7 +5,6 @@
 	import Topbar from '../../components/Topbar.svelte'
 	import { browser } from '$app/environment'
 	import { weekStart, days, getDays } from '$lib/calendar'
-	import { serialize } from 'cookie'
 
 	export let data: PageData
 
@@ -13,15 +12,7 @@
 	selectedUserID.set(data.selectedUserID)
 	days.set(getDays())
 
-	if (browser) {
-		console.log(data)
-		weekStart.subscribe((value) => {
-			document.cookie = serialize(`wec-weekStart`, `${value}`, {
-				maxAge: 90 * 24 * 60 * 60,
-			})
-			// TODO: Save locale in cookie too, to SSR with correct language
-		})
-	}
+	if (browser) console.log(data)
 </script>
 
 <section>

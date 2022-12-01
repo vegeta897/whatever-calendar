@@ -37,6 +37,7 @@
 	summary {
 		text-align: center;
 		padding-bottom: 0.75rem;
+		cursor: pointer;
 	}
 
 	@media (max-width: 1106px) {

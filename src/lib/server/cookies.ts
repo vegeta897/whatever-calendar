@@ -5,6 +5,7 @@ type CookieName =
 	| 'discord_access_token'
 	| 'discord_refresh_token'
 	| 'wec-session'
+	| 'wec-weekStart'
 
 export function setCookie(
 	cookies: RequestEvent['cookies'],
@@ -19,6 +20,7 @@ export function deleteCookies(cookies: RequestEvent['cookies']) {
 	cookies.delete('discord_access_token', { path: '/', maxAge: -1 })
 	cookies.delete('discord_refresh_token', { path: '/', maxAge: -1 })
 	cookies.delete('wec-session', { path: '/', maxAge: -1 })
+	cookies.delete('wec-weekStart', { path: '/', maxAge: -1 })
 }
 
 export const days = (days: number) =>
