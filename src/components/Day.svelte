@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CalendarDay } from '$lib/calendar'
 	import { weekStart, today } from '$lib/calendar'
-	// import People from './People.svelte'
+	import { selectedUserID } from './Calendar.svelte'
 	import { page } from '$app/stores'
 
 	export let day: CalendarDay
@@ -9,14 +9,13 @@
 	export let dayMarks: MarkData[]
 	export let onClick: (day: CalendarDay) => void
 	export let firstRow = false
-	export let selectedUserID: string | null
 
 	const myUserID = $page.data.discordMember!.id
 
 	$: myMark = dayMarks.find((m) => m.userID === myUserID)
 	$: otherMarks = dayMarks.filter((m) => m.userID !== myUserID)
 	$: hasSelectedUser =
-		selectedUserID && dayMarks.some((m) => m.userID === selectedUserID)
+		$selectedUserID && dayMarks.some((m) => m.userID === $selectedUserID)
 </script>
 
 <a
@@ -31,7 +30,7 @@
 		class:selected
 		class:first-column={day.weekday === $weekStart}
 		class:no-marks={dayMarks.length === 0}
-		class:faded={selectedUserID && !hasSelectedUser}
+		class:faded={$selectedUserID && !hasSelectedUser}
 	>
 		<div class="month-label">
 			{#if selected || day.day === 1 || (firstRow && day.weekday === $weekStart)}{day

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { weekStart, sundayName, mondayName } from '$lib/calendar'
-	import Avatar from './Avatar.svelte'
+	import { selectedUserID } from './Calendar.svelte'
+	import UserInfo from './UserInfo.svelte'
 
-	export let selectedUserID: string | null
+	export let fullWidth = false
 
 	const myUserID = $page.data.discordMember!.id
 	const myUser = $page.data.users![myUserID]
@@ -21,32 +22,31 @@
 	// Use hamburger menu, button placed in top right, sticky
 </script>
 
-<div class="sidebar">
-	<div class="user-info">
-		<Avatar user={myUser} size="1.5rem" />
-		<span>{myUser.name}</span>
-	</div>
-	<hr />
+<div class="sidebar" class:full-width={fullWidth}>
+	{#if fullWidth}
+		<div class="user-info"><UserInfo /></div>
+		<hr />
+	{/if}
 	<h3>Filter marks</h3>
-	<ol class="user-list">
+	<div class="user-list">
 		{#each users as user (user.id)}
-			<li>
+			<div>
 				<a
-					href={user.id === selectedUserID
+					href={user.id === $selectedUserID
 						? new URL($page.url.href).pathname
 						: `?filter=${user.id}`}
 					data-sveltekit-prefetch="off"
 					on:click|preventDefault={() =>
-						(selectedUserID = selectedUserID === user.id ? null : user.id)}
+						selectedUserID.set($selectedUserID === user.id ? null : user.id)}
 				>
-					<div class="user-circle" class:selected={user.id === selectedUserID}>
+					<div class="user-circle" class:selected={user.id === $selectedUserID}>
 						<div class="inner-dot" />
 					</div>
 					<span>{user.name}</span>
 				</a>
-			</li>
+			</div>
 		{/each}
-	</ol>
+	</div>
 
 	<div class="week-start-container">
 		<label for="week-start">Start of week</label>
@@ -63,14 +63,27 @@
 
 <style>
 	.sidebar {
-		width: 260px;
+		width: 224px;
 		box-sizing: border-box;
+		margin-left: 1rem;
 		padding: 1rem;
 		position: sticky;
+		border-radius: 1rem;
 		top: 0;
 		flex-shrink: 0;
 		display: flex;
 		flex-direction: column;
+		background: var(--color-bg);
+	}
+
+	.sidebar.full-width {
+		box-shadow: 0 0 0 1px var(--color-fg);
+	}
+
+	.sidebar:not(.full-width) {
+		width: 100%;
+		margin-left: 0;
+		padding-top: 0;
 	}
 
 	.sidebar > * + * {
@@ -78,11 +91,7 @@
 	}
 
 	.user-info {
-		display: flex;
-	}
-
-	.user-info span {
-		margin-left: 0.5rem;
+		height: 2.5rem;
 	}
 
 	h3 {
@@ -91,17 +100,30 @@
 		font-size: 1rem;
 	}
 
-	.user-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
+	.sidebar:not(.full-width) h3 {
+		margin-top: 0;
 	}
 
-	.user-list > li {
+	.user-list {
+		display: grid;
+		grid-template-columns: 100%;
+	}
+
+	.sidebar:not(.sidebar.full-width) .user-list {
+		row-gap: 1rem;
+		column-gap: 0.5rem;
+		grid-template-columns: repeat(auto-fill, min(10rem, calc(50% - 0.25rem)));
+	}
+
+	.user-list > div {
 		padding: 0.375rem 0 0.375rem 0.5rem;
 	}
 
-	.user-list > li > a {
+	.sidebar:not(.full-width) .user-list > div {
+		padding: 0;
+	}
+
+	.user-list > div > a {
 		display: flex;
 		align-items: center;
 		cursor: pointer;
@@ -162,16 +184,16 @@
 	}
 
 	hr {
-		width: 90%;
+		width: 100%;
 		margin-left: 0;
 		margin-bottom: 0;
 		border: none;
 		border-top: 1px solid var(--color-fg);
 	}
 
-	@media (max-width: 1126px) {
-		.sidebar {
-			display: none;
+	@media (max-width: 35rem) {
+		.sidebar:not(.sidebar.full-width) .user-list {
+			/* grid-template-columns: repeat(2, 1fr); */
 		}
 	}
 </style>

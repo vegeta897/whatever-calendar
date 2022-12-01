@@ -6,9 +6,9 @@
 	header {
 		display: flex;
 		justify-content: space-between;
-		padding: 0 1rem 0 calc(1rem + 260px);
+		padding: 0.25rem 1rem;
 		width: 100%;
-		max-width: 1160px;
+		max-width: 1140px;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
@@ -49,7 +49,7 @@
 		left: -1px;
 	}
 
-	@media (max-width: 1126px) {
+	@media (max-width: 1106px) {
 		header {
 			padding-left: 1rem;
 		}

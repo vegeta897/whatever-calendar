@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import Calendar from '../../components/Calendar.svelte'
-	import Sidebar from '../../components/Sidebar.svelte'
+	import Calendar, { selectedUserID } from '../../components/Calendar.svelte'
+	import SidebarContainer from '../../components/SidebarContainer.svelte'
+	import Topbar from '../../components/Topbar.svelte'
 	import { browser } from '$app/environment'
 	import { weekStart, days, getDays } from '$lib/calendar'
 	import { serialize } from 'cookie'
@@ -9,9 +10,7 @@
 	export let data: PageData
 
 	weekStart.set(data.weekStart || 7)
-
-	let selectedUserID: string | null = data.selectedUserID
-
+	selectedUserID.set(data.selectedUserID)
 	days.set(getDays())
 
 	if (browser) {
@@ -26,14 +25,22 @@
 </script>
 
 <section>
-	<Sidebar bind:selectedUserID />
-	<Calendar {selectedUserID} />
+	<main>
+		<Topbar />
+		<Calendar />
+	</main>
+	<SidebarContainer />
 </section>
 
 <style>
 	section {
 		display: flex;
 		align-items: flex-start;
-		padding-top: 0.875rem;
+		padding-top: 0.5rem;
+		height: 100%;
+	}
+
+	main {
+		flex-grow: 1;
 	}
 </style>

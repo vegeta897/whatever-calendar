@@ -5,11 +5,12 @@
 	export let user: WheneverUser
 	export let unmarked = false
 	export let markable = false
+	export let responsive = false
 
 	let imgError = false
 </script>
 
-<div style="--size: {size}" class:unmarked>
+<div style="--size: {size}" class:unmarked class:responsive>
 	<img
 		src={user.avatarURL}
 		alt="{user.name}'s avatar"
@@ -92,7 +93,7 @@
 
 	@media (max-width: 30rem) {
 		/* 480px */
-		div {
+		div.responsive {
 			--size: 2rem !important;
 		}
 	}

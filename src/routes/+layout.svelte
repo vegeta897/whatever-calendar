@@ -17,12 +17,6 @@
 	<main>
 		<slot />
 	</main>
-
-	<footer>
-		<p>
-			made with <a href="https://kit.svelte.dev">SvelteKit</a>
-		</p>
-	</footer>
 </div>
 
 <style>
@@ -37,28 +31,8 @@
 		flex-direction: column;
 		padding: 0 1rem;
 		width: 100%;
-		max-width: 1160px;
+		max-width: 1140px;
 		margin: 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-		opacity: 0.8;
-	}
-
-	footer a {
-		color: inherit;
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>
