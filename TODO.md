@@ -2,12 +2,11 @@
 
 ## Working on
 
-- Sidebar!
+- Getting ready to launch?
 
 ## High-priority (Required before public test)
 
-- Responsive layout
-- Auto-refresh, better indication of when app is refreshing or outdated
+- ???
 
 ## Low-priority
 
@@ -17,3 +16,4 @@
 - Use Chalk for nicer server logs
 - Add slash command(s)?
 - Create single-column day calendar as an alternative view (better for mobile?)
+- better indication of when app is refreshing or outdated

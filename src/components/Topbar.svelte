@@ -25,7 +25,6 @@
 						await invalidateAll()
 						saving.set(false)
 					}}
-					disabled={$saving}
 				>
 					Refresh
 				</button>

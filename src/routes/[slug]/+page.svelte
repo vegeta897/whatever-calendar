@@ -1,10 +1,15 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import Calendar, { selectedUserID } from '../../components/Calendar.svelte'
+	import Calendar, {
+		selectedUserID,
+		saving,
+	} from '../../components/Calendar.svelte'
 	import SidebarContainer from '../../components/SidebarContainer.svelte'
 	import Topbar from '../../components/Topbar.svelte'
 	import { browser } from '$app/environment'
 	import { weekStart, days, getDays } from '$lib/calendar'
+	import { onDestroy } from 'svelte'
+	import { invalidateAll } from '$app/navigation'
 
 	export let data: PageData
 
@@ -12,7 +17,15 @@
 	selectedUserID.set(data.selectedUserID)
 	days.set(getDays())
 
-	if (browser) console.log(data)
+	if (browser) {
+		console.log(data)
+		const refreshInterval = setInterval(async () => {
+			saving.set(true)
+			await invalidateAll()
+			saving.set(false)
+		}, 15 * 1000)
+		onDestroy(() => clearInterval(refreshInterval))
+	}
 </script>
 
 <section>
