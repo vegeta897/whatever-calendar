@@ -47,7 +47,7 @@
 					}
 					return async ({ update }) => {
 						saving.set(false)
-						update()
+						update({ reset: false })
 					}
 				}}
 			>
@@ -114,7 +114,7 @@
 						return async ({ update }) => {
 							saving.set(false)
 							myNoteDetailsElement.open = !myNoteText
-							update()
+							update({ reset: false })
 						}
 					}}
 				>

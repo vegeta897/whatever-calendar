@@ -2,7 +2,11 @@
 
 ## Working on
 
-- Getting ready to launch?
+- Launching!
+
+## Known issues
+
+- Server renders without Dec 31st
 
 ## High-priority (Required before public test)
 
