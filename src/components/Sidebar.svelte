@@ -226,10 +226,4 @@
 		border: none;
 		border-top: 1px solid var(--color-fg);
 	}
-
-	@media (max-width: 35rem) {
-		.sidebar:not(.sidebar.full-width) .user-list {
-			/* grid-template-columns: repeat(2, 1fr); */
-		}
-	}
 </style>

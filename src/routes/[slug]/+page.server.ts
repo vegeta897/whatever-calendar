@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({
 	params,
 	url,
 }) => {
-	console.log(`(server) load /${params.slug}`)
+	// console.log(`(server) load /${params.slug}`)
 	// await sleep(250)
 	const dayFromSlug = get(days).find((day) => day.YYYYMMDD === params.slug)
 	if (!locals.discordMember) {

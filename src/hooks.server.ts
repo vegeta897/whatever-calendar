@@ -17,7 +17,7 @@ await connectBot()
 await fetchMembers(getWheneverUserIDs())
 
 const handleSession: Handle = async ({ event, resolve }) => {
-	console.log('begin handleSession', event.routeId)
+	// console.log('begin handleSession', event.routeId)
 	let session = event.cookies.get('wec-session')
 	const storedSession = getSession(session)
 	// if (storedSession) console.log('found stored session')
