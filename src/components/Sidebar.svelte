@@ -43,7 +43,8 @@
 						href={user.id === $selectedUserID
 							? new URL($page.url.href).pathname
 							: `?filter=${user.id}`}
-						data-sveltekit-prefetch="off"
+						data-sveltekit-preload-data="off"
+						data-sveltekit-noscroll
 						on:click|preventDefault={() =>
 							selectedUserID.set($selectedUserID === user.id ? null : user.id)}
 					>

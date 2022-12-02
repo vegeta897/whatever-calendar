@@ -20,7 +20,8 @@
 
 <a
 	href="/{selected ? 'calendar' : day.YYYYMMDD}"
-	data-sveltekit-prefetch="off"
+	data-sveltekit-preload-data="off"
+	data-sveltekit-noscroll
 	on:click|preventDefault={() => {
 		onClick(day)
 	}}

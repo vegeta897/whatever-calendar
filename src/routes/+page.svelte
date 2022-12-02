@@ -11,7 +11,7 @@
 	{#if !data.discordUser}
 		<a
 			href="/api/auth"
-			data-sveltekit-prefetch="off"
+			data-sveltekit-preload-data="off"
 			style="font-size: 2em; margin-top: 1em;">Sign in!</a
 		>
 	{:else}
@@ -24,10 +24,11 @@
 		</p>
 		<p>
 			Did you connect the right account?
-			<a href="/api/auth" data-sveltekit-prefetch="off">Try again here</a>
+			<a href="/api/auth" data-sveltekit-preload-data="off">Try again here</a>
 		</p>
 		<p>
-			Or, you can <a href="/api/logout" data-sveltekit-prefetch="off">log out</a
+			Or, you can <a href="/api/logout" data-sveltekit-preload-data="off"
+				>log out</a
 			>
 		</p>
 	{/if}
