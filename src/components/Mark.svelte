@@ -198,8 +198,10 @@
 		border: 1px solid var(--color-fg);
 	}
 
-	.my-mark .user-info button:hover {
-		border: 1px solid var(--color-fg);
+	@media (hover: hover) {
+		.my-mark .user-info button:hover {
+			border: 1px solid var(--color-fg);
+		}
 	}
 
 	details[open] summary {
@@ -240,14 +242,16 @@
 		stroke: var(--color-fg);
 	}
 
-	.edit-note-button:hover {
-		background: var(--color-fg);
-		fill: var(--color-bg);
-	}
+	@media (hover: hover) {
+		.edit-note-button:hover {
+			background: var(--color-fg);
+			fill: var(--color-bg);
+		}
 
-	.cancel-note-button:hover {
-		background: var(--color-fg);
-		stroke: var(--color-bg);
+		.cancel-note-button:hover {
+			background: var(--color-fg);
+			stroke: var(--color-bg);
+		}
 	}
 
 	.cancel-note-button,
@@ -319,9 +323,11 @@
 		flex-shrink: 0;
 	}
 
-	.my-note button:not(:disabled):hover {
-		background: var(--color-fg);
-		color: var(--color-bg);
+	@media (hover: hover) {
+		.my-note button:not(:disabled):hover {
+			background: var(--color-fg);
+			color: var(--color-bg);
+		}
 	}
 
 	.my-note button:disabled {

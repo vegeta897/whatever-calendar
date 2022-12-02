@@ -81,14 +81,16 @@
 		opacity: 0;
 	}
 
-	:global(*:hover) > .unmarked svg.plus {
-		transform: rotate(90deg);
-	}
+	@media (hover: hover) {
+		:global(*:hover) > .unmarked svg.plus {
+			transform: rotate(90deg);
+		}
 
-	:global(*:hover) > :not(.unmarked) svg.plus {
-		transform: rotate(-45deg);
-		background-color: var(--color-bg);
-		opacity: 1;
+		:global(*:hover) > :not(.unmarked) svg.plus {
+			transform: rotate(-45deg);
+			background-color: var(--color-bg);
+			opacity: 1;
+		}
 	}
 
 	@media (max-width: 30rem) {

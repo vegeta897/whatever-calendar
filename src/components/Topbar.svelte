@@ -96,11 +96,13 @@
 			opacity 80ms ease-out;
 	}
 
-	.refresh button:hover,
-	.refresh a:hover {
-		color: var(--color-bg);
-		background: var(--color-fg);
-		transition: none;
+	@media (hover: hover) {
+		.refresh button:hover,
+		.refresh a:hover {
+			color: var(--color-bg);
+			background: var(--color-fg);
+			transition: none;
+		}
 	}
 
 	.refresh button:active,

@@ -181,9 +181,11 @@
 		transition: transform 50ms ease-out;
 	}
 
-	a:hover .user-circle:not(.selected) .inner-dot {
-		transform: scale(1);
-		transition: none;
+	@media (hover: hover) {
+		a:hover .user-circle:not(.selected) .inner-dot {
+			transform: scale(1);
+			transition: none;
+		}
 	}
 
 	.user-circle.selected .inner-dot {

@@ -36,8 +36,10 @@ a {
 	text-decoration-style: dotted;
 }
 
-a:hover {
-	text-decoration: underline;
+@media (hover: hover) {
+	a:hover {
+		text-decoration: underline;
+	}
 }
 
 h1 {
@@ -70,10 +72,12 @@ button {
 	transition: background-color 80ms ease-out, color 80ms ease-out;
 }
 
-button:hover {
-	color: var(--color-bg);
-	background: var(--color-fg);
-	transition: none;
+@media (hover: hover) {
+	button:hover {
+		color: var(--color-bg);
+		background: var(--color-fg);
+		transition: none;
+	}
 }
 
 button:focus:not(:focus-visible) {

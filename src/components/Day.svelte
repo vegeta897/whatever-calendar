@@ -82,8 +82,10 @@
 		padding-bottom: calc(var(--day-row-gap) - 1px);
 	}
 
-	.day:not(.selected):hover {
-		box-shadow: 0 0 0 1px var(--color-fg);
+	@media (hover: hover) {
+		.day:not(.selected):hover {
+			box-shadow: 0 0 0 1px var(--color-fg);
+		}
 	}
 
 	.day:not(.selected):not(:hover).faded {
