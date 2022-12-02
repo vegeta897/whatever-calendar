@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({
 
 export const actions: Actions = {
 	mark: async ({ request, locals }) => {
-		console.log('mark action received!')
+		// console.log('mark action received!')
 		// await sleep(250)
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
@@ -99,7 +99,7 @@ export const actions: Actions = {
 		}
 	},
 	note: async ({ request, locals }) => {
-		console.log('note action received!')
+		// console.log('note action received!')
 		// await sleep(250)
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
@@ -144,7 +144,7 @@ export const actions: Actions = {
 		})
 	},
 	weekStart: async ({ request, locals, cookies }) => {
-		console.log('weekStart action received!')
+		// console.log('weekStart action received!')
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
 		if (!formData.has('start')) {
