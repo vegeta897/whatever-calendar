@@ -6,7 +6,6 @@
 
 ## Known issues
 
-- Server renders without Dec 31st
 - `db.json` saves to /home on deployed server
 
 ## High-priority (Required before public test)
