@@ -6,7 +6,7 @@ import {
 } from '$env/static/private'
 import {
 	Client,
-	Guild,
+	type Guild,
 	GatewayIntentBits,
 	Events,
 	REST,

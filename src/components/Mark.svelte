@@ -8,7 +8,6 @@
 	import type { CalendarDay } from '$lib/calendar'
 	import { afterNavigate, beforeNavigate } from '$app/navigation'
 	import { saving } from './Calendar.svelte'
-	import Pencil from './Pencil.svelte'
 
 	// This component is pretty big, can it be split?
 

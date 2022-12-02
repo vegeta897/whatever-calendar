@@ -62,10 +62,6 @@
 		box-shadow: 0 0 0 1px var(--color-fg);
 	}
 
-	section > div + div {
-		margin-left: 1rem;
-	}
-
 	.hud {
 		flex-grow: 1;
 		display: flex;
