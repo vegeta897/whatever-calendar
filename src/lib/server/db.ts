@@ -1,4 +1,4 @@
-import { dev } from '$app/environment'
+import { dev, building } from '$app/environment'
 import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 import { days } from '$lib/server/cookies'
 import { Low, JSONFile } from 'lowdb'
@@ -25,10 +25,11 @@ type Session = Readonly<{
 // Use JSON file for storage
 const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
-await db.read()
+if (!building) await db.read()
+
 db.data ||= { marks: [], sessions: [] }
 
-if (!dev) setInterval(() => cleanupData(), 10 * 60 * 1000)
+if (!dev && !building) setInterval(() => cleanupData(), 10 * 60 * 1000)
 
 export function getData(): DeepReadonly<DBData> {
 	return db.data!
