@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({
 	}
 	pageData.discordMember = locals.discordMember
 	pageData.marks = getMarks()
-	pageData.users = await getUsers(getWheneverUserIDs())
+	pageData.users = await getUsers(getWheneverUserIDs(locals.discordMember.id))
 	pageData.users[locals.discordMember.id].me = true
 	const weekStart = cookies.get('wec-weekStart')
 	if (weekStart && (+weekStart === 1 || +weekStart === 7)) {

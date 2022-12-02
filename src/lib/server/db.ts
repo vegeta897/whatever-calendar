@@ -49,9 +49,11 @@ export function addOrRefreshSession(session: Omit<Session, 'expires'>) {
 	})
 }
 
-export function getWheneverUserIDs() {
+export function getWheneverUserIDs(me?: string) {
 	// Build set of all member IDs
-	return [...new Set(db.data!.marks.map((m) => m.userID))]
+	const markUsers = db.data!.marks.map((m) => m.userID)
+	if (me) markUsers.push(me)
+	return [...new Set(markUsers)]
 }
 
 export function getMarks(): DBData['marks'] {
