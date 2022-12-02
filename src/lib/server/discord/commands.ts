@@ -4,6 +4,7 @@ import {
 	DISCORD_CLIENT_ID,
 } from '$env/static/private'
 import { Client, REST, Routes, SlashCommandBuilder } from 'discord.js'
+import { getMarks } from '../db'
 
 const commands = [
 	new SlashCommandBuilder()
@@ -28,7 +29,14 @@ export function handleCommands(bot: Client) {
 	bot.on('interactionCreate', async (interaction) => {
 		if (!interaction.isChatInputCommand()) return
 		if (interaction.commandName === 'whenever') {
-			await interaction.reply(APP_URL)
+			const marks = getMarks()
+			const days = [...new Set(marks.map((m) => m.YYYYMMDD))]
+			const users = [...new Set(marks.map((m) => m.userID))]
+			const status = `**Whenever**
+The calendar has **${marks.length}** marks on **${days.length}** days from **${users.length}** users
+
+${APP_URL}`
+			await interaction.reply(status)
 		}
 	})
 }

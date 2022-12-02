@@ -14,6 +14,7 @@
 
 ## Low-priority
 
+- Add an event log on the page?
 - Use Chalk for nicer server logs
 - Add slash command(s)?
 - Create single-column day calendar as an alternative view (better for mobile?)
