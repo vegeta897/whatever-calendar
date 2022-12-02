@@ -55,12 +55,9 @@ export async function connectBot() {
 	})
 	try {
 		console.log('Started refreshing application (/) commands.')
-
-		await rest.put(
-			Routes.applicationGuildCommands(DISCORD_CLIENT_ID, '1045279421138997268'),
-			{ body: commands }
-		)
-
+		await rest.put(Routes.applicationCommands(DISCORD_CLIENT_ID), {
+			body: commands,
+		})
 		console.log('Successfully reloaded application (/) commands.')
 	} catch (error) {
 		console.error(error)
