@@ -48,7 +48,7 @@
 		saving.set(true)
 		daySelected = closeDetail ? null : day
 		await tick()
-		await goto(`/${newSlug}`, { noscroll: true, replaceState: true })
+		await goto(`/${newSlug}`, { noScroll: true, replaceState: true })
 		saving.set(false)
 	}
 
