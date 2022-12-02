@@ -21,14 +21,7 @@
 	]
 
 	function setWeekStart(start: 1 | 7) {
-		console.log('setWeekStart', start)
 		weekStart.set(start)
-		console.log(
-			serialize(`wec-weekStart`, `${start}`, {
-				maxAge: 90 * 24 * 60 * 60,
-				path: '/',
-			})
-		)
 		document.cookie = serialize(`wec-weekStart`, `${start}`, {
 			maxAge: 90 * 24 * 60 * 60,
 			path: '/',
