@@ -38,7 +38,7 @@ export async function getAccess(
 		...DISCORD_REQUEST_DATA,
 	}
 	const request = await fetch(TOKEN_URL, fetchOptions(dataObject))
-	logRateLimitHeaders(request.headers)
+	// logRateLimitHeaders(request.headers)
 	return request.json()
 }
 
@@ -52,7 +52,7 @@ export async function refresh(
 		...DISCORD_REQUEST_DATA,
 	}
 	const request = await fetch(TOKEN_URL, fetchOptions(dataObject))
-	logRateLimitHeaders(request.headers)
+	// logRateLimitHeaders(request.headers)
 	return await request.json()
 }
 
@@ -102,7 +102,7 @@ export async function getUser(
 	const userRequest = await fetch(`${API_URL}/users/@me`, {
 		headers: { Authorization: `Bearer ${accessToken}` },
 	})
-	logRateLimitHeaders(userRequest.headers)
+	// logRateLimitHeaders(userRequest.headers)
 	const user = await userRequest.json()
 	if (user.id) {
 		console.log('got user', user.id)
