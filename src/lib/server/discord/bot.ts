@@ -1,19 +1,8 @@
-import {
-	DISCORD_BOT_TOKEN,
-	DISCORD_CLIENT_ID,
-	DISCORD_SERVER_ID,
-	APP_URL,
-} from '$env/static/private'
-import {
-	Client,
-	type Guild,
-	GatewayIntentBits,
-	Events,
-	REST,
-	SlashCommandBuilder,
-	Routes,
-} from 'discord.js'
+import { dev } from '$app/environment'
+import { DISCORD_BOT_TOKEN, DISCORD_SERVER_ID } from '$env/static/private'
+import { Client, type Guild, GatewayIntentBits, Events } from 'discord.js'
 import { DateTime } from 'luxon'
+import { handleCommands, registerCommands } from './commands'
 
 let botConnected = false
 let discordServer: Guild
@@ -21,14 +10,6 @@ let discordServer: Guild
 const bot = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 })
-
-const rest = new REST({ version: '10' }).setToken(DISCORD_BOT_TOKEN)
-
-const commands = [
-	new SlashCommandBuilder()
-		.setName('whenever')
-		.setDescription('Get overview & status for the Whenever calendar'),
-]
 
 export async function connectBot() {
 	const promise = new Promise<void>((resolve) => {
@@ -44,24 +25,11 @@ export async function connectBot() {
 				)
 				resolve()
 			})
-			bot.on('interactionCreate', async (interaction) => {
-				if (!interaction.isChatInputCommand()) return
-				if (interaction.commandName === 'whenever') {
-					await interaction.reply(APP_URL)
-				}
-			})
+			if (dev) registerCommands()
+			if (!dev) handleCommands(bot)
 			bot.login(DISCORD_BOT_TOKEN)
 		}
 	})
-	try {
-		console.log('Started refreshing application (/) commands.')
-		await rest.put(Routes.applicationCommands(DISCORD_CLIENT_ID), {
-			body: commands,
-		})
-		console.log('Successfully reloaded application (/) commands.')
-	} catch (error) {
-		console.error(error)
-	}
 	return promise
 }
 
