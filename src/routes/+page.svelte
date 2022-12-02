@@ -12,7 +12,7 @@
 		<a
 			href="/api/auth"
 			data-sveltekit-prefetch="off"
-			style="font-size: 2em; margin-top: 1em;">Log in!</a
+			style="font-size: 2em; margin-top: 1em;">Sign in!</a
 		>
 	{:else}
 		<h2>Something isn't right...</h2>
