@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 
 const FINAL_DAY = DateTime.fromObject({ year: 2022, month: 12 })
+	.setZone(PUBLIC_GLOBAL_TIMEZONE, { keepLocalTime: true })
 	.endOf('month')
 	.startOf('day')
 
