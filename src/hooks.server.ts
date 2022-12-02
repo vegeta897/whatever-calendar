@@ -1,6 +1,7 @@
 import { days, setCookie } from '$lib/server/cookies'
 import {
 	addOrRefreshSession,
+	cleanupData,
 	getData,
 	getSession,
 	getWheneverUserIDs,
@@ -15,6 +16,7 @@ import { DISCORD_ADMIN_USER_ID } from '$env/static/private'
 
 await connectBot()
 await fetchMembers(getWheneverUserIDs())
+cleanupData()
 
 const handleSession: Handle = async ({ event, resolve }) => {
 	// console.log('begin handleSession', event.routeId)

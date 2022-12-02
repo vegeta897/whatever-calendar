@@ -1,3 +1,4 @@
+import { dev } from '$app/environment'
 import { PUBLIC_GLOBAL_TIMEZONE } from '$env/static/public'
 import { days } from '$lib/server/cookies'
 import { Low, JSONFile } from 'lowdb'
@@ -26,6 +27,8 @@ const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 await db.read()
 db.data ||= { marks: [], sessions: [] }
+
+if (!dev) setInterval(() => cleanupData(), 10 * 60 * 1000)
 
 export function getData(): DeepReadonly<DBData> {
 	return db.data!
@@ -62,6 +65,15 @@ export function getMarks(): DBData['marks'] {
 				.setZone(PUBLIC_GLOBAL_TIMEZONE, { keepLocalTime: true })
 				.toMillis() >= now
 	)
+}
+
+export function cleanupData() {
+	// Delete expired sessions and old mark data
+	const now = Date.now()
+	modifyData({
+		sessions: db.data!.sessions.filter((s) => s.expires > now),
+		marks: getMarks(),
+	})
 }
 
 export function modifyData(data: Partial<DBData>) {
