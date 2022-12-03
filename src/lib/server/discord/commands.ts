@@ -57,7 +57,7 @@ function getCalendarStats() {
 	return stats
 }
 
-setTimeout(() => console.log(getCalendarStats()), 5000)
+// setTimeout(() => console.log(getCalendarStats()), 5000)
 
 export function handleCommands(bot: Client) {
 	bot.on('interactionCreate', async (interaction) => {
