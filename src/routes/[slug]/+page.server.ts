@@ -1,6 +1,6 @@
 import {
 	getData,
-	getMarks,
+	getVotes,
 	getWheneverUserIDs,
 	modifyData,
 } from '$lib/server/db'
@@ -39,7 +39,7 @@ export const load: PageServerLoad = async ({
 		selectedUserID: url.searchParams.get('filter') || null,
 	}
 	pageData.discordMember = locals.discordMember
-	pageData.marks = getMarks()
+	pageData.votes = getVotes()
 	pageData.users = await getUsers(getWheneverUserIDs(locals.discordMember.id))
 	pageData.users[locals.discordMember.id].me = true
 	const weekStart = cookies.get('wec-weekStart')
@@ -50,25 +50,25 @@ export const load: PageServerLoad = async ({
 }
 
 export const actions: Actions = {
-	mark: async ({ request, locals }) => {
-		// console.log('mark action received!')
+	vote: async ({ request, locals }) => {
+		// console.log('vote action received!')
 		// await sleep(250)
 		checkAuth(locals.discordMember)
 		const formData = await request.formData()
-		if (!formData.has('mark')) {
-			validationError('Request invalid, missing "mark" form data', {
+		if (!formData.has('vote')) {
+			validationError('Request invalid, missing "vote" form data', {
 				user: locals.discordMember.username,
 			})
 		}
 		const userID = locals.discordMember.id
-		let doMark: boolean
+		let doVote: boolean
 		try {
-			doMark = JSON.parse(formData.get('mark') as string)
+			doVote = JSON.parse(formData.get('vote') as string)
 		} catch (e) {
 			validationError(
-				`Request invalid, received non-boolean "mark" form data`,
+				`Request invalid, received non-boolean "vote" form data`,
 				{
-					mark: formData.get('mark'),
+					vote: formData.get('vote'),
 					user: locals.discordMember.username,
 				}
 			)
@@ -81,18 +81,18 @@ export const actions: Actions = {
 				user: locals.discordMember.username,
 			})
 		}
-		const marks = [...getData().marks]
-		if (doMark) {
-			const existingMark = marks.find(
+		const votes = [...getData().votes]
+		if (doVote) {
+			const existingVote = votes.find(
 				(m) => m.userID === userID && m.YYYYMMDD === YYYYMMDD
 			)
-			if (!existingMark) {
-				marks.push({ YYYYMMDD, userID, timestamp: Date.now() })
-				modifyData({ marks })
+			if (!existingVote) {
+				votes.push({ YYYYMMDD, userID, timestamp: Date.now() })
+				modifyData({ votes: votes })
 			}
 		} else {
 			modifyData({
-				marks: marks.filter(
+				votes: votes.filter(
 					(m) => m.userID !== userID || m.YYYYMMDD !== YYYYMMDD
 				),
 			})
@@ -122,21 +122,21 @@ export const actions: Actions = {
 				user: locals.discordMember.username,
 			})
 		}
-		const marks = [...getData().marks]
-		const notedMark = marks.find(
+		const votes = [...getData().votes]
+		const notedVote = votes.find(
 			(m) => m.userID === locals.discordMember!.id && m.YYYYMMDD === YYYYMMDD
 		)!
-		if (!notedMark) {
+		if (!notedVote) {
 			validationError(
-				`Tried to modify the note for a mark that doesn't exist`,
+				`Tried to modify the note for a vote that doesn't exist`,
 				{ YYYYMMDD, user: locals.discordMember.username }
 			)
 		}
 		modifyData({
-			marks: [
-				...marks.filter((m) => m !== notedMark),
+			votes: [
+				...votes.filter((m) => m !== notedVote),
 				{
-					...notedMark,
+					...notedVote,
 					noteTimestamp: Date.now(),
 					note: noteText.substring(0, 256).trim(),
 				},

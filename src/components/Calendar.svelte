@@ -36,7 +36,7 @@
 	// Use the |local directive on transtitions whenever possible,
 	// because they can cause weird issues with stuck components!
 
-	$: marks = $page.data.marks!
+	$: votes = $page.data.votes!
 	$: weekdayNames = getWeekdayNames($weekStart)
 	$: preDays = getPreDays($days, $today, $weekStart)
 	$: daySelected =
@@ -90,11 +90,11 @@
 			</div>
 		{/each}
 		{#each $days as day, d (day.YYYYMMDD)}
-			{@const dayMarks = marks.filter((mark) => mark.YYYYMMDD === day.YYYYMMDD)}
+			{@const dayVotes = votes.filter((vote) => vote.YYYYMMDD === day.YYYYMMDD)}
 			<Day
 				{day}
 				selected={day === daySelected}
-				{dayMarks}
+				{dayVotes}
 				onClick={dayOnClick}
 				firstRow={preDays.length + d < 7}
 			/>
@@ -102,7 +102,7 @@
 		{#if daySelected}
 			<DayDetail
 				day={daySelected}
-				marks={marks.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
+				votes={votes.filter((m) => m.YYYYMMDD === daySelected?.YYYYMMDD)}
 				{preDays}
 			/>
 		{/if}

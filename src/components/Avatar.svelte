@@ -3,21 +3,21 @@
 
 	export let size = '3rem'
 	export let user: WheneverUser
-	export let unmarked = false
-	export let markable = false
+	export let unvoted = false
+	export let canVote = false
 	export let responsive = false
 
 	let imgError = false
 </script>
 
-<div style="--size: {size}" class:unmarked class:responsive>
+<div style="--size: {size}" class:unvoted class:responsive>
 	<img
 		src={user.avatarURL}
 		alt="{user.name}'s avatar"
 		class:hidden={imgError}
 		on:error={() => (imgError = true)}
 	/>
-	{#if markable && user.me}
+	{#if canVote && user.me}
 		<svg
 			version="1.1"
 			xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@
 		display: none;
 	}
 
-	div.unmarked img {
+	div.unvoted img {
 		transform: scale(0);
 	}
 
@@ -76,17 +76,17 @@
 		fill: none;
 	}
 
-	:not(.unmarked) svg.plus {
+	:not(.unvoted) svg.plus {
 		transform: rotate(0);
 		opacity: 0;
 	}
 
 	@media (hover: hover) {
-		:global(*:hover) > .unmarked svg.plus {
+		:global(*:hover) > .unvoted svg.plus {
 			transform: rotate(90deg);
 		}
 
-		:global(*:hover) > :not(.unmarked) svg.plus {
+		:global(*:hover) > :not(.unvoted) svg.plus {
 			transform: rotate(-45deg);
 			background-color: var(--color-bg);
 			opacity: 1;

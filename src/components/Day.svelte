@@ -6,16 +6,16 @@
 
 	export let day: CalendarDay
 	export let selected = false
-	export let dayMarks: MarkData[]
+	export let dayVotes: VoteData[]
 	export let onClick: (day: CalendarDay) => void
 	export let firstRow = false
 
 	const myUserID = $page.data.discordMember!.id
 
-	$: myMark = dayMarks.find((m) => m.userID === myUserID)
-	$: otherMarks = dayMarks.filter((m) => m.userID !== myUserID)
+	$: myVote = dayVotes.find((m) => m.userID === myUserID)
+	$: otherVotes = dayVotes.filter((m) => m.userID !== myUserID)
 	$: hasSelectedUser =
-		$selectedUserID && dayMarks.some((m) => m.userID === $selectedUserID)
+		$selectedUserID && dayVotes.some((m) => m.userID === $selectedUserID)
 </script>
 
 <a
@@ -30,7 +30,6 @@
 		class="day"
 		class:selected
 		class:first-column={day.weekday === $weekStart}
-		class:no-marks={dayMarks.length === 0}
 		class:faded={$selectedUserID && !hasSelectedUser}
 	>
 		<div class="month-label">
@@ -40,15 +39,11 @@
 		<div class="day-date" class:day-today={$today.hasSame(day.datetime, 'day')}>
 			{day.day}
 		</div>
-		<div class="day-marks">
-			<!-- <People YYYYMMDD={day.YYYYMMDD} count={dayMarks.length + 2} /> -->
-			{#if myMark}<span class="you">You</span>{/if}
-			{#if otherMarks.length > 0}{#if myMark}
+		<div class="day-votes">
+			{#if myVote}<span class="you">You</span>{/if}
+			{#if otherVotes.length > 0}{#if myVote}
 					<span class="plus">+</span>
-				{/if}<span class="others">{otherMarks.length}</span>{/if}
-			<!-- {#if dayMarks.some((m) => m.note)}
-				<span class="quote-mark">&#10078;</span>
-			{/if} -->
+				{/if}<span class="others">{otherVotes.length}</span>{/if}
 		</div>
 		<div class="day-detail-join-cover" />
 	</li>
@@ -116,7 +111,7 @@
 		text-decoration: underline;
 	}
 
-	.day-marks {
+	.day-votes {
 		display: flex;
 		font-size: calc(var(--day-height) * 0.16);
 		background: var(--color-fg);

@@ -13,7 +13,7 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 
 type DBData = {
 	sessions: Session[]
-	marks: MarkData[]
+	votes: VoteData[]
 }
 
 type Session = Readonly<{
@@ -27,7 +27,7 @@ const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 if (!building) await db.read()
 
-db.data ||= { marks: [], sessions: [] }
+db.data ||= { votes: [], sessions: [] }
 
 if (!dev && !building) setInterval(() => cleanupData(), 10 * 60 * 1000)
 
@@ -51,18 +51,18 @@ export function addOrRefreshSession(session: Omit<Session, 'expires'>) {
 
 export function getWheneverUserIDs(me?: string) {
 	// Build set of all member IDs
-	const markUsers = getMarks().map((m) => m.userID)
-	if (me) markUsers.push(me)
-	return [...new Set(markUsers)]
+	const voteUsers = getVotes().map((m) => m.userID)
+	if (me) voteUsers.push(me)
+	return [...new Set(voteUsers)]
 }
 
-export function getMarks(): DBData['marks'] {
-	// Get marks, filtering out ones from the past
+export function getVotes(): DBData['votes'] {
+	// Get votes, filtering out ones from the past
 	const now = DateTime.now()
 		.setZone(PUBLIC_GLOBAL_TIMEZONE)
 		.startOf('day')
 		.toMillis()
-	return getData().marks.filter(
+	return getData().votes.filter(
 		(m) =>
 			DateTime.fromFormat(m.YYYYMMDD, 'yyyy-LL-dd')
 				.setZone(PUBLIC_GLOBAL_TIMEZONE, { keepLocalTime: true })
@@ -71,11 +71,11 @@ export function getMarks(): DBData['marks'] {
 }
 
 export function cleanupData() {
-	// Delete expired sessions and old mark data
+	// Delete expired sessions and old vote data
 	const now = Date.now()
 	modifyData({
 		sessions: db.data!.sessions.filter((s) => s.expires > now),
-		marks: getMarks(),
+		votes: getVotes(),
 	})
 }
 

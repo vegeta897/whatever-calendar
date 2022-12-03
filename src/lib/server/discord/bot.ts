@@ -25,7 +25,7 @@ export async function connectBot() {
 				)
 				resolve()
 			})
-			if (dev) registerCommands()
+			// if (dev) registerCommands()
 			if (!dev) handleCommands(bot)
 			bot.login(DISCORD_BOT_TOKEN)
 		}

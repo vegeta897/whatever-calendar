@@ -28,7 +28,7 @@ declare global {
 		me?: boolean
 	}
 
-	type MarkData = {
+	type VoteData = {
 		YYYYMMDD: Readonly<string>
 		userID: Readonly<string>
 		timestamp: Readonly<number>

@@ -35,7 +35,7 @@
 		<hr />
 	{/if}
 	<div>
-		<h3>Filter marks</h3>
+		<h3>Filter votes</h3>
 		<div class="user-grid">
 			{#each users as user (user.id)}
 				<div>

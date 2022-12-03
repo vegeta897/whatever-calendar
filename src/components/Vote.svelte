@@ -11,7 +11,7 @@
 
 	// This component is pretty big, can it be split?
 
-	export let mark: MarkData | undefined
+	export let vote: VoteData | undefined
 	export let day: CalendarDay
 	export let mine = false
 
@@ -20,26 +20,26 @@
 
 	$: users = $page.data.users!
 
-	let myNoteText = mark?.note
+	let myNoteText = vote?.note
 	let myNoteDetailsElement: HTMLDetailsElement
 
-	beforeNavigate(() => (myNoteText = mark?.note))
-	afterNavigate(() => (myNoteText = mark?.note))
+	beforeNavigate(() => (myNoteText = vote?.note))
+	afterNavigate(() => (myNoteText = vote?.note))
 </script>
 
-<div class="user-mark" class:my-mark={mine} class:marked={mine && mark}>
+<div class="user-vote" class:my-vote={mine} class:voted={mine && vote}>
 	<div class="user-info">
 		{#if mine}
 			<form
 				method="POST"
-				action="?/mark"
+				action="?/vote"
 				use:enhance={() => {
 					saving.set(true)
-					if (mark) {
+					if (vote) {
 						myNoteText = ''
-						mark = undefined
+						vote = undefined
 					} else {
-						mark = {
+						vote = {
 							YYYYMMDD: day.YYYYMMDD,
 							userID: myUserID,
 							timestamp: Date.now(),
@@ -52,32 +52,32 @@
 				}}
 			>
 				<input name="day" hidden value={day.YYYYMMDD} />
-				<input name="mark" hidden value={!mark} />
+				<input name="vote" hidden value={!vote} />
 				<button disabled={$saving}>
 					<Avatar
 						user={users[myUserID]}
-						markable={!$saving}
-						unmarked={!mark}
+						canVote={!$saving}
+						unvoted={!vote}
 						responsive
 					/>
-					{#if mark}<span>{users[myUserID].name}</span>
-					{:else}<span>Add yourself</span>{/if}
+					{#if vote}<span>{users[myUserID].name}</span>
+					{:else}<span>Add your vote</span>{/if}
 				</button>
 			</form>
-		{:else if mark}
-			<Avatar user={users[mark.userID]} responsive />
-			<span>{users[mark.userID].name}</span>
+		{:else if vote}
+			<Avatar user={users[vote.userID]} responsive />
+			<span>{users[vote.userID].name}</span>
 		{/if}
 	</div>
-	{#if mine && mark}
+	{#if mine && vote}
 		<div
 			class="user-note my-note"
-			class:no-note={!mark.note}
+			class:no-note={!vote.note}
 			transition:fade|local={{ duration: 100, easing: quadOut }}
 		>
-			<details bind:this={myNoteDetailsElement} open={!mark.note}>
+			<details bind:this={myNoteDetailsElement} open={!vote.note}>
 				<summary>
-					{#if mark.note}
+					{#if vote.note}
 						<div class="edit-note-button">
 							<svg
 								viewBox="0 0 14 14"
@@ -100,7 +100,7 @@
 								/>
 							</svg>
 						</div>
-						<q class="user-note">{mark.note}</q>
+						<q class="user-note">{vote.note}</q>
 					{/if}
 				</summary>
 				<form
@@ -110,7 +110,7 @@
 					use:enhance={() => {
 						saving.set(true)
 						if (myNoteText) myNoteText = myNoteText.substring(0, 256).trim()
-						if (mark) mark.note = myNoteText
+						if (vote) vote.note = myNoteText
 						return async ({ update }) => {
 							saving.set(false)
 							myNoteDetailsElement.open = !myNoteText
@@ -133,20 +133,20 @@
 						disabled={!noJS &&
 							($saving ||
 								(myNoteText?.split('\r\n').join('\n') || '') ===
-									(mark.note?.split('\r\n').join('\n') || ''))}
+									(vote.note?.split('\r\n').join('\n') || ''))}
 					>
 						Save
 					</button>
 				</form>
 			</details>
 		</div>
-	{:else if mark?.note}
-		<q class="user-note">{mark.note}</q>
+	{:else if vote?.note}
+		<q class="user-note">{vote.note}</q>
 	{/if}
 </div>
 
 <style>
-	.user-mark {
+	.user-vote {
 		display: flex;
 		align-items: center;
 		text-align: left;
@@ -158,14 +158,14 @@
 		--note-input-height: 2.5rem;
 	}
 
-	:global(.user-mark + .user-mark) {
+	:global(.user-vote + .user-vote) {
 		margin-top: 0.5rem;
 	}
 
 	.user-info {
 		display: flex;
 		align-items: center;
-		width: 18rem;
+		width: 19rem;
 		flex-shrink: 0;
 		overflow: hidden;
 		padding-right: 0.75rem;
@@ -178,11 +178,11 @@
 		text-align: left;
 	}
 
-	.my-mark .user-info {
+	.my-vote .user-info {
 		padding-right: calc(var(--note-input-height) + 2rem);
 	}
 
-	.my-mark .user-info button {
+	.my-vote .user-info button {
 		color: var(--color-fg);
 		display: flex;
 		align-items: center;
@@ -194,12 +194,12 @@
 		border: 1px solid transparent;
 	}
 
-	.my-mark.marked .user-info button {
+	.my-vote.voted .user-info button {
 		border: 1px solid var(--color-fg);
 	}
 
 	@media (hover: hover) {
-		.my-mark .user-info button:hover {
+		.my-vote .user-info button:hover {
 			border: 1px solid var(--color-fg);
 		}
 	}
@@ -335,7 +335,7 @@
 		cursor: not-allowed;
 	}
 
-	.user-mark:not(.my-mark) .user-info {
+	.user-vote:not(.my-vote) .user-info {
 		padding-left: 0.8125rem;
 	}
 
@@ -363,7 +363,7 @@
 
 	@media (max-width: 50rem) {
 		/* 800px */
-		.user-mark {
+		.user-vote {
 			flex-wrap: wrap;
 			padding: 0.75rem 0 0;
 		}
@@ -372,7 +372,7 @@
 			width: 100%;
 		}
 
-		.my-mark .user-info {
+		.my-vote .user-info {
 			padding-right: 0;
 			margin-right: 0;
 			width: 100%;
@@ -400,7 +400,7 @@
 
 	@media (max-width: 30rem) {
 		/* 480px */
-		.user-mark {
+		.user-vote {
 			padding-top: 0.5rem;
 		}
 

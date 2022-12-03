@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition'
 	import { page } from '$app/stores'
-	import Mark from './Mark.svelte'
+	import Vote from './Vote.svelte'
 	import { weekStart, days, getPreDays, type CalendarDay } from '$lib/calendar'
 
 	export let day: CalendarDay
-	export let marks: MarkData[]
+	export let votes: VoteData[]
 	export let preDays: ReturnType<typeof getPreDays>
 
 	const myUserID = $page.data.discordMember!.id
 
-	$: myMark = marks.find((mark) => mark.userID === myUserID)
-	$: otherMarks = marks.filter((m) => m !== myMark)
+	$: myVote = votes.find((vote) => vote.userID === myUserID)
+	$: otherVotes = votes.filter((m) => m !== myVote)
 
 	$: rightAlignDay = day.weekday === ($weekStart === 1 ? 7 : 6)
 	$: leftAlignDay = day.weekday === $weekStart
@@ -38,26 +38,26 @@
 		{day.day}
 	</h3>
 	<h4>
-		{#if otherMarks.length > 0}
-			{#if myMark}
-				You and {otherMarks.length} other{otherMarks.length > 1 ? 's' : ''}
+		{#if otherVotes.length > 0}
+			{#if myVote}
+				You and {otherVotes.length} other{otherVotes.length > 1 ? 's' : ''}
 			{:else}
-				{otherMarks.length} {otherMarks.length > 1 ? 'people' : 'person'}
+				{otherVotes.length} {otherVotes.length > 1 ? 'people' : 'person'}
 			{/if}
-		{:else if myMark}
+		{:else if myVote}
 			It's just you
 		{:else}
 			&nbsp;
 		{/if}
 	</h4>
-	<div class="marks">
-		<Mark mark={myMark} {day} mine />
-		{#if otherMarks.length > 0}
+	<div class="votes">
+		<Vote vote={myVote} {day} mine />
+		{#if otherVotes.length > 0}
 			<hr />
 		{/if}
-		{#each otherMarks as mark, m (mark.YYYYMMDD + mark.userID)}
-			<Mark {mark} {day} />
-			{#if m < otherMarks.length - 1}
+		{#each otherVotes as vote, m (vote.YYYYMMDD + vote.userID)}
+			<Vote {vote} {day} />
+			{#if m < otherVotes.length - 1}
 				<hr />
 			{/if}
 		{/each}
@@ -91,7 +91,7 @@
 		margin: 0 0 0.5rem 1rem;
 	}
 
-	.marks {
+	.votes {
 		display: flex;
 		flex-direction: column;
 		padding: 0 1rem;
