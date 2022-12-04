@@ -2,7 +2,7 @@
 
 ## Working on
 
-- Post-launch
+- Event layers, created by Discord commands/interactions
 
 ## Known issues
 

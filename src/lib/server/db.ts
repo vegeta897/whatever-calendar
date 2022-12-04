@@ -14,6 +14,7 @@ type DeepReadonly<T> = T extends Function // eslint-disable-line @typescript-esl
 type DBData = {
 	sessions: Session[]
 	votes: VoteData[]
+	events: WheneverEvent[]
 }
 
 type Session = Readonly<{
@@ -27,7 +28,7 @@ const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 if (!building) await db.read()
 
-db.data ||= { votes: [], sessions: [] }
+db.data ||= { votes: [], sessions: [], events: [] }
 
 if (!dev && !building) setInterval(() => cleanupData(), 10 * 60 * 1000)
 

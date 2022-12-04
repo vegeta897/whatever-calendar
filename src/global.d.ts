@@ -35,4 +35,14 @@ declare global {
 		note?: string
 		noteTimestamp?: number
 	}
+
+	type WheneverEvent = {
+		name: string
+		description: string
+		cutoffDate: string
+		slug: string
+		bgColor?: string
+		fgColor?: string
+		createdBy: string
+	}
 }
