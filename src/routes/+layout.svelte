@@ -3,14 +3,6 @@
 	import './styles.css'
 </script>
 
-<svelte:head>
-	<!-- <title>Whenever?</title> -->
-	<meta
-		name="description"
-		content="Collaborative event availability planning"
-	/>
-</svelte:head>
-
 <div class="app">
 	<Header />
 
