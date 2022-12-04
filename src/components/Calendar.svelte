@@ -130,10 +130,10 @@
 
 	.weekdays {
 		grid-column: 1 / 8;
+		column-gap: 1%;
 		width: 100%;
 		display: grid;
-
-		grid-template-columns: repeat(7, calc(100% / 7));
+		grid-template-columns: repeat(7, calc(94% / 7));
 		border-bottom: 1px solid var(--color-fg);
 	}
 
