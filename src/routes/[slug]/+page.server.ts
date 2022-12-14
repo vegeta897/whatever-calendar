@@ -88,7 +88,7 @@ export const actions: Actions = {
 			)
 			if (!existingVote) {
 				votes.push({ YYYYMMDD, userID, timestamp: Date.now() })
-				modifyData({ votes: votes })
+				modifyData({ votes })
 			}
 		} else {
 			modifyData({

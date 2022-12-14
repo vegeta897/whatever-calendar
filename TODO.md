@@ -8,6 +8,7 @@
 
 - `db.json` saves to /home on deployed server
 - Media embeds don't work
+- Only auto-refresh if tab is visible
 
 ## Up next
 

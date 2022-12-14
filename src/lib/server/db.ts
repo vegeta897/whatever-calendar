@@ -28,7 +28,8 @@ const adapter = new JSONFile<DBData>('./db.json')
 const db = new Low<DBData>(adapter)
 if (!building) await db.read()
 
-db.data ||= { votes: [], sessions: [], events: [] }
+db.data ||= { events: [], votes: [], sessions: [] }
+db.data.events ||= [] // Migration, remove after first deploy
 
 if (!dev && !building) setInterval(() => cleanupData(), 10 * 60 * 1000)
 

@@ -41,8 +41,8 @@ declare global {
 		description: string
 		cutoffDate: string
 		slug: string
-		bgColor?: string
-		fgColor?: string
+		color?: string
 		createdBy: string
+		createdAt: number
 	}
 }

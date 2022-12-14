@@ -6,66 +6,56 @@ import {
 } from '$env/static/private'
 import {
 	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
 	Client,
+	ComponentType,
 	ModalBuilder,
 	REST,
 	Routes,
 	SlashCommandBuilder,
+	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder,
 	TextInputBuilder,
 	TextInputStyle,
+	type MessageActionRowComponentBuilder,
 } from 'discord.js'
 import { DateTime } from 'luxon'
-import { getVotes } from '../db'
+import { getData, getVotes, modifyData } from '../db'
+import slug from 'slug'
 
 const commands = [
 	new SlashCommandBuilder()
 		.setName('whenever')
-		.setDescription('View info or create events in the Whenever calendar')
-		.addSubcommand((subcommand) =>
-			subcommand.setName('info').setDescription('View info about the calendar')
-		)
-		.addSubcommandGroup((group) =>
-			group
-				.setName('event')
-				.setDescription('Add or edit events on the calendar')
-				.addSubcommand((subcommand) =>
-					subcommand
-						.setName('create')
-						.setDescription('Create a new event on the calendar')
-						.addStringOption((option) =>
-							option
-								.setName('name')
-								.setDescription('The name of the event')
-								.setMinLength(3)
-								.setMaxLength(40)
-						)
-						.addStringOption((option) =>
-							option
-								.setName('description')
-								.setDescription('A brief description of the event')
-								.setMinLength(5)
-								.setMaxLength(256)
-						)
-						.addStringOption((option) =>
-							option
-								.setName('cutoff')
-								.setDescription(
-									'The latest date that can be voted on for the event, in YYYY-MM-DD format'
-								)
-								.setMinLength(10)
-								.setMaxLength(10)
-						)
-						.addStringOption((option) =>
-							option
-								.setName('color')
-								.setDescription(
-									'The calendar background color for the event, in #hex format'
-								)
-								.setMinLength(7)
-								.setMaxLength(7)
-						)
-				)
-		),
+		.setDescription('View info or create events in the Whenever calendar'),
+	// .addSubcommand((subcommand) =>
+	// 	subcommand
+	// 		.setName('create')
+	// 		.setDescription('Create a new event on the calendar')
+	// 		.addStringOption((option) =>
+	// 			option
+	// 				.setName('name')
+	// 				.setDescription('The name of the event')
+	// 				.setMinLength(3)
+	// 				.setMaxLength(40)
+	// 		)
+	// 		.addStringOption((option) =>
+	// 			option
+	// 				.setName('description')
+	// 				.setDescription('A brief description of the event')
+	// 				.setMinLength(5)
+	// 				.setMaxLength(256)
+	// 		)
+	// 		.addStringOption((option) =>
+	// 			option
+	// 				.setName('cutoff')
+	// 				.setDescription(
+	// 					'The latest date that can be voted on for the event, in YYYY-MM-DD format'
+	// 				)
+	// 				.setMinLength(10)
+	// 				.setMaxLength(10)
+	// 		)
+	// ),
 ]
 
 const rest = new REST({ version: '10' }).setToken(DISCORD_BOT_TOKEN)
@@ -146,93 +136,262 @@ export function handleCommands(bot: Client) {
 		if (dev && interaction.guildId !== '1045279421138997268') return
 		if (dev && interaction.commandGuildId !== '1045279421138997268') return
 		console.log('name:', interaction.commandName)
-		console.log('subgroup:', interaction.options.getSubcommandGroup())
-		console.log('subcommand:', interaction.options.getSubcommand())
 		console.log('id:', interaction.id)
 		if (interaction.commandName === 'whenever') {
-			const subgroup = interaction.options.getSubcommandGroup()
-			const subcommand = interaction.options.getSubcommand()
-			if (subcommand === 'info') {
-				const status = `**Vote on the days you can play Sven!**
+			const components = [
+				new ActionRowBuilder().addComponents(
+					new ButtonBuilder()
+						.setCustomId('createEvent')
+						.setLabel('Create Event')
+						.setStyle(ButtonStyle.Success),
+					new ButtonBuilder()
+						.setCustomId('deleteEvent')
+						.setLabel('Delete Event')
+						.setStyle(ButtonStyle.Danger)
+				),
+				new ActionRowBuilder().addComponents(
+					new ButtonBuilder()
+						.setLabel('Open Calendar')
+						.setStyle(ButtonStyle.Link)
+						.setURL(APP_URL)
+				),
+			] as ActionRowBuilder<MessageActionRowComponentBuilder>[]
 
-${getCalendarStats()}
-
-${APP_URL}`
-				await interaction.reply(status)
-			} else if (subcommand === 'create') {
-				const options = new Map(
-					['name', 'description', 'cutoff', 'color']
-						.map((option) => [option, interaction.options.getString(option)])
-						.filter((option) => option[1]) as [string, string][]
-				)
-				if (
-					!options.has('name') ||
-					!options.has('description') ||
-					!options.has('cutoff')
-				) {
-					// Missing required options, create a modal
-					const modal = new ModalBuilder()
-						.setCustomId('eventInfo')
-						.setTitle('Event Info')
-						.addComponents(
-							[
-								new TextInputBuilder()
-									.setCustomId('eventNameInput')
-									.setLabel('Event name')
-									.setStyle(TextInputStyle.Short)
-									.setRequired(true)
-									.setMinLength(3)
-									.setMaxLength(40),
-								new TextInputBuilder()
-									.setCustomId('eventDescriptionInput')
-									.setLabel('Description')
-									.setStyle(TextInputStyle.Paragraph)
-									.setRequired(true)
-									.setMinLength(5)
-									.setMaxLength(256)
-									.setPlaceholder('A brief summary or explanation'),
-								new TextInputBuilder()
-									.setCustomId('eventCutoffInput')
-									.setLabel('Cutoff date')
-									.setStyle(TextInputStyle.Short)
-									.setRequired(true)
-									.setMinLength(10)
-									.setMaxLength(10)
-									.setPlaceholder('2023-01-31'),
-								new TextInputBuilder()
-									.setCustomId('eventColorInput')
-									.setLabel('Calendar color')
-									.setStyle(TextInputStyle.Short)
-									.setMinLength(7)
-									.setMaxLength(7)
-									.setPlaceholder('#ffdb3b'),
-							].map(
-								(input) =>
-									new ActionRowBuilder().addComponents(
-										input
-									) as ActionRowBuilder<TextInputBuilder>
+			const wheneverCommandReply = await interaction.reply({
+				content: getCalendarStats(),
+				components,
+				fetchReply: true,
+				ephemeral: true,
+			})
+			// TODO: Maybe instead of using modals, use a series of questions and replies?
+			//
+			wheneverCommandReply
+				.createMessageComponentCollector({
+					componentType: ComponentType.Button,
+					time: 10 * 60 * 1000,
+				})
+				.on('collect', async (wheneverCommandButtonInteraction) => {
+					console.log('button component interaction incoming')
+					console.log(
+						wheneverCommandButtonInteraction.customId,
+						wheneverCommandButtonInteraction.id
+					)
+					if (wheneverCommandButtonInteraction.customId === 'createEvent') {
+						const modal = new ModalBuilder()
+							.setCustomId('eventInfo')
+							.setTitle('Event Info')
+							.addComponents(
+								[
+									new TextInputBuilder()
+										.setCustomId('eventNameInput')
+										.setLabel('Event name')
+										.setStyle(TextInputStyle.Short)
+										.setRequired(true)
+										.setMinLength(3)
+										.setMaxLength(40),
+									new TextInputBuilder()
+										.setCustomId('eventDescriptionInput')
+										.setLabel('Description')
+										.setStyle(TextInputStyle.Paragraph)
+										.setRequired(true)
+										.setMinLength(5)
+										.setMaxLength(256)
+										.setPlaceholder('A brief summary or explanation'),
+									new TextInputBuilder()
+										.setCustomId('eventCutoffInput')
+										.setLabel('Cutoff date')
+										.setStyle(TextInputStyle.Short)
+										.setRequired(true)
+										.setMinLength(10)
+										.setMaxLength(10)
+										.setPlaceholder('2023-01-31'),
+								].map(
+									(input) =>
+										new ActionRowBuilder().addComponents(
+											input
+										) as ActionRowBuilder<TextInputBuilder>
+								)
 							)
-						)
-					await interaction.showModal(modal)
-				} else {
-					// All required options present
-					await interaction.reply(`Event "${options.get('name')}" created`)
-				}
-			}
+						wheneverCommandButtonInteraction.showModal(modal)
+						wheneverCommandButtonInteraction
+							.awaitModalSubmit({ time: 5 * 60 * 1000 })
+							.then((modalSubmitInteraction) => {
+								console.log('modalSubmitInteraction received!')
+								const fields = new Map(
+									[
+										'eventNameInput',
+										'eventDescriptionInput',
+										'eventCutoffInput',
+									].map((field) => [
+										field,
+										modalSubmitInteraction.fields.getTextInputValue(field),
+									])
+								)
+								createEvent({
+									name: fields.get('eventNameInput')!,
+									description: fields.get('eventDescriptionInput')!,
+									cutoffDate: fields.get('eventCutoffInput')!,
+									createdBy: interaction.user.id,
+								})
+								modalSubmitInteraction.reply(
+									`Event "${fields.get('eventNameInput')}" was created by ${
+										interaction.user
+									}`
+								)
+							})
+					} else if (
+						wheneverCommandButtonInteraction.customId === 'deleteEvent'
+					) {
+						const deleteEventButtonReply =
+							await wheneverCommandButtonInteraction.reply({
+								content: 'Select an event to delete',
+								ephemeral: true,
+								fetchReply: true,
+								components: [
+									new ActionRowBuilder().addComponents(
+										new StringSelectMenuBuilder()
+											.setCustomId('deleteEventSelect')
+											.setPlaceholder('Select event')
+											.addOptions(
+												...getData().events.map((event) => ({
+													label: event.name,
+													description: event.description.substring(0, 100),
+													value: event.slug,
+												}))
+											)
+									) as ActionRowBuilder<StringSelectMenuBuilder>,
+								],
+							})
+						deleteEventButtonReply
+							.createMessageComponentCollector({
+								componentType: ComponentType.StringSelect,
+								time: 5 * 60 * 1000,
+							})
+							.on('collect', async (deleteEventSelectInteraction) => {
+								console.log('deleteEventSelect received!')
+								const selectedEvent = deleteEventSelectInteraction.values[0]
+								console.log('selected:', selectedEvent)
+								const event = getData().events.find(
+									(event) => event.slug === selectedEvent
+								)
+								wheneverCommandButtonInteraction.deleteReply()
+								if (event) {
+									const deleteEventSelectReply =
+										await deleteEventSelectInteraction.reply({
+											content: `Are you sure you want to delete "${event.name}"?`,
+											ephemeral: true,
+											fetchReply: true,
+											components: [
+												new ActionRowBuilder().addComponents(
+													new ButtonBuilder()
+														.setCustomId('confirmDeleteEvent')
+														.setLabel('Confirm Delete')
+														.setStyle(ButtonStyle.Danger),
+													new ButtonBuilder()
+														.setCustomId('cancelDeleteEvent')
+														.setLabel('Cancel')
+														.setStyle(ButtonStyle.Secondary)
+												) as ActionRowBuilder<MessageActionRowComponentBuilder>,
+											],
+										})
+									deleteEventSelectReply
+										.createMessageComponentCollector({
+											componentType: ComponentType.Button,
+											time: 30 * 1000,
+										})
+										.on('collect', (deleteEventButtonInteraction) => {
+											console.log('event delete button interaction incoming')
+											console.log(
+												deleteEventButtonInteraction.customId,
+												deleteEventButtonInteraction.id
+											)
+											deleteEventSelectInteraction.deleteReply()
+											if (
+												deleteEventButtonInteraction.customId ===
+												'confirmDeleteEvent'
+											) {
+												modifyData({
+													events: getData().events.filter(
+														(event) => event.slug !== selectedEvent
+													),
+												})
+												deleteEventButtonInteraction.reply(
+													`Event "${event.name}" was deleted by ${interaction.user}`
+												)
+											} else if (
+												deleteEventButtonInteraction.customId ===
+												'cancelDeleteEvent'
+											) {
+												deleteEventButtonInteraction.reply(
+													'Cancelled, no event was deleted'
+												)
+											}
+										})
+										.on('end', async () => {
+											if (deleteEventSelectReply.deletable) {
+												deleteEventSelectInteraction.deleteReply()
+											}
+										})
+								} else {
+									deleteEventSelectInteraction.reply({
+										content:
+											'Oops, it looks like this event was already deleted!',
+										components: [],
+									})
+								}
+							})
+							.on('end', () => {
+								interaction.editReply({
+									content:
+										'Command timed out, use `/whenever` to begin another',
+									components: [
+										new ActionRowBuilder().addComponents(
+											new ButtonBuilder()
+												.setLabel('Open Calendar')
+												.setStyle(ButtonStyle.Link)
+												.setURL(APP_URL)
+										) as ActionRowBuilder<MessageActionRowComponentBuilder>,
+									],
+								})
+							})
+					}
+				})
+				.on('end', () => {
+					interaction.editReply({
+						content: 'Command timed out, use `/whenever` to begin another',
+						components: [
+							new ActionRowBuilder().addComponents(
+								new ButtonBuilder()
+									.setLabel('Open Calendar')
+									.setStyle(ButtonStyle.Link)
+									.setURL(APP_URL)
+							) as ActionRowBuilder<MessageActionRowComponentBuilder>,
+						],
+					})
+				})
 		}
 	})
+}
 
-	bot.on('interactionCreate', async (interaction) => {
-		if (!interaction.isModalSubmit()) return
-		console.log('modal submission received!')
-		const fields = new Map(
-			[
-				'eventNameInput',
-				'eventDescriptionInput',
-				'eventCutoffInput',
-				'eventColorInput',
-			].map((field) => [field, interaction.fields.getTextInputValue(field)])
-		)
-		interaction.reply(`Event "${fields.get('eventNameInput')}" created`)
+type EventCreateOptions = Partial<WheneverEvent> &
+	Pick<WheneverEvent, 'name' | 'description' | 'cutoffDate' | 'createdBy'>
+
+function createEvent(options: EventCreateOptions) {
+	const events = [...getData().events]
+	events.push({
+		...options,
+		slug: slugifyEventName(options.name, events),
+		createdAt: Date.now(),
 	})
+	modifyData({ events })
+}
+
+function slugifyEventName(name: string, events: Pick<WheneverEvent, 'slug'>[]) {
+	let slugged: string
+	let discriminator = 0
+	do {
+		slugged = slug(name) + (discriminator ? `-${discriminator}` : '')
+		discriminator++
+	} while (events.some((e) => e.slug === slugged))
+	return slugged
 }
